@@ -1,4 +1,4 @@
-package engine.view;
+package engine;
 
 import engine.model.Entity;
 import oop.graphics.Graphics;
