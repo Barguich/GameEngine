@@ -1,22 +1,18 @@
-package engine.model;
+package engine;
 
+import engine.ISU;
 
-public abstract class Shape implements iShape{
-
+public class Shape {
 	// FIELD
 
-	protected ISU isu;
-	protected ISU.Coord center;
+	ISU isu;
+	ISU.Coord center;
 
 	// CONSTRUCTOR
 
 	public Shape(ISU.Coord center) {
-		this.isu = center.getIsu();
-		this.center = center;
+		this.center = center.mkCopy();
+		this.isu = center.isu();
 	}
-
-	 public ISU.Coord getCenter(){
-       return center;
-    }
 
 }
