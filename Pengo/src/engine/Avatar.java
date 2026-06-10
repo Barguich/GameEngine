@@ -1,6 +1,5 @@
 package engine;
 
-import engine.model.Entity;
 import oop.graphics.Graphics;
 
 public abstract class Avatar {

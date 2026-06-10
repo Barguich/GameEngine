@@ -1,4 +1,4 @@
-package engine.model;
+package engine;
 
 public interface iShape {
 
@@ -7,5 +7,7 @@ public interface iShape {
 	boolean intersects(Circle circle);
 
 	boolean intersects(Rect rect);
+
+	Box box();
 
 }

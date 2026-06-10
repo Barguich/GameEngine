@@ -2,91 +2,92 @@ package engine;
 
 public class Axis {
 
-  // FIELDS
+	// FIELDS
 
-  private boolean onTorus;
+	boolean onTorus;
 
-  private double perimeter;
-  private double halfPerimeter;
+	double perimeter;
+	private double halfPerimeter;
 
-  // CONSTRUCTOR
+	// CONSTRUCTOR
 
-  public Axis(boolean onTorus, double perimeter) {
+	public Axis(boolean onTorus, double perimeter) {
 
-    assert(perimeter > 0);
+		assert (perimeter > 0);
 
-    this.onTorus = onTorus;
+		this.onTorus = onTorus;
 
-    this.perimeter = perimeter;
-    this.halfPerimeter = perimeter / 2.0;
-  }
+		this.perimeter = perimeter;
+		this.halfPerimeter = perimeter / 2.0;
+	}
 
-  // NORMALIZE INTEGER
+	// NORMALIZE INTEGER
 
-  public int normalize(int length) {
+	public int normalize(int length) {
 
-    if (!onTorus) {
-      return length;
-    }
+		if (!onTorus) {
+			return length;
+		}
 
-    return modp(length, (int)perimeter);
-  }
+		return modp(length, (int) perimeter);
+	}
 
-  public int modp(int length, int perimeter) {
+	public int modp(int length, int perimeter) {
 
-    int r = length % perimeter;
+		int r = length % perimeter;
 
-    if (r < 0) {
-      r += perimeter;
-    }
+		if (r < 0) {
+			r += perimeter;
+		}
 
-    return r;
-  }
+		return r;
+	}
 
-  // NORMALIZE REAL
+	// NORMALIZE REAL
 
-  public double normalize(double length) {
+	public double normalize(double length) {
 
-    if (!onTorus) {
-      return length;
-    }
+		if (!onTorus) {
+			return length;
+		}
 
-    return modp(length, perimeter);
-  }
+		return modp(length, perimeter);
+	}
 
-  public double modp(double length, double perimeter) {
+	public double modp(double length, double perimeter) {
 
-    double r = length % perimeter;
+		double r = length % perimeter;
 
-    if (r < 0) {
-      r += perimeter;
-    }
+		if (r < 0) {
+			r += perimeter;
+		}
 
-    return r;
-  }
+		return r;
+	}
 
-  // DISTANCE
+	// DISTANCE
 
-public double distance(double position1, double position2) {
+	public double distance(double position1, double position2) {
 
-    double d = Math.abs(position2 - position1);
+		double d = Math.abs(position2 - position1);
 
-    if (!onTorus) {
-        return d;
-    }
+		if (!onTorus) {
+			return d;
+		}
 
-    if (d > halfPerimeter) {
-        d = perimeter - d;
-    }
+		if (d > halfPerimeter) {
+			d = perimeter - d;
+		}
 
-    return d;
-  }
-  // Garantit que xmax > xmin en ajoutant perimeter si nécessaire
-public double euclidian(double min, double max) {
-  if (onTorus && max < min) {
-    return max + perimeter;
-  }
+		return d;
+	}
 
-  return max;
-}
+	// Garantit que xmax > xmin en ajoutant perimeter si nécessaire
+	public double euclidian(double min, double max) {
+		if (onTorus && max < min) {
+			return max + perimeter;
+		}
+
+		return max;
+	}
 }

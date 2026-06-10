@@ -34,4 +34,22 @@ public class Rect extends Shape implements iShape {
 		return shape.intersects(this);
 	}
 
+	@Override
+	public boolean intersects(Circle circle) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean intersects(Rect rect) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Box box() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

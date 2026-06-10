@@ -2,7 +2,7 @@ package engine;
 
 import engine.Entity;
 import engine.ISU;
-import game.Model;
+
 
 public class BasicStunt extends Stunt {
 	// Le stunt est responsable de l'exécution des mouvements
