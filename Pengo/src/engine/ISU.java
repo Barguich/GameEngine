@@ -3,6 +3,8 @@ package engine;
 
 import java.io.PrintStream;
 
+import game.Game;
+
 public class ISU {
 
 	// FIELDS
@@ -15,8 +17,8 @@ public class ISU {
 
 	public ISU(Game game) {
 		this.game = game;
-		this.xAxis = new Axis(game.torusOnXaxis, game.width_cm);
-		this.yAxis = new Axis(game.torusOnYaxis, game.height_cm);
+		this.xAxis = new Axis(game.isTorusOnXaxis(), game.width_cm());
+		this.yAxis = new Axis(game.isTorusOnYaxis(), game.height_cm());
 	}
 
 	// SETTER
@@ -150,8 +152,8 @@ public class ISU {
 
 		public Grid.Position toGridPosition() {
 			assert grid != null;
-			int x_ncell = (int) Math.floor(x_cm / game.cmPerCell);
-			int y_ncell = (int) Math.floor(y_cm / game.cmPerCell);
+			int x_ncell = (int) Math.floor(x_cm / game.getCmpercell());
+			int y_ncell = (int) Math.floor(y_cm / game.getCmpercell());
 			return grid.new Position(x_ncell, y_ncell);
 		}
 
