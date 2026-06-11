@@ -6,11 +6,6 @@ import java.io.PrintStream;
 import engine.collision.Bounding;
 import engine.geometry.Grid;
 import engine.geometry.ISU;
-import engine.geometry.Grid.Cell;
-import engine.geometry.Grid.Position;
-import engine.geometry.Grid.Vector;
-import engine.geometry.ISU.Coord;
-import engine.geometry.ISU.Dimension;
 import engine.view.Avatar;
 
 public abstract class Entity {
