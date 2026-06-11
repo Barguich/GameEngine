@@ -1,4 +1,4 @@
-package engine;
+package engine.collision;
 
 import engine.geometry.ISU;
 

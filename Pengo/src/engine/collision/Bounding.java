@@ -1,9 +1,7 @@
-package engine;
-
+package engine.collision;
 
 import java.util.HashSet;
 import java.util.Set;
-
 
 public class Bounding {
 
@@ -52,22 +50,23 @@ public class Bounding {
 
 		return false;
 	}
+
 	public Box box() {
 
-	    Box result = null;
+		Box result = null;
 
-	    for (iShape shape : boundings) {
+		for (iShape shape : boundings) {
 
-	        Box b = shape.box();
+			Box b = shape.box();
 
-	        if (result == null) {
-	            result = b;
-	        } else {
-	            result = Box.union(result, b);
-	        }
-	    }
+			if (result == null) {
+				result = b;
+			} else {
+				result = Box.union(result, b);
+			}
+		}
 
-	    return result;
+		return result;
 	}
 
 }

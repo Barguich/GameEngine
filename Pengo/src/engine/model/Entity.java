@@ -3,7 +3,7 @@ package engine.model;
 
 import java.io.PrintStream;
 
-import engine.Bounding;
+import engine.collision.Bounding;
 import engine.geometry.Grid;
 import engine.geometry.ISU;
 import engine.geometry.Grid.Cell;

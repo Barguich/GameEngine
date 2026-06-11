@@ -1,4 +1,4 @@
-package engine;
+package engine.collision;
 
 public interface iShape {
 
