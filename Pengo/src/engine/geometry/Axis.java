@@ -4,9 +4,9 @@ public class Axis {
 
 	// FIELDS
 
-	boolean onTorus;
+	public boolean onTorus;
 
-	double perimeter;
+	public double perimeter;
 	private double halfPerimeter;
 
 	// CONSTRUCTOR
