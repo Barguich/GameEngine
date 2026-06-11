@@ -12,6 +12,11 @@ public abstract class Stunt {
 		this.entity = entity;
 	}
 
+	public void set(double x_cm, double y_cm) {
+	}
+
+
+
 	public void collision(Entity e) {
 	}
 
