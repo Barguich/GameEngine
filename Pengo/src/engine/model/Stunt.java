@@ -1,4 +1,4 @@
-package engine;
+package engine.model;
 
 import java.util.List;
 
@@ -14,8 +14,6 @@ public abstract class Stunt {
 
 	public void set(double x_cm, double y_cm) {
 	}
-
-
 
 	public void collision(Entity e) {
 	}

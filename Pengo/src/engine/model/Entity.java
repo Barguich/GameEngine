@@ -1,36 +1,46 @@
 // == ENTITY ==
-package engine;
+package engine.model;
 
 import java.io.PrintStream;
+
+import engine.Bounding;
+import engine.geometry.Grid;
+import engine.geometry.ISU;
+import engine.geometry.Grid.Cell;
+import engine.geometry.Grid.Position;
+import engine.geometry.Grid.Vector;
+import engine.geometry.ISU.Coord;
+import engine.geometry.ISU.Dimension;
+import engine.view.Avatar;
 
 public abstract class Entity {
 
 	// FIELDS
 	protected final Grid grid;
-	protected final ISU  isu;
+	protected final ISU isu;
 	protected final String name;
 
 	// FIELDS
-	protected ISU.Dimension  size;             // dimension de l'entité
-	protected ISU.Dimension  step;             // dimension d'un pas de déplacement
-	protected Grid.Position  position;         // position dans la grille
-	protected ISU.Coord      center;           // coordonnées en cm du centre de l'entité
-	protected Bounding       bounding;
-	protected ISU.Vector     lSpeed;
-	protected Stunt          stunt;
-	protected Avatar         avatar;
+	protected ISU.Dimension size; // dimension de l'entité
+	protected ISU.Dimension step; // dimension d'un pas de déplacement
+	protected Grid.Position position; // position dans la grille
+	protected ISU.Coord center; // coordonnées en cm du centre de l'entité
+	protected Bounding bounding;
+	protected ISU.Vector lSpeed;
+	protected Stunt stunt;
+	protected Avatar avatar;
 
 	// FIELDS
-	protected int orientation_degree;          // orientation par rapport à l'axe des x
+	protected int orientation_degree; // orientation par rapport à l'axe des x
 
 	// CONSTRUCTOR
 	protected Entity(String name) {
-		this.name             = name;
+		this.name = name;
 		this.orientation_degree = 0;
-		this.isu              = game.Game.instance().isu();
-		this.grid             = game.Game.instance().grid();
-		this.lSpeed           = null;
-		this.stunt            = null;
+		this.isu = game.Game.instance().isu();
+		this.grid = game.Game.instance().grid();
+		this.lSpeed = null;
+		this.stunt = null;
 	}
 
 	// ─── SETTER ───────────────────────────────────────────────────────────────
@@ -102,7 +112,8 @@ public abstract class Entity {
 	 */
 	public void turnTo(int degree) {
 		orientation_degree = ((degree % 360) + 360) % 360;
-		if (bounding != null) setBounding();
+		if (bounding != null)
+			setBounding();
 	}
 
 	// ─── BOUNDING — abstract ─────────────────────────────────────────────────
@@ -111,14 +122,37 @@ public abstract class Entity {
 
 	// ─── GETTER ──────────────────────────────────────────────────────────────
 
-	public ISU.Coord      center()   { return this.center;   }
-	public Grid.Position  position() { return this.position; }
-	public int            orientation() { return this.orientation_degree; }
-	public ISU.Dimension  size()     { return this.size;     }
-	public ISU.Dimension  step()     { return this.step;     }
-	public Stunt          stunt()    { return this.stunt;    }
-	public Avatar         avatar()   { return this.avatar;   }
-	public Bounding       bounding() { return this.bounding; }
+	public ISU.Coord center() {
+		return this.center;
+	}
+
+	public Grid.Position position() {
+		return this.position;
+	}
+
+	public int orientation() {
+		return this.orientation_degree;
+	}
+
+	public ISU.Dimension size() {
+		return this.size;
+	}
+
+	public ISU.Dimension step() {
+		return this.step;
+	}
+
+	public Stunt stunt() {
+		return this.stunt;
+	}
+
+	public Avatar avatar() {
+		return this.avatar;
+	}
+
+	public Bounding bounding() {
+		return this.bounding;
+	}
 
 	// ─── INTERSECTION ────────────────────────────────────────────────────────
 
@@ -151,13 +185,14 @@ public abstract class Entity {
 		// retrait de l'ancienne cellule
 		Grid.Cell oldCell = (position != null) ? grid.cellAt(position) : null;
 
-		this.center   = newCenter;
+		this.center = newCenter;
 		this.position = newCenter.toGridPosition();
 
 		// inscription dans la nouvelle cellule
 		Grid.Cell newCell = grid.cellAt(position);
 		if (oldCell != newCell) {
-			if (oldCell != null) oldCell.remove(this);
+			if (oldCell != null)
+				oldCell.remove(this);
 			newCell.add(this);
 		}
 
@@ -205,10 +240,19 @@ public abstract class Entity {
 	public void show(PrintStream ps) {
 		ps.printf("Entity[%s] orientation=%d%n", name, orientation_degree);
 		ps.print("position: ");
-		if (position != null) position.show(ps); else ps.println("null");
+		if (position != null)
+			position.show(ps);
+		else
+			ps.println("null");
 		ps.print("center: ");
-		if (center != null) center.show(ps); else ps.println("null");
+		if (center != null)
+			center.show(ps);
+		else
+			ps.println("null");
 		ps.print("size: ");
-		if (size != null) size.show(ps); else ps.println("null");
+		if (size != null)
+			size.show(ps);
+		else
+			ps.println("null");
 	}
 }

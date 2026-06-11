@@ -1,9 +1,12 @@
-package engine;
+package engine.geometry;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import engine.Picture;
+import engine.Picture.Pixel;
+import engine.model.Entity;
 import game.Game;
 
 public class Grid {

@@ -1,6 +1,6 @@
 package engine;
 
-import engine.ISU;
+import engine.geometry.ISU;
 
 public class Circle extends Shape implements iShape {
 

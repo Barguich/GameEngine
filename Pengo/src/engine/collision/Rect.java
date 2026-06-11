@@ -1,5 +1,7 @@
 package engine;
 
+import engine.geometry.ISU;
+
 public class Rect extends Shape implements iShape {
 
 	// FIELDS

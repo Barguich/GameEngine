@@ -1,8 +1,7 @@
-package engine;
+package engine.model;
 
-import engine.Entity;
-import engine.ISU;
-
+import engine.geometry.ISU;
+import engine.geometry.ISU.Vector;
 
 public class BasicStunt extends Stunt {
 	// Le stunt est responsable de l'exécution des mouvements

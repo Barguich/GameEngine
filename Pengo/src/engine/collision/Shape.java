@@ -1,6 +1,6 @@
-package engine;
+package engine.collision;
 
-import engine.ISU;
+import engine.geometry.ISU;
 
 public class Shape {
 	// FIELD
