@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import engine.Picture;
-import engine.Picture.Pixel;
 import engine.model.Entity;
 import game.Game;
 

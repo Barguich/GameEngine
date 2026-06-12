@@ -11,7 +11,7 @@ public abstract class Avatar {
 		this.entity = entity;
 	}
 
-	public abstract void paint(Graphics g, int xPix, int yPix);
+	public abstract void paint(Graphics g, int xPix, int yPix, double scale);
 
 	protected Object saveTransform(Graphics g) {
 		return g.getTransform();
