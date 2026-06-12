@@ -24,15 +24,13 @@ public class ISU {
 		this.grid = grid;
 	}
 
-	// DIMENSION
+	// == DIMENSION (cm) ==
 	public class Dimension {
 		protected double x_cm, y_cm;
 
 		// CONSTRUCTOR
 		public Dimension(double x_cm, double y_cm) {
-			this.x_cm = x_cm;
-			this.y_cm = y_cm;
-			normalize();
+			setxy(x_cm, y_cm);
 		}
 
 		// GETTERS
@@ -69,14 +67,14 @@ public class ISU {
 			if (!(o instanceof Dimension))
 				return false;
 			Dimension d = (Dimension) o;
-			return (x_cm == d.x_cm) && (y_cm == d.y_cm);
+			return x_cm == d.x_cm && y_cm == d.y_cm;
 		}
 
 		public boolean equiv(Dimension d) {
 			if (d == null)
 				return false;
-			return (xAxis.normalize(x_cm) == xAxis.normalize(d.x_cm))
-					&& (yAxis.normalize(y_cm) == yAxis.normalize(d.y_cm));
+			return xAxis.normalize(x_cm) == xAxis.normalize(d.x_cm)
+					&& yAxis.normalize(y_cm) == yAxis.normalize(d.y_cm);
 		}
 
 		// FACTORY
@@ -98,20 +96,12 @@ public class ISU {
 		}
 	}
 
-	// POINT
+	// == POINT ==
 	public class Coord extends Dimension {
 
 		// CONSTRUCTOR
 		public Coord(double x_cm, double y_cm) {
 			super(x_cm, y_cm);
-		}
-
-		private double sgn(double x) {
-			if (x == 0)
-				return 0;
-			if (x < 0)
-				return -1;
-			return 1;
 		}
 
 		// FACTORY
@@ -121,11 +111,11 @@ public class ISU {
 			double dy = target.y_cm - this.y_cm;
 			if (xAxis.onTorus) {
 				if (Math.abs(dx) > xAxis.perimeter / 2)
-					dx -= sgn(dx) * xAxis.perimeter;
+					dx -= Math.signum(dx) * xAxis.perimeter;
 			}
 			if (yAxis.onTorus) {
 				if (Math.abs(dy) > yAxis.perimeter / 2)
-					dy -= sgn(dy) * yAxis.perimeter;
+					dy -= Math.signum(dy) * yAxis.perimeter;
 			}
 			return new Vector(dx, dy);
 		}
@@ -285,5 +275,12 @@ public class ISU {
 		}
 	}
 
+	public double width_cm() {
+		return game.width_cm;
+	}
+
+	public double height_cm() {
+		return game.height_cm;
+	}
 
 }

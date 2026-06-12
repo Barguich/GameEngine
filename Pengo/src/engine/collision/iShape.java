@@ -1,7 +1,6 @@
 package engine.collision;
 
 public interface iShape {
-
 	boolean intersects(iShape shape);
 
 	boolean intersects(Circle circle);
@@ -9,5 +8,4 @@ public interface iShape {
 	boolean intersects(Rect rect);
 
 	Box box();
-
 }
