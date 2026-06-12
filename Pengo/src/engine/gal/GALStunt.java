@@ -1,46 +1,64 @@
 package engine.gal;
 
+import java.util.List;
+
+import engine.gal.action.iAllGALActions;
 import engine.gal.arguments.Direction;
+import engine.geometry.Grid.Cell;
+import engine.geometry.ISU;
 import engine.model.Entity;
+import engine.model.Model;
+import engine.model.Stunt;
 
 // = Stunt =
 
-public class GALStunt {
+public class GALStunt extends Stunt implements iAllGALActions {
 
 	// FIELDS
 
-	Entity entity;
+	private Entity entity;
+	private double max_cmPer_ms;
+	private double max_degPer_ms;
+	private double step_cm;
+	private double action_ms;
 
 	// CONSTRUCTOR
 
-	 GALStunt(Entity e){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `GALStunt`"); }
+	public GALStunt(Model model, Entity e) {
+		super(model, e);
+		step_cm = 10;
+		max_cmPer_ms = 0.1;
+		max_degPer_ms = 0.1;
+		action_ms = 0;
+	}
 
 	// STEP
+	public void setStepLength(double cm) {
+		this.step_cm = cm;
+	}
 
-	 double step_cm;
-
-	void setStepLength(double cm){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `setStepLength`"); }
-
-	 double stepLength(){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `stepLength`"); }
+	public double stepLength() {
+		return this.step_cm;
+	}
 
 	// SPEED
+	public void setMaxLinearSpeed(double cmPer_ms) {
+		max_cmPer_ms = cmPer_ms;
+	}
 
-	 double max_cmPer_ms;
-
-	void setMaxLinearSpeed(double cmPer_ms){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `setMaxLinearSpeed`"); }
-
-	 double max_degPer_ms;
-
-	void setMaxAngularSpeed(double degPer_ms){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `setMaxAngularSpeed`"); }
+	public void setMaxAngularSpeed(double degPer_ms) {
+		max_degPer_ms = degPer_ms;
+	}
 
 	// == DEFAULT IMPLEMENTATION of GAL Actions ==
 
 	/**
 	 * @apiNote the remaining time of the action in progress
 	 */
-	double action_ms;
 
-	 double actionDuration(){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `actionDuration`"); }
+	public double actionDuration() {
+		return action_ms;
+	}
 
 	// TICK
 
@@ -50,14 +68,102 @@ public class GALStunt {
 	 * @param elapsed_ms
 	 * @implNote {@code action_ms} is updated according to the {@code elapsed_ms}
 	 */
-	void tick(double elapsed_ms){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `tick`"); }
+	public void tick(double elapsed_ms) {
+		if (action_ms <= 0)
+			return;
+
+		action_ms -= elapsed_ms;
+
+		if (action_ms <= 0) {
+			action_ms = 0;
+			entity.stop();
+			entity.done();
+		}
+	}
 
 	// MOVE
 
-	 boolean startMoving(Direction direction, double intensity, double duration_ms){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `startMoving`"); }
+	public boolean startMoving(Direction direction, double intensity, double duration_ms) {
+		if (action_ms > 0)
+			return false;
+
+		double speed = intensity * max_cmPer_ms;
+
+		if (speed <= 0)
+			speed = max_cmPer_ms;
+
+		ISU isu = entity.center().isu();
+
+		switch (direction.name()) {
+			case "N":
+				entity.setLinearSpeed(
+						isu.new Vector(0, -speed));
+				break;
+
+			case "S":
+				entity.setLinearSpeed(
+						isu.new Vector(0, speed));
+				break;
+
+			case "E":
+				entity.setLinearSpeed(
+						isu.new Vector(speed, 0));
+				break;
+
+			case "W":
+				entity.setLinearSpeed(
+						isu.new Vector(-speed, 0));
+				break;
+		}
+		action_ms = duration_ms;
+		return true;
+	}
 
 	// TURN
 
-	 boolean startTurning(int angle_deg, double intensity){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `startTurning`"); }
+	public boolean startTurning(int angle_deg, double intensity) {
+		if (action_ms > 0)
+			return false;
+		double speed = intensity * max_degPer_ms;
+		if (speed <= 0)
+			speed = max_degPer_ms;
+		entity.setAngularSpeed(
+				Math.signum(angle_deg) * speed);
+
+		action_ms = Math.abs(angle_deg) / speed;
+		return true;
+	}
+
+	@Override
+	public void set(double x_cm, double y_cm) {
+		entity.setCoord(entity.center().isu().new Coord(x_cm, y_cm));
+	}
+
+	@Override
+	public void set(int orientation) {
+		entity.turnTo(orientation);
+	}
+
+	@Override
+	public void set(Cell c) {
+		entity.setPosition(c.position());
+	}
+
+	@Override
+	public void collision(Entity e) {
+		action_ms = 0;
+		entity.stop();
+	}
+
+	@Override
+	public void done() {
+		action_ms = 0;
+		entity.stop();
+	}
+
+	@Override
+	public void collision(List<Entity> others) {
+		action_ms = 0;
+	}
 
 }
