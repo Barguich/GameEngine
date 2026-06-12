@@ -8,12 +8,10 @@ import engine.geometry.Point;
 public class Rect extends Shape implements iShape {
 
 	// FIELDS
-
 	protected double halfWidth, halfHeight;
 	protected int angle_degree;
 
 	// CONSTRUCTOR
-
 	public Rect(ISU.Coord center, ISU.Dimension size, int angle_degree) {
 		super(center);
 		this.angle_degree = angle_degree;
@@ -24,7 +22,6 @@ public class Rect extends Shape implements iShape {
 	// TRANSLATION ?
 
 	// ROTATION
-
 	void rotate(int angle_degree) {
 		this.angle_degree += angle_degree;
 		this.angle_degree = this.angle_degree % 360;
@@ -145,7 +142,7 @@ public class Rect extends Shape implements iShape {
 		return new RectCircleIntersection(this, virtualCircleCenter, circle.radius, rectDx, rectDy).intersects();
 	}
 
-// === Helping inner class ===
+	// === Helping inner class ===
 	/**
 	 * @implNote Principe
 	 *           <UL>

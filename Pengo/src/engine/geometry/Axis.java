@@ -1,85 +1,92 @@
 package engine.geometry;
 
 public class Axis {
-
 	// FIELDS
-
-	public boolean onTorus;
-
-	public double perimeter;
-	private double halfPerimeter;
+	final boolean onTorus;
+	final double perimeter;
+	private final double halfPerimeter;
 
 	// CONSTRUCTOR
-
 	public Axis(boolean onTorus, double perimeter) {
-
 		assert (perimeter > 0);
-
 		this.onTorus = onTorus;
-
 		this.perimeter = perimeter;
 		this.halfPerimeter = perimeter / 2.0;
 	}
 
-	// NORMALIZE INTEGER
-
+	// NORMALIZE INTEGER LENGTH
+	/**
+	 * @return
+	 *         <UL>
+	 *         <LI>length % perimeter &in; [0, perimeter-1] if onTorus</LI>
+	 *         <LI>length if !onTorus</LI>
+	 *         </UL>
+	 * @apiNote normalize _integer length_ according to the geometry
+	 * @implNote returns positive values
+	 */
 	public int normalize(int length) {
-
 		if (!onTorus) {
 			return length;
+		} else {
+			return modp(length, (int) this.perimeter);
 		}
-
-		return modp(length, (int) perimeter);
 	}
 
-	public int modp(int length, int perimeter) {
-
-		int r = length % perimeter;
-
-		if (r < 0) {
-			r += perimeter;
+	/**
+	 * @return length % perimeter &in; [0, perimeter-1]
+	 * @apiNote compute length modulo perimeter
+	 */
+	private int modp(int length, int perimeter) {
+		assert perimeter > 0;
+		int res = length % perimeter;
+		if (res < 0) {
+			return res + perimeter;
 		}
-
-		return r;
+		return res;
 	}
 
-	// NORMALIZE REAL
-
+	// NORMALIZE REAL LENGTH
+	/**
+	 * @return
+	 *         <UL>
+	 *         <LI>length module perimeter <I>&in; [0 , perimeter[</I>
+	 *         if onTorus</LI>
+	 *         <LI>length if !onTorus</LI>
+	 *         </UL>
+	 * @apiNote normalize _real length_ according to the geometry
+	 * @implNote returns positive values
+	 */
 	public double normalize(double length) {
-
-		if (!onTorus) {
+		if (!onTorus)
 			return length;
-		}
-
-		return modp(length, perimeter);
+		return modp(length, this.perimeter);
 	}
 
-	public double modp(double length, double perimeter) {
-
-		double r = length % perimeter;
-
-		if (r < 0) {
-			r += perimeter;
+	/**
+	 * @return length % perimeter &in; [0, perimeter[
+	 * @apiNote compute length modulo perimeter
+	 */
+	private double modp(double length, double perimeter) {
+		assert perimeter > 0;
+		double res = length % perimeter;
+		if (res < 0) {
+			return res + perimeter;
 		}
-
-		return r;
+		return res;
 	}
 
 	// DISTANCE
-
+	/**
+	 * @apiNote The distance on a Torus is that of the shortest path, sometimes
+	 *          going in the opposite direction and across the border is shorter.
+	 * @implNote Look for the detail on internet.
+	 */
 	public double distance(double position1, double position2) {
-
-		double d = Math.abs(position2 - position1);
-
-		if (!onTorus) {
-			return d;
+		double dist = Math.abs(position1 - position2);
+		if (onTorus && (dist >= this.halfPerimeter)) {
+			dist = this.perimeter - dist;
 		}
-
-		if (d > halfPerimeter) {
-			d = perimeter - d;
-		}
-
-		return d;
+		return dist;
 	}
 
 	// Garantit que xmax > xmin en ajoutant perimeter si nécessaire
@@ -87,7 +94,6 @@ public class Axis {
 		if (onTorus && max < min) {
 			return max + perimeter;
 		}
-
 		return max;
 	}
 }

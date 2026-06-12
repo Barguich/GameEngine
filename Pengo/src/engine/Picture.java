@@ -3,7 +3,7 @@ package engine;
 import java.io.PrintStream;
 
 import engine.geometry.ISU;
-import game.Game;
+
 
 public class Picture {
 
@@ -14,12 +14,12 @@ public class Picture {
 	public Picture(Game game) {
 		assert game != null;
 		this.game = game;
-		this.width_pixel = toPixelLength(game.width_cm());
-		this.height_pixel = toPixelLength(game.height_cm());
+		this.width_pixel = toPixelLength(game.width_cm);
+		this.height_pixel = toPixelLength(game.height_cm);
 	}
 
 	public int toPixelLength(double length_cm) {
-		return (int) Math.round(length_cm * Game.getPixelPerCm());
+		return (int) Math.round(length_cm * game.pixelPerCm);
 	}
 
 	public int toPixelX(double x_cm) {

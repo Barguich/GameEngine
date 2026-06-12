@@ -4,27 +4,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Bounding {
-
 	// FIELDS
-
-	Set<iShape> boundings;
+	private final Set<iShape> boundings;
 
 	// CONSTRUCTOR
-
 	public Bounding() {
 		this.boundings = new HashSet<iShape>();
 	}
 
 	// BUILDER
-
 	public void add(iShape shape) {
 		assert shape != null;
-
 		boundings.add(shape);
 	}
 
 	// INTERSECTION
-
 	public boolean intersects(iShape shape) {
 		assert shape != null;
 
@@ -52,21 +46,15 @@ public class Bounding {
 	}
 
 	public Box box() {
-
 		Box result = null;
-
 		for (iShape shape : boundings) {
-
 			Box b = shape.box();
-
 			if (result == null) {
 				result = b;
 			} else {
 				result = Box.union(result, b);
 			}
 		}
-
 		return result;
 	}
-
 }

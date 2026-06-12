@@ -3,11 +3,10 @@ package engine.collision;
 import engine.geometry.ISU;
 
 public class Circle extends Shape implements iShape {
-
+	// FIELDS
 	double radius;
 
 	// CONSTRUCTOR
-
 	public Circle(ISU.Coord center, double radius) {
 		super(center);
 		this.radius = radius;
@@ -27,12 +26,12 @@ public class Circle extends Shape implements iShape {
 		return shape.intersects(this);
 
 	}
-	// BOX
-		@Override
-		public Box box() {
-			double cx = center.x();
-			double cy = center.y();
-			return new Box(cx - radius, cy - radius, cx + radius, cy + radius);
-		}
 
+	// BOX
+	@Override
+	public Box box() {
+		double cx = center.x();
+		double cy = center.y();
+		return new Box(cx - radius, cy - radius, cx + radius, cy + radius);
+	}
 }
