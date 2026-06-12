@@ -1,13 +1,14 @@
 package engine.gal.action;
 
-public class GALAction  {
+import engine.gal.aut.iGALAction;
+
+public abstract class GALAction implements iGALAction{
 
 	/**
 	 * @param intensity &in; [0,1] ≃ %
 	 */
-	double intensity;
+	protected double intensity = 1.0;
 
 	// CONSTANT
-
-	 Nothing NOTHING = new Nothing();
+	public static final Nothing NOTHING = new Nothing();
 }

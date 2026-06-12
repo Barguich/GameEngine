@@ -2,13 +2,15 @@ package engine.gal.action;
 
 import engine.model.Entity;
 
-public class Nothing  {
+public class Nothing {
 
 	// CONSTRUCTOR
 
-	 Nothing(){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `Nothing`"); }
+	public Nothing() {
+	}
 
 	// EXEC
-	 boolean exec(Entity __){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `exec`"); }
-
+	public boolean exec(Entity __) {
+		return true;
+	}
 }

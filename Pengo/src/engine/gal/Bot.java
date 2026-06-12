@@ -2,7 +2,7 @@ package engine.gal;
 
 import engine.model.Entity;
 
-class Bot {
+public class Bot {
 
 	Entity entity;
 
