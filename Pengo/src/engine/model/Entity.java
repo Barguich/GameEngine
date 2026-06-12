@@ -96,9 +96,11 @@ public abstract class Entity {
 	 * @apiNote turn is a rotation around the center of the entity.
 	 */
 	public void turn(int angle_degree) {
-		orientation_degree = (orientation_degree + angle_degree) % 360;
-		if (orientation_degree < 0)
-			orientation_degree += 360;
+	    orientation_degree = (orientation_degree + angle_degree) % 360;
+	    if (orientation_degree < 0)
+	        orientation_degree += 360;
+	    if (bounding != null)
+	        setBounding();
 	}
 
 	/**

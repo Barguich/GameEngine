@@ -1,4 +1,4 @@
-package maths;
+package engine.geometry;
 
 public class Vector {
 
@@ -18,7 +18,6 @@ public class Vector {
     }
 
     public void add(Vector v) {
-        assert v != null;
         x += v.x();
         y += v.y();
     }
@@ -28,7 +27,6 @@ public class Vector {
     }
 
     public double dot(Vector v) {
-        assert v != null;
         return x * v.x() + y * v.y();
     }
 
@@ -38,7 +36,6 @@ public class Vector {
 
     public void unity() {
         double n = norm();
-        assert n != 0;
         x = x / n;
         y = y / n;
     }

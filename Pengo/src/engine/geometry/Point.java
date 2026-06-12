@@ -1,4 +1,4 @@
-package maths;
+package engine.geometry;
 
 public class Point {
 
@@ -18,18 +18,14 @@ public class Point {
 	}
 
 	public Point translated(Vector v) {
-		assert v != null;
 		return new Point(x + v.x(), y + v.y());
 	}
 
 	public Vector vectorToward(Point p) {
-		assert p != null;
 		return new Vector(p.x() - x, p.y() - y);
 	}
 
 	public void rotateAround(Point center, double angle_degree) {
-		assert center != null;
-
 		double angle = Math.toRadians(angle_degree);
 
 		double dx = x - center.x();
