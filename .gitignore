@@ -16,7 +16,6 @@
 *.iml
 *.ipr
 .settings/
-.classpath
 .project
 .metadata/
 .vscode/
