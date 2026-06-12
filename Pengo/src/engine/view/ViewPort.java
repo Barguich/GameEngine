@@ -12,9 +12,23 @@ public class ViewPort {
 	private double width_cm;
 	private double height_cm;
 
+	// Dimensions de la map — pour le clamping (contrainte Non-Tore)
+	private final double mapWidth_cm;
+	private final double mapHeight_cm;
+
+
 	public ViewPort(double width_cm, double height_cm) {
 		this.height_cm = height_cm;
 		this.width_cm = width_cm;
+		this.mapHeight_cm = height_cm;
+		this.mapWidth_cm = width_cm;
+	}
+
+	public ViewPort(double width_cm, double height_cm, double mapWidth_cm, double mapHeight_cm) {
+		this.height_cm = height_cm;
+		this.width_cm = width_cm;
+		this.mapHeight_cm = mapHeight_cm;
+		this.mapWidth_cm = mapWidth_cm;
 	}
 
 	public void MoveTo(double x_cm, double y_cm) {
@@ -24,8 +38,10 @@ public class ViewPort {
 
 	/* centre le viewport sur une coordonée ISU */
 	public void centerOn(ISU.Coord target) {
-		this.x_cm = target.x() - width_cm / 2;
-		this.y_cm = target.y() - height_cm / 2;
+		double nx =  target.x() - width_cm / 2;
+		double ny = target.y() - height_cm / 2;
+		this.x_cm = Math.max(0, Math.min(nx, mapWidth_cm - width_cm));
+		this.y_cm = Math.max(0, Math.min(ny, mapHeight_cm - height_cm));
 	}
 
 	public double x() {
