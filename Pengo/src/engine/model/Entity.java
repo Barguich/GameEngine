@@ -28,13 +28,14 @@ public abstract class Entity {
 
 	// FIELDS
 	protected int orientation_degree; // orientation par rapport à l'axe des x
+	private final static double cmPerCell = Game.game().cmPerCell;
 
 	// CONSTRUCTOR
 	protected Entity(String name) {
 		this.name = name;
 		this.orientation_degree = 0;
-		this.isu = game.Game.instance().isu();
-		this.grid = game.Game.instance().grid();
+		this.isu = Game.isu();
+		this.grid = Game.grid();
 		this.lSpeed = null;
 		this.stunt = null;
 	}
@@ -42,8 +43,8 @@ public abstract class Entity {
 	// ─── SETTER ───────────────────────────────────────────────────────────────
 
 	public void setPosition(Grid.Position position) {
-		double x_cm = (position.x() + 0.5) * game.Game.getCmpercell();
-		double y_cm = (position.y() + 0.5) * game.Game.getCmpercell();
+		double x_cm = (position.x() + 0.5) * cmPerCell;
+		double y_cm = (position.y() + 0.5) * cmPerCell;
 		setCenter(isu.new Coord(x_cm, y_cm));
 	}
 
@@ -52,8 +53,8 @@ public abstract class Entity {
 	}
 
 	public void setSize(Grid.Dimension d) {
-		double w_cm = d.x() * game.Game.getCmpercell();
-		double h_cm = d.y() * game.Game.getCmpercell();
+		double w_cm = d.x() * cmPerCell;
+		double h_cm = d.y() * cmPerCell;
 		this.size = isu.new Dimension(w_cm, h_cm);
 	}
 
@@ -167,8 +168,8 @@ public abstract class Entity {
 	// ─── TRANSLATION ─────────────────────────────────────────────────────────
 
 	public void translate(Grid.Vector v) {
-		double dx_cm = v.x() * game.Game.getCmpercell();
-		double dy_cm = v.y() * game.Game.getCmpercell();
+		double dx_cm = v.x() * cmPerCell;
+		double dy_cm = v.y() * cmPerCell;
 		translate(isu.new Vector(dx_cm, dy_cm));
 	}
 
