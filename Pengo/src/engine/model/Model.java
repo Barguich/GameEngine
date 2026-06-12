@@ -8,190 +8,125 @@ import engine.geometry.ISU;
 
 public class Model {
 
-    // FIELDS
+	private Grid grid;
+	private List<Entity> entities;
 
-    private Grid grid;
-    private List<Entity> entities;
+	public Model(Grid grid) {
+		assert grid != null;
 
-    // CONSTRUCTOR
+		this.grid = grid;
+		this.entities = new ArrayList<Entity>();
+	}
 
-    public Model(Grid grid) {
-        assert grid != null;
+	public Grid grid() {
+		return grid;
+	}
 
-        this.grid = grid;
-        this.entities = new ArrayList<Entity>();
-    }
+	public List<Entity> entities() {
+		return entities;
+	}
 
-    // GETTERS
+	public List<Entity> getEntities() {
+		return entities;
+	}
 
-    public Grid grid() {
-        return grid;
-    }
+	public void add(Entity e) {
+		assert e != null;
 
-    public List<Entity> getEntities() {
-        return entities;
-    }
+		if (!entities.contains(e)) {
+			entities.add(e);
+			e.setModel(this);
+			e.deploy();
+		}
+	}
 
-    public List<Entity> entities() {
-        return entities;
-    }
+	public void remove(Entity e) {
+		assert e != null;
 
-    // ADD / REMOVE
+		if (entities.remove(e)) {
+			e.retract();
+			e.setModel(null);
+		}
+	}
 
-    public void add(Entity e) {
-        assert e != null;
+	public boolean move(Entity e, ISU.Vector v) {
+		assert e != null;
+		assert v != null;
 
-        if (!entities.contains(e)) {
-            entities.add(e);
-            e.setModel(this);
-            e.deploy();
-        }
-    }
+		if (!entities.contains(e)) {
+			return false;
+		}
 
-    public void remove(Entity e) {
-        assert e != null;
+		e.translate(v);
 
-        if (entities.remove(e)) {
-            e.retract();
-            e.setModel(null);
-        }
-    }
+		List<Entity> cols = collisions(e);
 
-    // MOVE
+		if (!cols.isEmpty()) {
+			v.scale(-1);
+			e.translate(v);
 
-    public boolean move(Entity e, ISU.Vector v) {
-        assert e != null;
-        assert v != null;
+			e.collision(cols.get(0));
+			return false;
+		}
 
-        if (!entities.contains(e)) {
-            return false;
-        }
+		return true;
+	}
 
-        e.translate(v);
+	public List<Entity> collisions(Entity e) {
+		List<Entity> result = new ArrayList<Entity>();
 
-        List<Entity> cols = collisions(e);
+		for (Entity other : entities) {
+			if (other != e && e.intersects(other)) {
+				result.add(other);
+			}
+		}
 
-        if (!cols.isEmpty()) {
-            v.scale(-1);
-            e.translate(v);
+		return result;
+	}
 
-            e.collision(cols.get(0));
+	public List<Entity> entitiesAt(Grid.Position p) {
+		assert p != null;
 
-            return false;
-        }
+		List<Entity> result = new ArrayList<Entity>();
 
-        return true;
-    }
+		for (Entity e : entities) {
+			if (e.position() != null && e.position().equiv(p)) {
+				result.add(e);
+			}
+		}
 
-    // COLLISIONS
+		return result;
+	}
 
-    public List<Entity> collisions(Entity e) {
-        assert e != null;
+	public boolean isFree(Grid.Position p) {
+		return entitiesAt(p).isEmpty();
+	}
 
-        List<Entity> result = new ArrayList<Entity>();
+	public Entity firstAt(Grid.Position p) {
+		List<Entity> list = entitiesAt(p);
 
-        for (Entity other : entities) {
-            if (other != e && e.intersects(other)) {
-                result.add(other);
-            }
-        }
+		if (list.isEmpty()) {
+			return null;
+		}
 
-        return result;
-    }
+		return list.get(0);
+	}
 
-    public List<Entity[]> allCollisions() {
-        List<Entity[]> result = new ArrayList<Entity[]>();
+	public void tick(long elapsed) {
+		assert elapsed >= 0;
 
-        for (int i = 0; i < entities.size(); i++) {
-            Entity e1 = entities.get(i);
+		List<Entity> copy = new ArrayList<Entity>(entities);
 
-            for (int j = i + 1; j < entities.size(); j++) {
-                Entity e2 = entities.get(j);
+		for (Entity e : copy) {
+			if (entities.contains(e)) {
+				e.tick(elapsed);
+			}
+		}
+	}
 
-                if (e1.intersects(e2)) {
-                    result.add(new Entity[] { e1, e2 });
-                }
-            }
-        }
-
-        return result;
-    }
-
-    // POSITION HELPERS
-
-    public List<Entity> entitiesAt(Grid.Position p) {
-        assert p != null;
-
-        List<Entity> result = new ArrayList<Entity>();
-
-        for (Entity e : entities) {
-            if (e.position() != null && e.position().equiv(p)) {
-                result.add(e);
-            }
-        }
-
-        return result;
-    }
-
-    public boolean isFree(Grid.Position p) {
-        return entitiesAt(p).isEmpty();
-    }
-
-    public Entity firstAt(Grid.Position p) {
-        List<Entity> list = entitiesAt(p);
-
-        if (list.isEmpty()) {
-            return null;
-        }
-
-        return list.get(0);
-    }
-
-    // TICK
-
-    public void tick(long elapsed_ms) {
-        assert elapsed_ms >= 0;
-
-        double dt = elapsed_ms / 1000.0;
-
-        List<Entity> copy = new ArrayList<Entity>(entities);
-
-        for (Entity e : copy) {
-
-            if (!entities.contains(e)) {
-                continue;
-            }
-
-            // rotation continue
-            if (e.angularSpeed() != 0) {
-                int angle = (int) Math.round(e.angularSpeed() * dt);
-                e.turn(angle);
-            }
-
-            // déplacement continu
-            ISU.Vector speed = e.linearSpeed();
-
-            if (speed != null && speed.norm() != 0) {
-
-                ISU.Vector movement = e.center().isu().new Vector(
-                    speed.x() * dt,
-                    speed.y() * dt
-                );
-
-                boolean moved = move(e, movement);
-
-                if (!moved) {
-                    e.stop();
-                }
-            }
-        }
-    }
-
-    // CLEAR
-
-    public void clear() {
-        for (Entity e : new ArrayList<Entity>(entities)) {
-            remove(e);
-        }
-    }
+	public void clear() {
+		for (Entity e : new ArrayList<Entity>(entities)) {
+			remove(e);
+		}
+	}
 }

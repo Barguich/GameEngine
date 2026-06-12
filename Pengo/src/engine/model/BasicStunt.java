@@ -13,26 +13,27 @@ public class BasicStunt extends Stunt {
 	public BasicStunt(Model model, Entity entity) {
 		super(model, entity);
 	}
+
 	@Override
 	public void set(int orientation) {
-		int delta =orientation -entity.orientation();
+		int delta = orientation - entity.orientation();
 		entity.turn(delta);
-		
+
 	}
 
 	@Override
 	public void set(Cell c) {
-		assert c!=null;
+		assert c != null;
 		entity.setPosition(c.position());
-		
+
 	}
 
 	@Override
 	public void collision(List<Entity> entities) {
-		 for (Entity e : entities) {
-		      collision(e);
-		    }
-		
+		for (Entity e : entities) {
+			collision(e);
+		}
+
 	}
 
 	public void walk(int degree) {
@@ -61,22 +62,28 @@ public class BasicStunt extends Stunt {
 			entity.setLinearSpeed(entity.center().isu().new Vector(0, speed));
 		}
 	}
+
 	@Override
 	public void set(double x_cm, double y_cm) {
-		entity.setCoord(
-		        entity.center().isu().new Coord(x_cm, y_cm)
-		    );
-		
+		entity.setCoord(entity.center().isu().new Coord(x_cm, y_cm));
+
 	}
+
 	@Override
 	public void collision(Entity e) {
-		 System.out.println("Collision avec " + e);
-		
+		System.out.println("Collision avec " + e);
+
 	}
+
 	@Override
 	public void done() {
-		// TODO Auto-generated method stub
-		
+		entity.stop();
 	}
-	
+
+	@Override
+	public void update(long elapsed) {
+		// Rien ici pour BasicStunt.
+		// Le déplacement est appliqué par Entity.tick avec linearSpeed.
+	}
+
 }
