@@ -7,6 +7,7 @@ import java.util.List;
 
 import engine.Picture;
 import engine.model.Entity;
+import engine.Game;
 
 public class Grid {
 

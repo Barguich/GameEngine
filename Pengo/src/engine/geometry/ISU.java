@@ -285,11 +285,5 @@ public class ISU {
 		}
 	}
 
-	public double width_cm() {
-	    return game.width_cm();
-	}
 
-	public double height_cm() {
-	    return game.height_cm();
-	}
 }

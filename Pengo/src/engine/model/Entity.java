@@ -7,6 +7,7 @@ import engine.collision.Bounding;
 import engine.geometry.Grid;
 import engine.geometry.ISU;
 import engine.view.Avatar;
+import engine.Game;
 
 public abstract class Entity {
 
