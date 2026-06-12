@@ -61,4 +61,22 @@ public class BasicStunt extends Stunt {
 			entity.setLinearSpeed(entity.center().isu().new Vector(0, speed));
 		}
 	}
+	@Override
+	public void set(double x_cm, double y_cm) {
+		entity.setCoord(
+		        entity.center().isu().new Coord(x_cm, y_cm)
+		    );
+		
+	}
+	@Override
+	public void collision(Entity e) {
+		 System.out.println("Collision avec " + e);
+		
+	}
+	@Override
+	public void done() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
