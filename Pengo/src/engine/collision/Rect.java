@@ -1,12 +1,9 @@
 // = Rect =
 package engine.collision;
 
-
-
 import engine.geometry.ISU;
 import engine.geometry.Vector;
 import engine.geometry.Point;
-
 
 public class Rect extends Shape implements iShape {
 
@@ -418,10 +415,10 @@ class RectRectIntersection {
 	private double r2dy; // déplacement virtuel en y de r2
 
 	public RectRectIntersection(Rect r1, Rect r2, double r2dx, double r2dy) {
-	    this.r1 = r1;
-	    this.r2 = r2;
-	    this.r2dx = r2dx;  
-	    this.r2dy = r2dy;
+		this.r1 = r1;
+		this.r2 = r2;
+		this.r2dx = r2dx;
+		this.r2dy = r2dy;
 	}
 
 	void remedy() {
@@ -429,7 +426,12 @@ class RectRectIntersection {
 	}
 
 	public boolean intersects() {
-		double[][] axes = new double[4][2];// 4 axes
+		// Optimisation : si les deux rects sont axis-aligned → AABB simple
+		if (r1.angle_degree == 0 && r2.angle_degree == 0) {
+			return intersectsAABB();
+		}
+		// Cas général : SAT (Separating Axis Theorem)
+		double[][] axes = new double[4][2];
 
 		double[] Ar1 = getAxes(r1);
 		double[] Ar2 = getAxes(r2);
@@ -442,31 +444,37 @@ class RectRectIntersection {
 			double[] projR1 = project(r1, axes[i], 0, 0);
 			double[] projR2 = project(r2, axes[i], r2dx, r2dy);
 			if (!overlaps(projR1, projR2))
-				return false;// pas de collistion existe droite qui separe
+				return false; // axe séparateur trouvé → pas de collision
 		}
-		return true;// collision aucune droite
+		return true; // aucun axe séparateur → collision
+	}
+
+	// AABB : test rapide quand angle_degree == 0 pour les deux rects
+	private boolean intersectsAABB() {
+		double cx1 = r1.center.x();
+		double cy1 = r1.center.y();
+		double cx2 = r2.center.x() + r2dx;
+		double cy2 = r2.center.y() + r2dy;
+
+		return Math.abs(cx1 - cx2) < r1.halfWidth + r2.halfWidth && Math.abs(cy1 - cy2) < r1.halfHeight + r2.halfHeight;
 	}
 
 	private boolean overlaps(double[] projR1, double[] projR2) {
 		return projR1[1] >= projR2[0] && projR2[1] >= projR1[0];
 	}
 
-	private double[] project(Rect r, double[] axes, double dx, double dy) {
+	private double[] project(Rect r, double[] axis, double dx, double dy) {
 		Point[] corners = r.cornersAt(dx, dy);
 
-		double min = dot(axes, corners[0]);
+		double min = dot(axis, corners[0]);
 		double max = min;
 
 		for (int i = 1; i < corners.length; i++) {
-			double p = dot(axes, corners[i]);
-
-			if (p < min) {
+			double p = dot(axis, corners[i]);
+			if (p < min)
 				min = p;
-			}
-
-			if (p > max) {
+			if (p > max)
 				max = p;
-			}
 		}
 
 		return new double[] { min, max };
@@ -475,13 +483,11 @@ class RectRectIntersection {
 	private double[] getAxes(Rect r) {
 		double cos = Math.cos(Math.toRadians(r.angle_degree));
 		double sin = Math.sin(Math.toRadians(r.angle_degree));
-
-		return new double[] { cos, sin, -sin, cos };// les 2 axes du rect dans le monde
+		// les 2 axes normaux du rectangle dans le monde
+		return new double[] { cos, sin, -sin, cos };
 	}
 
 	private double dot(double[] axis, Point p) {
-		// Ps entre un axe et un point vu comme vecteur depuis l'origine.
 		return axis[0] * p.x() + axis[1] * p.y();
 	}
-
 }
