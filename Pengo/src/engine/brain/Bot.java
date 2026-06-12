@@ -2,6 +2,7 @@ package engine.brain;
 
 import engine.model.BasicStunt;
 import engine.model.Entity;
+import engine.model.Stunt;
 
 public abstract class Bot {
 
@@ -18,4 +19,5 @@ public abstract class Bot {
 
     public void done() {
     }
+   
 }

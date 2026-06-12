@@ -25,6 +25,7 @@ public abstract class Stunt {
 	public abstract void set(Cell c);
 	public abstract void collision(Entity e) ;
 	public abstract void done() ;
+	public abstract void update(long elapsed);
 	public  abstract  void collision(List<Entity> others) ;
 
 }

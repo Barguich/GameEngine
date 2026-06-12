@@ -376,4 +376,33 @@ public class Entity {
         else
             ps.println("size = null");
     }
+    public void tick(long elapsed) {
+        assert elapsed >= 0;
+
+        if (stunt != null) {
+            stunt.update(elapsed);
+        }
+
+        if (model == null || center == null || lSpeed == null) {
+            return;
+        }
+
+        if (lSpeed.norm() == 0) {
+            return;
+        }
+
+        double dt = elapsed / 1000.0;
+
+        ISU.Vector movement = center.isu().new Vector(
+            lSpeed.x() * dt,
+            lSpeed.y() * dt
+        );
+
+        boolean moved = model.move(this, movement);
+
+        if (!moved) {
+            stop();
+            collision(null);
+        }
+    }
 }
