@@ -1,11 +1,38 @@
 package engine.model;
 
+import java.util.List;
+
+import engine.geometry.Grid.Cell;
+import engine.geometry.ISU;
+import engine.geometry.ISU.Vector;
+
 public class BasicStunt extends Stunt {
 	// Le stunt est responsable de l'exécution des mouvements
 	// de l'entité associée.
 
 	public BasicStunt(Model model, Entity entity) {
 		super(model, entity);
+	}
+	@Override
+	public void set(int orientation) {
+		int delta =orientation -entity.orientation();
+		entity.turn(delta);
+		
+	}
+
+	@Override
+	public void set(Cell c) {
+		assert c!=null;
+		entity.setPosition(c.position());
+		
+	}
+
+	@Override
+	public void collision(List<Entity> entities) {
+		 for (Entity e : entities) {
+		      collision(e);
+		    }
+		
 	}
 
 	public void walk(int degree) {
