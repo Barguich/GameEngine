@@ -1,17 +1,15 @@
 package engine.collision;
 
 public class Box {
-
+	// FIELDS
 	private final double xmin, ymin, xmax, ymax;
 
+	// CONSTRUCTOR
 	public Box(double xmin, double ymin, double xmax, double ymax) {
-
 		if (xmin > xmax)
 			throw new IllegalArgumentException("xmin > xmax");
-
 		if (ymin > ymax)
 			throw new IllegalArgumentException("ymin > ymax");
-
 		this.xmin = xmin;
 		this.ymin = ymin;
 		this.xmax = xmax;
@@ -19,7 +17,6 @@ public class Box {
 	}
 
 	// GETTERS
-
 	public double xmin() {
 		return xmin;
 	}
@@ -53,7 +50,6 @@ public class Box {
 	}
 
 	// COLLISION
-
 	public boolean overlaps(Box other) {
 		if (other == null)
 			return false;
@@ -62,9 +58,7 @@ public class Box {
 	}
 
 	// UNION
-
 	public static Box union(Box b1, Box b2) {
-
 		if (b1 == null)
 			return b2;
 
