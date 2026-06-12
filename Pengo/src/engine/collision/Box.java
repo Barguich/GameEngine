@@ -1,5 +1,8 @@
 package engine.collision;
 
+import engine.geometry.ISU.Coord;
+import engine.geometry.ISU.Dimension;
+
 public class Box {
 	// FIELDS
 	private final double xmin, ymin, xmax, ymax;
@@ -15,6 +18,8 @@ public class Box {
 		this.xmax = xmax;
 		this.ymax = ymax;
 	}
+
+	
 
 	// GETTERS
 	public double xmin() {
