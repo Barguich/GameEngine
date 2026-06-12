@@ -1,11 +1,38 @@
 package engine.model;
 
+import java.util.List;
+
+import engine.geometry.Grid.Cell;
+import engine.geometry.ISU;
+import engine.geometry.ISU.Vector;
+
 public class BasicStunt extends Stunt {
 	// Le stunt est responsable de l'exécution des mouvements
 	// de l'entité associée.
 
 	public BasicStunt(Model model, Entity entity) {
 		super(model, entity);
+	}
+	@Override
+	public void set(int orientation) {
+		int delta =orientation -entity.orientation();
+		entity.turn(delta);
+		
+	}
+
+	@Override
+	public void set(Cell c) {
+		assert c!=null;
+		entity.setPosition(c.position());
+		
+	}
+
+	@Override
+	public void collision(List<Entity> entities) {
+		 for (Entity e : entities) {
+		      collision(e);
+		    }
+		
 	}
 
 	public void walk(int degree) {
@@ -34,4 +61,22 @@ public class BasicStunt extends Stunt {
 			entity.setLinearSpeed(entity.center().isu().new Vector(0, speed));
 		}
 	}
+	@Override
+	public void set(double x_cm, double y_cm) {
+		entity.setCoord(
+		        entity.center().isu().new Coord(x_cm, y_cm)
+		    );
+		
+	}
+	@Override
+	public void collision(Entity e) {
+		 System.out.println("Collision avec " + e);
+		
+	}
+	@Override
+	public void done() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

@@ -1,257 +1,379 @@
-// == ENTITY ==
 package engine.model;
 
-import java.io.PrintStream;
+// == ENTITY ==
 
+import java.io.PrintStream;
+import java.util.HashSet;
+import java.util.Set;
+
+import engine.brain.Bot;
 import engine.collision.Bounding;
+import engine.collision.Box;
 import engine.geometry.Grid;
 import engine.geometry.ISU;
 import engine.view.Avatar;
-import engine.Game;
 
-public abstract class Entity {
 
-	// FIELDS
-	protected final Grid grid;
-	protected final ISU isu;
-	protected final String name;
 
-	// FIELDS
-	protected ISU.Dimension size; // dimension de l'entité
-	protected ISU.Dimension step; // dimension d'un pas de déplacement
-	protected Grid.Position position; // position dans la grille
-	protected ISU.Coord center; // coordonnées en cm du centre de l'entité
-	protected Bounding bounding;
-	protected ISU.Vector lSpeed;
-	protected Stunt stunt;
-	protected Avatar avatar;
+public class Entity {
 
-	// FIELDS
-	protected int orientation_degree; // orientation par rapport à l'axe des x
-	private final static double cmPerCell = Game.game().cmPerCell;
+    // FIELDS
+    protected Bounding bounding;
+    protected Grid grid;
+    protected ISU isu;
+    protected String name;
+    protected Avatar avatar;
 
-	// CONSTRUCTOR
-	protected Entity(String name) {
-		this.name = name;
-		this.orientation_degree = 0;
-		this.isu = Game.isu();
-		this.grid = Game.grid();
-		this.lSpeed = null;
-		this.stunt = null;
-	}
+    protected Model model;
+    protected Stunt stunt;
+    protected Bot bot;
 
-	// ─── SETTER ───────────────────────────────────────────────────────────────
+    protected ISU.Dimension size;
+    protected ISU.Dimension step;
+    protected Grid.Position position;
+    protected ISU.Coord center;
 
-	public void setPosition(Grid.Position position) {
-		double x_cm = (position.x() + 0.5) * cmPerCell;
-		double y_cm = (position.y() + 0.5) * cmPerCell;
-		setCenter(isu.new Coord(x_cm, y_cm));
-	}
+    protected ISU.Vector lSpeed;
+    protected double aSpeed;
 
-	public void setCoord(ISU.Coord center) {
-		setCenter(center);
-	}
+    protected int orientation_degree;
 
-	public void setSize(Grid.Dimension d) {
-		double w_cm = d.x() * cmPerCell;
-		double h_cm = d.y() * cmPerCell;
-		this.size = isu.new Dimension(w_cm, h_cm);
-	}
+    // cellules occupées par l'entité
+    protected Set<Grid.Cell> occupied;
 
-	public void setSize(ISU.Dimension d) {
-		this.size = d;
-	}
+    // CONSTRUCTOR
+    public Entity(String name) {
+        assert name != null;
 
-	public void setStep(Grid.Dimension d) {
-		this.step = d.toISUDimension();
-	}
+        this.name = name;
+        this.orientation_degree = 0;
+        this.lSpeed = null;
+        this.aSpeed = 0;
+        this.occupied = new HashSet<>();
+    }
 
-	public void setStep(ISU.Dimension d) {
-		this.step = d;
-	}
+    // SETTER
 
-	public void setStunt(Stunt stunt) {
-		this.stunt = stunt;
-	}
+    public void setPosition(Grid.Position position) {
+        retract();
 
-	public void setAvatar(Avatar avatar) {
-		this.avatar = avatar;
-	}
+        this.position = position.copy();
+        this.grid = position.grid();
 
-	/** Vitesse linéaire — appelée par BasicStunt.walk() */
-	public void setLinearSpeed(ISU.Vector v) {
-		this.lSpeed = v;
-	}
+        this.center = position.toISUCoordCentered();
+        this.isu = center.isu();
 
-	/** Alias spec : setlSpeed */
-	public void setlSpeed(ISU.Vector v) {
-		this.lSpeed = v;
-	}
+        this.step = grid.new Dimension(1, 1).toISUDimension();
 
-	public ISU.Vector getlSpeed() {
-		return this.lSpeed;
-	}
+        check();
 
-	// ─── TURN ────────────────────────────────────────────────────────────────
+        if (size != null)
+            setBounding();
 
-	/**
-	 * @apiNote turn is a rotation around the center of the entity.
-	 */
-	public void turn(int angle_degree) {
-	    orientation_degree = (orientation_degree + angle_degree) % 360;
-	    if (orientation_degree < 0)
-	        orientation_degree += 360;
-	    if (bounding != null)
-	        setBounding();
-	}
+        deploy();
+    }
 
-	/**
-	 * @apiNote Set orientation to an absolute value.
-	 *          Appelée par BasicStunt.walk().
-	 */
-	public void turnTo(int degree) {
-		orientation_degree = ((degree % 360) + 360) % 360;
-		if (bounding != null)
-			setBounding();
-	}
+    public void setCoord(ISU.Coord center) {
+        retract();
 
-	// ─── BOUNDING — abstract ─────────────────────────────────────────────────
+        this.center = center.mkCopy();
+        this.isu = center.isu();
 
-	protected abstract void setBounding();
+        this.position = center.toGridPosition();
+        this.grid = position.grid();
 
-	// ─── GETTER ──────────────────────────────────────────────────────────────
+        check();
 
-	public ISU.Coord center() {
-		return this.center;
-	}
+        if (size != null)
+            setBounding();
 
-	public Grid.Position position() {
-		return this.position;
-	}
+        deploy();
+    }
 
-	public int orientation() {
-		return this.orientation_degree;
-	}
+    public void setSize(Grid.Dimension dimension) {
+        this.size = dimension.toISUDimension();
 
-	public ISU.Dimension size() {
-		return this.size;
-	}
+        if (center != null)
+            setBounding();
+    }
 
-	public ISU.Dimension step() {
-		return this.step;
-	}
+    protected void setSize(ISU.Dimension dimension) {
+        this.size = dimension;
 
-	public Stunt stunt() {
-		return this.stunt;
-	}
+        if (center != null)
+            setBounding();
+    }
 
-	public Avatar avatar() {
-		return this.avatar;
-	}
+    public void setStep(Grid.Dimension step) {
+        this.step = step.toISUDimension();
+    }
 
-	public Bounding bounding() {
-		return this.bounding;
-	}
+    public void setModel(Model model) {
+        this.model = model;
+    }
 
-	// ─── INTERSECTION ────────────────────────────────────────────────────────
+    public void setStunt(Stunt stunt) {
+        this.stunt = stunt;
+    }
 
-	public boolean intersects(Entity e) {
-		if (this.bounding == null || e.bounding == null)
-			return false;
-		return this.bounding.intersects(e.bounding);
-	}
+    public void setBot(Bot bot) {
+        this.bot = bot;
+    }
 
-	public double distanceCenterToCenter(Entity e) {
-		return this.center.distanceTo(e.center);
-	}
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
+    }
 
-	// ─── TRANSLATION ─────────────────────────────────────────────────────────
+    public void setLinearSpeed(ISU.Vector v) {
+        this.lSpeed = v;
+    }
 
-	public void translate(Grid.Vector v) {
-		double dx_cm = v.x() * cmPerCell;
-		double dy_cm = v.y() * cmPerCell;
-		translate(isu.new Vector(dx_cm, dy_cm));
-	}
+    public void setAngularSpeed(double aSpeed) {
+        this.aSpeed = aSpeed;
+    }
 
-	public void translate(ISU.Vector v) {
-		ISU.Coord moved = center.mkTranslated(v);
-		setCenter(moved);
-	}
+    public void stop() {
+        if (isu != null)
+            this.lSpeed = isu.new Vector(0, 0);
+        else
+            this.lSpeed = null;
 
-	// ─── setCenter — point d'entrée unique pour tout changement de position ──
+        this.aSpeed = 0;
+    }
 
-	private void setCenter(ISU.Coord newCenter) {
-		// retrait de l'ancienne cellule
-		Grid.Cell oldCell = (position != null) ? grid.cellAt(position) : null;
+    public void turnTo(int degree) {
+        orientation_degree = ((degree % 360) + 360) % 360;
 
-		this.center = newCenter;
-		this.position = newCenter.toGridPosition();
+        if (center != null && size != null)
+            setBounding();
+    }
 
-		// inscription dans la nouvelle cellule
-		Grid.Cell newCell = grid.cellAt(position);
-		if (oldCell != newCell) {
-			if (oldCell != null)
-				oldCell.remove(this);
-			newCell.add(this);
-		}
+    // GETTER
 
-		// recalcul du bounding si la taille est connue
-		if (this.size != null) {
-			setBounding();
-		}
+    public ISU.Coord center() {
+        return center;
+    }
 
-		// notification du stunt
-		if (stunt != null) {
-			stunt.set(center.x(), center.y());
-		}
-	}
+    public Grid.Position position() {
+        return position;
+    }
 
-	// ─── MOVE ────────────────────────────────────────────────────────────────
+    public int orientation() {
+        return orientation_degree;
+    }
 
-	/**
-	 * @apiNote déplacement vers le nord en nombre de pas
-	 */
-	public void moveNorth(int nStep) {
-		if (step == null)
-			throw new IllegalStateException("step non initialisé : " + name);
-		translate(isu.new Vector(0, -nStep * step.y()));
-	}
+    public ISU.Dimension step() {
+        return step;
+    }
 
-	public void moveSouth(int nStep) {
-		if (step == null)
-			throw new IllegalStateException("step non initialisé : " + name);
-		translate(isu.new Vector(0, nStep * step.y()));
-	}
+    public ISU.Dimension size() {
+        return size;
+    }
 
-	/**
-	 * @apiNote déplacement vers l'est en cm
-	 */
-	public void moveEast(double length_cm) {
-		translate(isu.new Vector(length_cm, 0));
-	}
+    public ISU.Vector linearSpeed() {
+        return lSpeed;
+    }
 
-	public void moveWest(double length_cm) {
-		translate(isu.new Vector(-length_cm, 0));
-	}
+    public double angularSpeed() {
+        return aSpeed;
+    }
 
-	// ─── SHOW ────────────────────────────────────────────────────────────────
+    public Model model() {
+        return model;
+    }
 
-	public void show(PrintStream ps) {
-		ps.printf("Entity[%s] orientation=%d%n", name, orientation_degree);
-		ps.print("position: ");
-		if (position != null)
-			position.show(ps);
-		else
-			ps.println("null");
-		ps.print("center: ");
-		if (center != null)
-			center.show(ps);
-		else
-			ps.println("null");
-		ps.print("size: ");
-		if (size != null)
-			size.show(ps);
-		else
-			ps.println("null");
-	}
+    public Stunt stunt() {
+        return stunt;
+    }
+
+    public Bot bot() {
+        return bot;
+    }
+
+    public Avatar avatar() {
+        return avatar;
+    }
+
+    public Bounding bounding() {
+        return bounding;
+    }
+
+    public Box box() {
+        if (bounding == null)
+            return null;
+
+        return bounding.box();
+    }
+
+    // TRANSLATION
+
+    public void translate(Grid.Vector v) {
+        if (position == null)
+            return;
+
+        retract();
+
+        position.translate(v);
+        center = position.toISUCoordCentered();
+
+        check();
+
+        if (size != null)
+            setBounding();
+
+        deploy();
+    }
+
+    public void translate(ISU.Vector v) {
+        if (center == null)
+            return;
+
+        retract();
+
+        center.translate(v);
+        position = center.toGridPosition();
+
+        check();
+
+        if (size != null)
+            setBounding();
+
+        deploy();
+    }
+
+    // TURN
+
+    public void turn(int angle_degree) {
+        turnTo(orientation_degree + angle_degree);
+    }
+
+    // MOVE
+
+    public void moveNorth(int nStep) {
+        if (step == null)
+            throw new IllegalStateException("step non initialisé");
+
+        double length_cm = nStep * step.y();
+        translate(isu.new Vector(0, -length_cm));
+    }
+
+    public void moveSouth(int nStep) {
+        if (step == null)
+            throw new IllegalStateException("step non initialisé");
+
+        double length_cm = nStep * step.y();
+        translate(isu.new Vector(0, length_cm));
+    }
+
+    public void moveEast(double length_cm) {
+        translate(isu.new Vector(length_cm, 0));
+    }
+
+    public void moveWest(double length_cm) {
+        translate(isu.new Vector(-length_cm, 0));
+    }
+
+    // COLLISION / INTERSECTION
+
+    public boolean intersects(Entity entity) {
+        if (entity == null)
+            return false;
+
+        if (this.bounding == null || entity.bounding == null)
+            return false;
+
+        return this.bounding.intersects(entity.bounding);
+    }
+
+    public double distanceCenterToCenter(Entity e) {
+        if (e == null || this.center == null || e.center == null)
+            return Double.POSITIVE_INFINITY;
+
+        return this.center.distanceTo(e.center);
+    }
+
+    public void setBounding() {
+        this.bounding = new Bounding();
+    }
+
+    public void collision(Entity e) {
+        stop();
+
+        if (stunt != null)
+            stunt.collision(e);
+
+        if (bot != null)
+            bot.collision(e);
+    }
+
+    public void done() {
+        if (stunt != null)
+            stunt.done();
+
+        if (bot != null)
+            bot.done();
+    }
+
+    // DEPLOY / OCCUPY / RETRACT
+
+    public void deploy() {
+        if (position == null)
+            return;
+
+        occupy(position);
+    }
+
+    public void occupy(Grid.Position position) {
+        if (position == null || grid == null)
+            return;
+
+        Grid.Cell cell = grid.cellAt(position);
+
+        if (cell == null)
+            return;
+
+        if (!occupied.contains(cell)) {
+            cell.add(this);
+            occupied.add(cell);
+        }
+    }
+
+    public void retract() {
+        for (Grid.Cell cell : occupied) {
+            cell.remove(this);
+        }
+
+        occupied.clear();
+    }
+
+    // CHECK
+
+    void check() {
+        if (position == null || center == null)
+            return;
+
+        assert position.equiv(center.toGridPosition());
+    }
+
+    // SHOW
+
+    public void show(PrintStream ps) {
+        ps.println("Entity: " + name);
+        ps.println("orientation = " + orientation_degree);
+
+        if (position != null)
+            position.show(ps);
+        else
+            ps.println("position = null");
+
+        if (center != null)
+            center.show(ps);
+        else
+            ps.println("center = null");
+
+        if (size != null)
+            size.show(ps);
+        else
+            ps.println("size = null");
+    }
 }

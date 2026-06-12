@@ -2,6 +2,8 @@ package engine.model;
 
 import java.util.List;
 
+import engine.geometry.Grid.Cell;
+
 public abstract class Stunt {
 
 	protected Model model;
@@ -11,22 +13,18 @@ public abstract class Stunt {
 		this.model = model;
 		this.entity = entity;
 	}
-
-	public void set(double x_cm, double y_cm) {
+	public Entity entity() {
+		return entity;
+	}
+	public Model model() {
+		return model;
 	}
 
-	public void collision(Entity e) {
-	}
-
-	public void done() {
-	}
-
-	public void collision(List<Entity> others) {
-		if (others == null)
-			return;
-		for (Entity e : others) {
-			collision(e);
-		}
-	}
+	public abstract void set(double x_cm, double y_cm) ;
+	public abstract void set(int orientation) ;
+	public abstract void set(Cell c);
+	public abstract void collision(Entity e) ;
+	public abstract void done() ;
+	public  abstract  void collision(List<Entity> others) ;
 
 }
