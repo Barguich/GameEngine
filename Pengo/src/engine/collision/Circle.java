@@ -27,13 +27,12 @@ public class Circle extends Shape implements iShape {
 		return shape.intersects(this);
 
 	}
-
 	// BOX
-
-	public Box box() {
-		double cx = center.x();
-		double cy = center.y();
-		return new Box(cx - radius, cy - radius, cx + radius, cy + radius);
-	}
+		@Override
+		public Box box() {
+			double cx = center.x();
+			double cy = center.y();
+			return new Box(cx - radius, cy - radius, cx + radius, cy + radius);
+		}
 
 }

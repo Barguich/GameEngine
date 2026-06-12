@@ -1,3 +1,4 @@
+// = GRID =
 package engine.geometry;
 
 import java.io.PrintStream;
@@ -6,58 +7,34 @@ import java.util.List;
 
 import engine.Picture;
 import engine.model.Entity;
-import game.Game;
+import engine.Game;
 
 public class Grid {
 
 	// FIELDS
-
-	private ISU isu;
-	private Picture pict;
-
-	private Axis xAxis;
-	private Axis yAxis;
-
-	private int width_ncell;
-	private int height_ncell;
-
-	private double cmPerCell;
-	private int pixelPerCm;
-
+	private final ISU isu;
+	private final Axis xAxis, yAxis;
+	private final int width_ncell, height_ncell;
 	private Cell[][] grid;
 
+	// CONSTRUCTOR
 	public Grid(Game game) {
-		this.isu = game.isu();
-		this.pict = game.pict();
-
-		this.cmPerCell = game.getCmpercell();
-		this.pixelPerCm = game.getPixelPerCm();
-
-		width_ncell = game.width_ncell();
-		height_ncell = game.height_ncell();
-
-		xAxis = new Axis(game.isTorusOnXaxis(), width_ncell);
-		yAxis = new Axis(game.isTorusOnYaxis(), height_ncell);
-
+		this.width_ncell = Game.game().width_ncell;
+		this.height_ncell = Game.game().height_ncell;
+		this.isu = Game.isu();
+		this.xAxis = new Axis(Game.game().torusOnXaxis, this.width_ncell);
+		this.yAxis = new Axis(Game.game().torusOnYaxis, this.height_ncell);
 		init();
-
 	}
-	// INIT
 
 	private void init() {
-
-		grid = new Cell[width_ncell][height_ncell];
-
-		for (int x = 0; x < width_ncell; x++) {
-			for (int y = 0; y < height_ncell; y++) {
-
-				Position p = new Position(x, y);
-
-				grid[x][y] = new Cell(p);
+		this.grid = new Cell[this.width_ncell][this.height_ncell];
+		for (int i = 0; i < this.width_ncell; i++) {
+			for (int j = 0; j < this.height_ncell; j++) {
+				this.grid[i][j] = new Cell(new Position(i, j));
 			}
 		}
 	}
-	// GETTER
 
 	public int width() {
 		return width_ncell;
@@ -67,39 +44,25 @@ public class Grid {
 		return height_ncell;
 	}
 
-	public ISU isu() {
-		return isu;
+	public Grid.Cell cellAt(Grid.Position p) {
+		int x = xAxis.normalize(p.x());
+		int y = yAxis.normalize(p.y());
+		return this.grid[x][y];
 	}
 
-	public Cell cellAt(Position p) {
-
-		p.normalize();
-		return grid[p.x()][p.y()];
-	}
-
-	// SHOW
 	public void show(PrintStream ps) {
-
 		ps.println("Grid:");
-
 		ps.println("width_ncell = " + width_ncell);
 		ps.println("height_ncell = " + height_ncell);
 	}
-	// ============================
+
 	// DIMENSION
-	// ============================
-
 	public class Dimension {
-
-		protected int x_ncell;
-		protected int y_ncell;
+		protected int x_ncell, y_ncell;
 
 		public Dimension(int x_ncell, int y_ncell) {
-
-			this.x_ncell = x_ncell;
-			this.y_ncell = y_ncell;
-
-			normalize();
+			this.x_ncell = xAxis.normalize(x_ncell);
+			this.y_ncell = yAxis.normalize(y_ncell);
 		}
 
 		public int x() {
@@ -111,167 +74,143 @@ public class Grid {
 		}
 
 		public void normalize() {
-
-			x_ncell = xAxis.normalize(x_ncell);
-			y_ncell = yAxis.normalize(y_ncell);
+			this.x_ncell = xAxis.normalize(this.x_ncell);
+			this.y_ncell = yAxis.normalize(this.y_ncell);
 		}
 
-		// EQUALS / EQUIV
 		@Override
 		public boolean equals(Object o) {
-
-			if (!(o instanceof Dimension)) {
+			if (this == o)
+				return true;
+			if (o == null || !(o instanceof Dimension))
 				return false;
-			}
-
 			Dimension d = (Dimension) o;
-
-			return x_ncell == d.x_ncell && y_ncell == d.y_ncell;
+			return (this.x_ncell == d.x_ncell) && (this.y_ncell == d.y_ncell);
 		}
 
-		// on tient compte de la normalization
 		public boolean equiv(Dimension d) {
-
-			if (d == null) {
+			if (d == null)
 				return false;
-			}
-			Dimension copy = new Dimension(d.x(), d.y());
-			return this.equals(copy);
+			return (xAxis.normalize(x_ncell) == xAxis.normalize(d.x_ncell))
+					&& (yAxis.normalize(y_ncell) == yAxis.normalize(d.y_ncell));
 		}
 
 		public ISU.Dimension toISUDimension() {
-
-			return isu.new Dimension(x_ncell * cmPerCell, y_ncell * cmPerCell);
+			double cm = Game.game().cmPerCell;
+			return isu.new Dimension(x_ncell * cm, y_ncell * cm);
 		}
 
 		public void show(PrintStream ps) {
-
 			ps.println("Dimension(" + x_ncell + "," + y_ncell + ")");
 		}
 	}
-	// ============================
-	// VECTOR
-	// ============================
 
-	public class Vector extends Dimension {
+	// VECTEUR
+	public class Vector {
+		private int x_ncell, y_ncell;
 
 		public Vector(int x_ncell, int y_ncell) {
-			super(x_ncell, y_ncell);
+			this.x_ncell = x_ncell;
+			this.y_ncell = y_ncell;
+		}
+
+		public int x() {
+			return x_ncell;
+		}
+
+		public int y() {
+			return y_ncell;
 		}
 
 		public void add(Vector v) {
-			x_ncell += v.x();
-			y_ncell += v.y();
+			x_ncell += v.x_ncell;
+			y_ncell += v.y_ncell;
+		}
 
-			normalize();
+		public double length() {
+			return Math.sqrt(x_ncell * x_ncell + y_ncell * y_ncell);
 		}
 
 		public void show(PrintStream ps) {
-
 			ps.println("Vector(" + x_ncell + "," + y_ncell + ")");
 		}
 	}
 
-	// ============================
 	// POSITION
-	// ============================
-
-	public class Position extends Dimension {
+	public class Position {
+		private int x_ncell, y_ncell;
 
 		public Position(int x_ncell, int y_ncell) {
-			super(x_ncell, y_ncell);
+			this.x_ncell = xAxis.normalize(x_ncell);
+			this.y_ncell = yAxis.normalize(y_ncell);
 		}
 
-		public Position copy() {
-			return new Position(x_ncell, y_ncell);
+		public int x() {
+			return x_ncell;
+		}
+
+		public int y() {
+			return y_ncell;
+		}
+
+		public Grid.Position copy() {
+			return new Position(this.x_ncell, this.y_ncell);
 		}
 
 		@Override
 		public boolean equals(Object o) {
-
-			if (!(o instanceof Position)) {
+			if (this == o)
+				return true;
+			if (!(o instanceof Position))
 				return false;
-			}
-
 			Position p = (Position) o;
-
-			return x_ncell == p.x_ncell && y_ncell == p.y_ncell;
+			return (this.x_ncell == p.x_ncell) && (this.y_ncell == p.y_ncell);
 		}
 
 		public boolean equiv(Position p) {
-
-			if (p == null) {
+			if (p == null)
 				return false;
-			}
-
-			Position copy = new Position(p.x(), p.y());
-
-			return this.equals(copy);
+			return (xAxis.normalize(x_ncell) == xAxis.normalize(p.x_ncell))
+					&& (yAxis.normalize(y_ncell) == yAxis.normalize(p.y_ncell));
 		}
 
 		public void translate(Vector v) {
-
-			x_ncell += v.x();
-			y_ncell += v.y();
-
-			normalize();
+			x_ncell = xAxis.normalize(x_ncell + v.x());
+			y_ncell = yAxis.normalize(y_ncell + v.y());
 		}
 
 		public void moveNorth(int n_ncell) {
-			translate(new Vector(0, -n_ncell));
+			y_ncell = yAxis.normalize(y_ncell - n_ncell);
 		}
 
 		public void rotateAround(Grid.Position position, int angle_degree) {
-			// translation vers origine
 			int dx = x_ncell - position.x();
 			int dy = y_ncell - position.y();
-
-			// angle en radians
 			double angle = Math.toRadians(angle_degree);
 
-			// rotation
 			int newX = position.x() + (int) Math.round(dx * Math.cos(angle) - dy * Math.sin(angle));
-
 			int newY = position.y() + (int) Math.round(dx * Math.sin(angle) + dy * Math.cos(angle));
 
-			// mise à jour
-			x_ncell = newX;
-			y_ncell = newY;
-
-			// tore
-			normalize();
+			x_ncell = xAxis.normalize(newX);
+			y_ncell = yAxis.normalize(newY);
 		}
 
 		public double distanceTo(Position p) {
-
-			double dx = xAxis.distance(x_ncell, p.x());
-			double dy = yAxis.distance(y_ncell, p.y());
-
+			double dx = xAxis.distance(x_ncell, p.x_ncell);
+			double dy = yAxis.distance(y_ncell, p.y_ncell);
 			return Math.sqrt(dx * dx + dy * dy);
 		}
 
 		public ISU.Coord toISUCoord() {
-
-			return isu.new Coord(x_ncell * cmPerCell, y_ncell * cmPerCell);
+			return isu.new Coord(this.x_ncell * Game.game().cmPerCell, this.y_ncell * Game.game().cmPerCell);
 		}
 
 		public ISU.Coord toISUCoordCentered() {
-
-			return isu.new Coord(x_ncell * cmPerCell + cmPerCell / 2.0, y_ncell * cmPerCell + cmPerCell / 2.0);
-		}
-
-		public Picture.Pixel toPicturePixel() {
-
-			ISU.Coord coord = toISUCoordCentered();
-
-			int x_pixel = (int) (coord.x() * pixelPerCm);
-			int y_pixel = (int) (coord.y() * pixelPerCm);
-
-			return pict.new Pixel(x_pixel, y_pixel);
+			return isu.new Coord((this.x_ncell + .5) * Game.game().cmPerCell,
+					(this.y_ncell + .5) * Game.game().cmPerCell);
 		}
 
 		public void show(PrintStream ps) {
-
 			ps.println("Position(" + x_ncell + "," + y_ncell + ")");
 		}
 
@@ -280,25 +219,24 @@ public class Grid {
 		}
 	}
 
-	// ============================
 	// CELL
-	// ============================
-
 	public class Cell {
-
 		private Grid.Dimension size;
-
-		public Grid.Position position;
-
+		private Grid.Position position;
 		private List<Entity> entities;
 
 		public Cell(Position p) {
+			this.position = p;
+			this.size = new Dimension(1, 1);
+			this.entities = new ArrayList<>();
+		}
 
-			position = p.copy();
+		public Grid.Position position() {
+			return this.position;
+		}
 
-			size = new Dimension(1, 1);
-
-			entities = new ArrayList<Entity>();
+		public List<Entity> entities() {
+			return this.entities;
 		}
 
 		public void add(Entity e) {
@@ -308,21 +246,17 @@ public class Grid {
 		}
 
 		public void remove(Entity e) {
-			entities.remove(e);
+			this.entities.remove(e);
 		}
 
 		public boolean contains(Entity e) {
-			return entities.contains(e);
+			return this.entities.contains(e);
 		}
 
 		public void show(PrintStream ps) {
-
 			ps.println("Cell(" + position.x() + "," + position.y() + ")");
-		}
-
-		public Position position() {
-			return position;
+			ps.println("  size = " + size);
+			ps.println("  entities = " + entities);
 		}
 	}
-
 }
