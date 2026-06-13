@@ -1,14 +1,15 @@
 package engine.gal;
 
 import engine.model.Entity;
+import engine.model.Stunt;
 
 public class Bot {
 
-	Entity entity;
+	private Entity entity;
 
 	// CONSTRUCTOR
 
-	Bot(Entity e) {
+	public Bot(Entity e) {
 		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `Bot`");
 	}
 
@@ -72,5 +73,4 @@ public class Bot {
 	 */
 	void completed() {
 	}
-
 }

@@ -111,16 +111,28 @@ public class Direction {
     // CONVERSION
 
     public int toAngle() {
-        if (this == E) return 0;
-        if (this == NE) return 45;
-        if (this == N) return 90;
-        if (this == NW) return 135;
-        if (this == W) return 180;
-        if (this == SW) return -135;
-        if (this == S) return -90;
-        if (this == SE) return -45;
+        if (this == E)
+            return 0;
+        if (this == NE)
+            return 45;
+        if (this == N)
+            return 90;
+        if (this == NW)
+            return 135;
+        if (this == W)
+            return 180;
+        if (this == SW)
+            return -135;
+        if (this == S)
+            return -90;
+        if (this == SE)
+            return -45;
 
         throw new IllegalStateException(
                 "Relative direction " + name + " has no absolute angle");
+    }
+
+    public String name() {
+        return name;
     }
 }

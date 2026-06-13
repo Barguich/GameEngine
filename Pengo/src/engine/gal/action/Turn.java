@@ -49,6 +49,10 @@ public class Turn extends GALAction {
 
     // EXEC
     public boolean exec(Entity e) {
-        return e.bot().stunt().startTurning(angle_deg, intensity);
+        if (e == null)
+            return false;
+        
+        e.turn(angle_deg);
+        return true;
     }
 }
