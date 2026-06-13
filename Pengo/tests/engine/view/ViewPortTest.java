@@ -20,7 +20,7 @@ class ViewPortTest {
 
 	@BeforeEach
 	void setUp() {
-		new Game(20, 20);
+		new Game(100, 80);
 	}
 
 	// ─── constructeurs ──────────────────────────────────────────────────────
@@ -81,7 +81,7 @@ class ViewPortTest {
 	void centerOn_clamp_au_bord_superieur() {
 		ViewPort vp = new ViewPort(20, 10, 100, 80);
 
-		vp.centerOn(Game.isu().new Coord(1000, 1000));
+		vp.centerOn(Game.isu().new Coord(95, 75));
 
 		assertEquals(100 - 20, vp.x(), DELTA);
 		assertEquals(80 - 10, vp.getY_cm(), DELTA);
