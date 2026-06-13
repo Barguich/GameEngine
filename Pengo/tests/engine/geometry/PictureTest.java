@@ -1,4 +1,4 @@
-package engine;
+package engine.geometry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import engine.Game;
+import engine.Picture;
+import engine.Picture.Pixel;
 import engine.geometry.ISU;
 
 /**

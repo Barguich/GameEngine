@@ -1,4 +1,4 @@
-package engine;
+package engine.geometry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

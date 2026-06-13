@@ -1,4 +1,4 @@
-package engine;
+package engine.geometry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import engine.collision.Circle;
 import engine.geometry.ISU;
+import engine.Game;
 import engine.collision.Box;
 
 /**
