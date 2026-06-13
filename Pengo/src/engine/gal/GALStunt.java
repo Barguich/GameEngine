@@ -166,4 +166,8 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		action_ms = 0;
 	}
 
+	@Override
+	public void update(long elapsed) {
+	}
+
 }
