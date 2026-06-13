@@ -1,0 +1,14 @@
+Enemy(Normal) {
+	* (Normal):
+	| Step(H,K) ?	 	  :(Frozen)   	-- un bloc de glace atterrit ici → gel
+  	| Step(H,@) ?          :()         -- le joueur marche dessus directement → mort
+   	| Step(F,V) ? Move(F) :(Normal)		-- case libre devant → avance
+	| Step(F,O) ? Turn(R) :(Normal)		-- obstacle devant → tourne à droite
+   	| True 		? Turn(L) :(Normal)		-- sinon → tourne à gauche
+
+	* (Frozen):
+	| Step(H,@) ?         :() 			-- joueur sur la case → mort pendant le gel
+	| True ? wait(N) :(Normal)			-- attendre N ms → dégel automatique
+
+	* ()
+}
