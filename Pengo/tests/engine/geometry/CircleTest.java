@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import engine.collision.Circle;
-import engine.geometry.ISU;
 import engine.Game;
 import engine.collision.Box;
 

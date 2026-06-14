@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import engine.Game;
 import engine.model.Entity;
-import engine.view.View;
-import engine.view.ViewPort;
 
 /**
  * Avatar : constructeur, setView, et helpers protégés saveTransform /

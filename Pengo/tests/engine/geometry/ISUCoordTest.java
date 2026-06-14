@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import engine.Game;
-import engine.geometry.ISU;
-import engine.geometry.Grid;
 
 /**
  * ISU.Coord en cm, sur un plateau toroïdal (torus activé par défaut dans Game).
