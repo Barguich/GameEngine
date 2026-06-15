@@ -2,21 +2,32 @@ package engine.gal.aut;
 
 import engine.gal.State;
 import engine.gal.action.GALAction;
-import engine.gal.aut.iGALAction;
 import engine.model.Entity;
 
 public class Transition {
 
 	// FIELDS
 
-	 State source;
-	 iGALCondition condition;
-	 iGALAction action;
-	 State tgt;
+	private State source;
+	private iGALCondition condition;
+	private iGALAction action;
+	private State tgt;
 
 	// CONSTRUCTOR
 
-	 Transition(State source, iGALCondition condition, GALAction action, State target){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `Transition`"); }
+	public Transition(State source, iGALCondition condition, GALAction action, State target) {
+		this.source = source;
+		this.tgt = target;
+		this.condition = condition;
+	}
+
+	public State source() {
+		return source;
+	}
+
+	public State target() {
+		return tgt;
+	}
 
 	// EXEC
 
@@ -34,6 +45,12 @@ public class Transition {
 	 *          figures (health, state, ...) and triggers the {@code Stunt} action
 	 * @return {@code true} if the condition is satisfied and the action can start
 	 */
-	 boolean exec(Entity e){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `exec`"); }
+	public boolean exec(Entity e) {
+		if (!condition.eval(e))
+			return false;
+		if (action != null)
+			action.exec(e);
+		return true;
+	}
 
 }

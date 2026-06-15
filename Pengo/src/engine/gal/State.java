@@ -1,28 +1,45 @@
 package engine.gal;
 
+import java.util.Objects;
+
 public class State {
 
-	Mode mode;
-	int id;
+	private Mode mode;
+	private int id;
 
 	// CONSTRUCTOR
 
-	State(String mode, int id) {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `State`");
+	public State(String mode, int id) {
+		this.mode = Mode.canonical(mode);
+		this.id = id;
+
+	}
+
+	public Mode mode() {
+		return mode;
+	}
+
+	public int id() {
+		return id;
 	}
 
 	// EQUALS
 	public boolean equals(Object o) {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `equals`");
+
+		if (!(o instanceof State))
+			return false;
+		return equals((State) o);
+
 	}
 
-	boolean equals(State s) {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `equals`");
+	public boolean equals(State s) {
+		return s != null && id == s.id && mode.equals(s.mode);
 	}
 
 	// HASH
+	@Override
 	public int hashCode() {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `hashCode`");
+		return Objects.hash(mode, id);
 	}
 
 }
