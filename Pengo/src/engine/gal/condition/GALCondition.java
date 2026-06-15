@@ -1,14 +1,15 @@
 package engine.gal.condition;
 
-import engine.gal.arguments.Direction;
 import engine.gal.arguments.Category;
+import engine.gal.arguments.Direction;
+import engine.gal.aut.iGALCondition;
 
-public class GALCondition {
+public abstract class GALCondition implements iGALCondition  {
 
-    Direction direction;
-    Category category;
+   protected  Direction direction;
+    protected Category category;
 
     // CONSTANT
 
-    True TRUE = new True();
+   public static final True TRUE = new True();
 }

@@ -9,5 +9,5 @@ public interface iGALAction {
 	 * @param e = the entity which performs the action
 	 * @return true if the action can be started
 	 */
-	boolean exec(Entity e);
+	public boolean exec(Entity e);
 }
