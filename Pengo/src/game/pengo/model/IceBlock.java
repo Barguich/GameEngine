@@ -1,7 +1,6 @@
 package game.pengo.model;
 
 import engine.collision.Bounding;
-import engine.collision.Box;
 import engine.collision.Rect;
 import engine.model.Entity;
 
