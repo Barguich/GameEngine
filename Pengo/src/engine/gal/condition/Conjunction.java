@@ -1,30 +1,34 @@
 package engine.gal.condition;
 
-import java.util.LinkedList;
 import engine.gal.aut.iGALCondition;
 import engine.model.Entity;
+import java.util.LinkedList;
 
-class Conjunction {
+public class Conjunction extends GALCondition {
 
 	// FIELDS
 
-	LinkedList<iGALCondition> conditions;
+	 private LinkedList<iGALCondition> conditions;
 
 	// CONSTRUCTOR
 
-	Conjunction() {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `Conjunction`");
+	public Conjunction() {
+		this.conditions=new LinkedList<>();
 	}
 
 	// BUILDER
 
-	void add(iGALCondition c) {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `add`");
+	public void add(iGALCondition c) {
+		conditions.add(c);
 	}
 
 	// EVAL
-	boolean eval(Entity e) {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `eval`");
+	public boolean eval(Entity e) {
+		for(iGALCondition c:conditions){
+			if(c.eval(e)==false)
+				return false;
+		}
+		return true;
 	}
 
 }
