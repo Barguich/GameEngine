@@ -1,11 +1,10 @@
 package engine.gal.aut;
 
+import engine.gal.State;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.HashMap;
 import java.util.Map;
-
-import engine.gal.State;
 
 public class Transitions implements iTransitions{
 

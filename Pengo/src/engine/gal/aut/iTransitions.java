@@ -1,8 +1,7 @@
 package engine.gal.aut;
 
-import java.util.List;
-
 import engine.gal.State;
+import java.util.List;
 
 public interface iTransitions {
 
