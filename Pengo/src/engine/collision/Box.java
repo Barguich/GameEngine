@@ -19,8 +19,6 @@ public class Box {
 		this.ymax = ymax;
 	}
 
-	
-
 	// GETTERS
 	public double xmin() {
 		return xmin;
@@ -56,10 +54,13 @@ public class Box {
 
 	// COLLISION
 	public boolean overlaps(Box other) {
-		if (other == null)
-			return false;
 
-		return this.xmax > other.xmin && this.xmin < other.xmax && this.ymax > other.ymin && this.ymin < other.ymax;
+		if (other == null) {
+			return false;
+		}
+
+		return this.xmax > other.xmin() && this.xmin < other.xmax() && this.ymax > other.ymin()
+				&& this.ymin < other.ymax();
 	}
 
 	// UNION

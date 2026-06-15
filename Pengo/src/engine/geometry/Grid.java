@@ -209,6 +209,10 @@ public class Grid {
 			return isu.new Coord((this.x_ncell + .5) * Game.game().cmPerCell,
 					(this.y_ncell + .5) * Game.game().cmPerCell);
 		}
+		@Override
+		public String toString() {
+		    return "(" + x_ncell + "," + y_ncell + ")";
+		}
 
 		public void show(PrintStream ps) {
 			ps.println("Position(" + x_ncell + "," + y_ncell + ")");

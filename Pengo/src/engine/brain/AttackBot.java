@@ -25,23 +25,27 @@ public class AttackBot extends Bot {
 
         Entity me = stunt.entity();
 
-        int ex = me.position().x();
-        int ey = me.position().y();
+        double ex = me.center().x();
+        double ey = me.center().y();
 
-        int tx = target.position().x();
-        int ty = target.position().y();
+        double tx = target.center().x();
+        double ty = target.center().y();
 
         moving = true;
 
         if (tx > ex) {
-            stunt.walk(0);
-        } else if (tx < ex) {
-            stunt.walk(180);
-        } else if (ty > ey) {
-            stunt.walk(90);
-        } else if (ty < ey) {
-            stunt.walk(270);
-        } else {
+            stunt.walk(0);       // droite
+        }
+        else if (tx < ex) {
+            stunt.walk(180);     // gauche
+        }
+        else if (ty > ey) {
+            stunt.walk(270);     // bas, car y augmente vers le bas
+        }
+        else if (ty < ey) {
+            stunt.walk(90);      // haut
+        }
+        else {
             moving = false;
         }
     }

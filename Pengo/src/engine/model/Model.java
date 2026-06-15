@@ -65,7 +65,10 @@ public class Model {
 			v.scale(-1);
 			e.translate(v);
 
-			e.collision(cols.get(0));
+			Entity other = cols.get(0);
+
+			e.collision(other);
+			other.collision(e);
 			return false;
 		}
 
@@ -117,6 +120,14 @@ public class Model {
 
 		List<Entity> copy = new ArrayList<Entity>(entities);
 
+		// 1) Les Bots réfléchissent
+		for (Entity e : copy) {
+			if (entities.contains(e) && e.bot() != null) {
+				e.bot().think();
+			}
+		}
+
+		// 2) Les entités exécutent leur déplacement
 		for (Entity e : copy) {
 			if (entities.contains(e)) {
 				e.tick(elapsed);
