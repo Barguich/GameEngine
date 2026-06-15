@@ -9,6 +9,7 @@
 /build/
 /target/
 /out/
+.classpath
 
 # --- IDE (IntelliJ, Eclipse, VS Code) ---
 .idea/
