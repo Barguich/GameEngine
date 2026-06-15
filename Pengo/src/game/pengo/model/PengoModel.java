@@ -16,6 +16,10 @@ public class PengoModel extends Model {
 
     private boolean doubleScore;
     private long doubleScoreRemaining;
+    //la vibrations des entites quand le mur vibres
+    private boolean wallVibration;
+    private long wallVibrationRemaining;
+    private List<Entity> vibratingEntities;//liste partagée
 
     // Temps d'invincibilité après une collision avec un ennemi
     private long invincibleRemaining;
@@ -32,6 +36,10 @@ public class PengoModel extends Model {
         this.doubleScoreRemaining = 0;
 
         this.invincibleRemaining = 0;
+        //vibration false par defaut 
+        this.wallVibration = false;
+        this.wallVibrationRemaining = 0;
+        this.vibratingEntities = new ArrayList<Entity>();
     }
 
     public void setPlayer(PengoPlayer player) {
@@ -104,13 +112,24 @@ public class PengoModel extends Model {
             if (doubleScoreRemaining <= 0) {
                 doubleScore = false;
                 doubleScoreRemaining = 0;
+               
             }
         }
+        
 
         checkVictory();
 
         if (player != null && player.dead()) {
             lost = true;
+        }
+        if (wallVibration) {
+            wallVibrationRemaining -= elapsed;
+
+            if (wallVibrationRemaining <= 0) {
+                wallVibration = false;
+                wallVibrationRemaining = 0;
+                vibratingEntities.clear();
+            }
         }
     }
 
@@ -193,4 +212,31 @@ public class PengoModel extends Model {
     public boolean lost() {
         return lost;
     }
+    //cas de la vibration du mur 
+    public void startWallVibration(Entity source, long duration) {
+        assert source != null;
+        assert duration >= 0;
+
+        wallVibration = true;
+        wallVibrationRemaining = duration;
+
+        vibratingEntities.clear();
+
+        for (Entity e : entities()) {//si c un ennemy pres du mur ca doit vibrer 
+            if (e instanceof Enemy) {
+                if (e.distanceCenterToCenter(source) <= source.step().x() * 2) {
+                    vibratingEntities.add(e);
+                }
+            }
+        }
+    }
+
+    public boolean wallVibration() {
+        return wallVibration;
+    }
+
+    public boolean isVibrating(Entity e) {
+    	 return e != null && vibratingEntities.contains(e);
+    }
+    
 }

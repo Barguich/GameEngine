@@ -4,6 +4,7 @@ import engine.collision.Bounding;
 import engine.collision.Circle;
 import engine.model.Entity;
 
+
 public class PengoPlayer extends Entity {
 
     private int lives;
@@ -81,4 +82,21 @@ public class PengoPlayer extends Entity {
         double radius = Math.min(size.x(), size.y()) / 2.0;
         bounding.add(new Circle(center, radius));
     }
+  //collision du penguin avec le mur -> vibration du mur ;
+  	@Override
+  	public void collision(Entity e) {
+  	    super.collision(e);
+
+  	    if (e instanceof Wall && model instanceof PengoModel) {
+  	        ((PengoModel) model).startWallVibration(e, 1500);
+  	    }
+
+  	    if (e instanceof Enemy && model instanceof PengoModel) {
+  	        ((PengoModel) model).loseLife();
+  	    }
+
+  	    if (e instanceof FishBonus) {
+  	        ((FishBonus) e).consume(this);
+  	    }
+  	}
 }
