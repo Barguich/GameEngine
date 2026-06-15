@@ -4,8 +4,9 @@ package engine.geometry;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
-import engine.Picture;
+// import engine.Picture;
 import engine.model.Entity;
 import engine.Game;
 
@@ -47,6 +48,10 @@ public class Grid {
 	public Grid.Cell cellAt(Grid.Position p) {
 		int x = xAxis.normalize(p.x());
 		int y = yAxis.normalize(p.y());
+
+		if (Log.FINER)
+			Log.logger.log(Level.FINER, "cellAt: pos({0},{1}) -> cell[{2}][{3}]", new Object[] { p.x(), p.y(), x, y });
+
 		return this.grid[x][y];
 	}
 
@@ -175,8 +180,14 @@ public class Grid {
 		}
 
 		public void translate(Vector v) {
+			assert v != null;
 			x_ncell = xAxis.normalize(x_ncell + v.x());
 			y_ncell = yAxis.normalize(y_ncell + v.y());
+			if (Log.FINER)
+				Log.logger.log(Level.FINER,
+						"translate: +({0},{1}) -> ({2},{3})",
+						new Object[] { v.x(), v.y(), x_ncell, y_ncell });
+
 		}
 
 		public void moveNorth(int n_ncell) {
