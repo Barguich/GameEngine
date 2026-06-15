@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import engine.geometry.Vector;
 
 /**
  * Vector (engine.geometry) est une classe pure.
