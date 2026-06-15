@@ -1,9 +1,7 @@
 package engine.gal.aut;
 
-import engine.gal.GALBot;
 import engine.gal.State;
 import engine.model.Entity;
-import engine.model.Stunt;
 
 public class Automaton {
 
