@@ -1,18 +1,37 @@
 package engine.gal.aut;
 
-import java.util.List;
-
 import engine.gal.State;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-public class Transitions {
+public class Transitions implements iTransitions {
 
 	long serialVersionUID = 1L;
+	private Map<State, List<Transition>> transitions;
 
-	void add(Transition t) {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `add`");
+	public Transitions() {
+		transitions = new HashMap<>();
 	}
 
-	List<Transition> get(State state) {
-		return null;
+	public void add(Transition t) {
+		State source = t.source();
+		List<Transition> list = transitions.get(source);
+		if (list == null) {
+			list = new LinkedList<>();
+			transitions.put(source, list);
+
+		}
+		list.add(t);
+	}
+
+	public List<Transition> get(State state) {
+		List<Transition> list = transitions.get(state);
+		if (list == null) {
+			return new LinkedList<>();
+		}
+		return list;
+
 	}
 }

@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import engine.Game;
 import engine.geometry.Grid;
 import engine.geometry.ISU;
-import engine.model.Entity;
 
 /**
  * Entity : positionnement, déplacement, orientation, occupation de cellules

@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import engine.gal.arguments.Direction;
 
 /**
  * Direction : prédicats absolu/relatif et conversion en angle.

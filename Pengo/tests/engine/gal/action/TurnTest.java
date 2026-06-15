@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import engine.Game;
-import engine.gal.action.Turn;
 import engine.gal.arguments.Direction;
 import engine.model.Entity;
 

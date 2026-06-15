@@ -10,9 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import engine.Game;
-import engine.model.BasicStunt;
-import engine.model.Entity;
-import engine.model.Model;
 
 /**
  * BasicStunt : exécution des mouvements et changements d'orientation d'une

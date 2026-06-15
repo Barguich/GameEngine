@@ -1,5 +1,7 @@
 package engine.geometry;
 
+import java.util.logging.Level;
+
 public class Axis {
 	// FIELDS
 	final boolean onTorus;
@@ -82,10 +84,19 @@ public class Axis {
 	 * @implNote Look for the detail on internet.
 	 */
 	public double distance(double position1, double position2) {
+		if (Log.FINER)
+			Log.logger.log(Level.FINER,
+					"Distance: p1={0} p2={1} perimeter={2} torus={3}",
+					new Object[] { position1, position2, perimeter, onTorus });
+
 		double dist = Math.abs(position1 - position2);
 		if (onTorus && (dist >= this.halfPerimeter)) {
 			dist = this.perimeter - dist;
 		}
+
+		if (Log.FINER)
+			Log.logger.log(Level.FINER, "	d={0}", dist);
+
 		return dist;
 	}
 

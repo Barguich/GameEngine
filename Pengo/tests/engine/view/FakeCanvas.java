@@ -1,6 +1,5 @@
 package engine.view;
 
-import oop.graphics.BufferedImage;
 import oop.graphics.Canvas;
 
 /**

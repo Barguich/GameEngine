@@ -10,8 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import engine.Game;
-import engine.model.Entity;
-import engine.model.Model;
 
 /**
  * Model : gestion des entités (add/remove/clear), déplacement avec

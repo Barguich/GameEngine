@@ -5,7 +5,8 @@ import engine.model.Entity;
 
 public class Automaton {
 
-	 State initial;
+	private State initial;
+	private State current;
 	/**
 	 * @apiNote represents a collection of {@code Transition}
 	 * @implNote Transitions are ordered by the order in which they were added so
@@ -13,18 +14,26 @@ public class Automaton {
 	 * @implNote Choose your representation carefully to efficiently identify the
 	 *           potential transitions for triggering.
 	 */
-	 iTransitions transitions;
+	private iTransitions transitions;
+	private String name;
 
 	// CONSTRUCTOR
 
-	 Automaton(String name, State initial){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `Automaton`"); }
+	public Automaton(String name, State initial) {
+		this.name = name;
+		this.initial = initial;
+		this.current = initial;
+		this.transitions = new Transitions();
 
+	}
 	// BUILDER
 
 	/**
 	 * @apiNote add a transition to the automaton after the previous ones
 	 */
-	 void add(Transition t){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `add`"); }
+	public void add(Transition t) {
+		transitions.add(t);
+	}
 
 	// AUTOMATON STEP = TRIGGER A TRANSITION or FAIL and STAY IN THE SAME STATE
 
@@ -36,6 +45,33 @@ public class Automaton {
 	 *         the {@code bot}
 	 *         <LI>{@code false} if no transition can be taken.</LI>
 	 */
-	 boolean step(Entity e){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `step`"); }
+	public boolean step(Entity e) {
+		if (current == null) {
+			return false;
+
+		}
+		for (Transition t : transitions.get(current)) {
+			if (t.exec(e)) {
+				current = t.target();
+				return true;
+			}
+
+		}
+		return false;
+
+	}
+
+	public State initial() {
+		return initial;
+	}
+
+	public State current() {
+		return current;
+	}
+
+	public String name() {
+		return name;
+
+	}
 
 }

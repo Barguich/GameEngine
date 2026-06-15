@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import engine.geometry.Point;
-import engine.geometry.Vector;
 
 /**
  * Point est une classe pure. translated/vectorToward renvoient des copies,
