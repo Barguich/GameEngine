@@ -1,28 +1,131 @@
 package engine.gal.condition;
 
+import engine.gal.GALBot;
 import engine.gal.arguments.Category;
 import engine.gal.arguments.Direction;
+import engine.gal.aut.iGALAction;
+import engine.gal.aut.iGALCondition;
+import engine.geometry.Grid;
 import engine.model.Entity;
+import java.util.List;
+import javax.sql.rowset.CachedRowSet;
+import engine.model.Stunt;
+public class AtStep extends GALCondition {
 
-public class AtStep  {
+    private final Direction direction;
+    private final Category category;
 
-	int nbStep;
+    private final int nbStep;
 
-	// CONSTRUCTOR
+    // CONSTRUCTOR
+    public AtStep(Direction dir, Category cat, int nbStep) {
+        this.direction = dir;
+        this.category = cat;
+        this.nbStep = nbStep;
+    }
+    //constructeur sans direction
 
-	 AtStep(Direction dir, Category cat, int nbStep){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `AtStep`"); }
+    public AtStep(int nbStep, Category cat) {
+        this(Direction.F, cat, nbStep);
+    }
 
-	// EVAL
+    // EVAL
+    /**
+     * @apiNote check if the condition AtStep(...) is satisfied by the given
+     * entity
+     * @param e = the entity that does the evaluation
+     * @implNote AtStep(...) conditions are intensively used and must be
+     * efficient: efficiency is perhaps more important than accuracy.
+     * @implNote There is plenty room for optimization here in collaboration
+     * with the Model and the Bot.
+     */
+    public boolean eval(Entity e) {
+       // Grid grid = e.grid();
+        
+	   Grid.Position pos = e.position();
+     Grid grid=pos.grid();
+	 Grid.Position target=pos.copy();
+	   if (direction != Direction.H) {
+            int angle;
+            if (direction.isRelative()) {
+                angle = (e.orientation() + direction.toAngle() + 360) % 360;
+            } else {
+                angle = direction.toAngle();
+            }
+            int dx = 0;
+            int dy = 0;
+            switch (angle) {
+                case 0:
+                    dx = 1;
+                    dy = 0;
+                    break;
+                case 90:
+                    dx = 0;
+                    dy = -1;
+                    break;
+                case 180:
+                    dx = -1;
+                    dy = 0;
+                    break;
+                case 270:
+                    dx = 0;
+                    dy = 1;
+                    break;
+                default:
+                    dx = (int) Math.round(Math.cos(Math.toRadians(angle)));
+                    dy = -(int) Math.round(Math.sin(Math.toRadians(angle)));
+                    break;
 
-	/**
-	 * @apiNote check if the condition AtStep(...) is satisfied by the given entity
-	 * @param e = the entity that does the evaluation
-	 * @implNote AtStep(...) conditions are intensively used and must be efficient:
-	 *           efficiency is perhaps more important than accuracy.
-	 * @implNote There is plenty room for optimization here in collaboration with
-	 *           the Model and the Bot.
-	 */
+            }
+            target.translate(grid.new Vector(dx * nbStep, dy * nbStep));
 
-	 boolean eval(Entity e){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `eval`"); }
+        }
+        Grid.Cell cell = grid.cellAt(target);
+        return checkCategory(e, cell.entities());
+    }
+
+    private boolean checkCategory(Entity e, List<Entity> occupants) {
+        if (category == Category.Void) {
+            for (Entity candidate : occupants) {
+                if (candidate != e) {
+                    return false;
+                }
+            }
+
+        }
+        if (category == Category.Any) {
+            for (Entity candidate : occupants) {
+                if (candidate != e) {
+                    setSelected(e, candidate);
+                    return true;
+                }
+            }
+            return false;
+        }
+        for (Entity candidate : occupants) {
+            if (candidate == e) {
+                continue;
+            }
+            if (category.matches(candidate.category())) {
+                setSelected(e, candidate);
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    private static void setSelected(Entity e, Entity found) {
+       Stunt stunt=e.stunt();
+	   if(stunt instanceof GALBot galBot){
+		galBot.selectedEntity(found);
+	   }
+
+    }
+
+    @Override
+    public String toString() {
+        return "Step(" + direction + ", " + nbStep + ", " + category + ")";
+    }
 
 }
