@@ -3,7 +3,6 @@ package engine.gal.condition;
 import engine.gal.aut.iGALCondition;
 import engine.model.Entity;
 
-
 public class True implements iGALCondition {
 
 	// CONSTRUCTOR
@@ -14,8 +13,8 @@ public class True implements iGALCondition {
 	// EVAL
 	@Override
 	public boolean eval(Entity e) {
-	
+
 		return true;
 	}
-	
+
 }

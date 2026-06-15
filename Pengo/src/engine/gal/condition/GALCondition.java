@@ -4,12 +4,12 @@ import engine.gal.arguments.Category;
 import engine.gal.arguments.Direction;
 import engine.gal.aut.iGALCondition;
 
-public abstract class GALCondition implements iGALCondition  {
+public abstract class GALCondition implements iGALCondition {
 
-   protected  Direction direction;
-    protected Category category;
+   protected Direction direction;
+   protected Category category;
 
-    // CONSTANT
+   // CONSTANT
 
    public static final True TRUE = new True();
 }

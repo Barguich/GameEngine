@@ -3,30 +3,38 @@ package engine.gal;
 import engine.model.Entity;
 import engine.gal.aut.Automaton;
 
-public class GALBot  {
+public class GALBot {
 
 	// CONSTRUCTOR
 
-	 GALBot(Entity e){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `GALBot`"); }
+	GALBot(Entity e) {
+		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `GALBot`");
+	}
 
 	// ENTITY SELECTED BY CONDITON
 
-	 Entity selectedEndity;
+	Entity selectedEndity;
 
-	 void selectedEntity(Entity e){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `selectedEntity`"); }
+	void selectedEntity(Entity e) {
+		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `selectedEntity`");
+	}
 
-	Entity selected(){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `selected`"); }
+	Entity selected() {
+		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `selected`");
+	}
 
 	// AUTOMATON
 
-	 Automaton automaton;
+	Automaton automaton;
 
 	/**
 	 * @apiNote change the automaton of the Bot
 	 * @impNote Que devient l'état (State) du Bot ?
 	 * @param automaton
 	 */
-	 void set(Automaton automaton){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `set`"); }
+	void set(Automaton automaton) {
+		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `set`");
+	}
 
 	// TICK & COLLISION & COMPLETED
 
@@ -36,17 +44,21 @@ public class GALBot  {
 	 * @param elapsed is not used by the automaton
 	 */
 
-	 void tick(double elapsed){ throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `tick`"); }
+	void tick(double elapsed) {
+		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `tick`");
+	}
 
 	/**
 	 * @apiNote stops the current action and then queries the PLC to select a new
 	 *          action
 	 */
-	 void collision(Entity impactor, double elapsed_ms){}
+	void collision(Entity impactor, double elapsed_ms) {
+	}
 
 	/**
 	 * @apiNote notifies the Bot that the action of its Stunt is completed.
 	 */
-	 void completed(){}
+	void completed() {
+	}
 
 }

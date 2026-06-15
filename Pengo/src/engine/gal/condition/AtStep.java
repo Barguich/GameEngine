@@ -10,6 +10,7 @@ import engine.model.Entity;
 import java.util.List;
 import javax.sql.rowset.CachedRowSet;
 import engine.model.Stunt;
+
 public class AtStep extends GALCondition {
 
     private final Direction direction;
@@ -23,7 +24,7 @@ public class AtStep extends GALCondition {
         this.category = cat;
         this.nbStep = nbStep;
     }
-    //constructeur sans direction
+    // constructeur sans direction
 
     public AtStep(int nbStep, Category cat) {
         this(Direction.F, cat, nbStep);
@@ -32,20 +33,20 @@ public class AtStep extends GALCondition {
     // EVAL
     /**
      * @apiNote check if the condition AtStep(...) is satisfied by the given
-     * entity
+     *          entity
      * @param e = the entity that does the evaluation
      * @implNote AtStep(...) conditions are intensively used and must be
-     * efficient: efficiency is perhaps more important than accuracy.
+     *           efficient: efficiency is perhaps more important than accuracy.
      * @implNote There is plenty room for optimization here in collaboration
-     * with the Model and the Bot.
+     *           with the Model and the Bot.
      */
     public boolean eval(Entity e) {
-       // Grid grid = e.grid();
-        
-	   Grid.Position pos = e.position();
-     Grid grid=pos.grid();
-	 Grid.Position target=pos.copy();
-	   if (direction != Direction.H) {
+        // Grid grid = e.grid();
+
+        Grid.Position pos = e.position();
+        Grid grid = pos.grid();
+        Grid.Position target = pos.copy();
+        if (direction != Direction.H) {
             int angle;
             if (direction.isRelative()) {
                 angle = (e.orientation() + direction.toAngle() + 360) % 360;
@@ -116,10 +117,10 @@ public class AtStep extends GALCondition {
     }
 
     private static void setSelected(Entity e, Entity found) {
-       Stunt stunt=e.stunt();
-	   if(stunt instanceof GALBot galBot){
-		galBot.selectedEntity(found);
-	   }
+        Stunt stunt = e.stunt();
+        if (stunt instanceof GALBot galBot) {
+            galBot.selectedEntity(found);
+        }
 
     }
 

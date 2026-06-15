@@ -1,29 +1,31 @@
 package engine.gal.aut;
 
 import engine.gal.State;
+import engine.gal.action.GALAction;
+import engine.model.Entity;
 
 public class Transition {
 
 	// FIELDS
 
 	private State source;
-	 private iGALCondition condition;
-	 private iGALAction action;
-	 private State tgt;
+	private iGALCondition condition;
+	private iGALAction action;
+	private State tgt;
 
 	// CONSTRUCTOR
 
-	 public Transition(State source, iGALCondition condition, GALAction action, State target){ 
-		this.source=source;
-		this.tgt=target;
-		this.condition=condition;
-		
-
+	public Transition(State source, iGALCondition condition, GALAction action, State target) {
+		this.source = source;
+		this.tgt = target;
+		this.condition = condition;
 	}
-	public State source(){
+
+	public State source() {
 		return source;
 	}
-	public State target(){
+
+	public State target() {
 		return tgt;
 	}
 
@@ -43,10 +45,10 @@ public class Transition {
 	 *          figures (health, state, ...) and triggers the {@code Stunt} action
 	 * @return {@code true} if the condition is satisfied and the action can start
 	 */
-	 public boolean exec(Entity e){ 
-		if(!condition.eval(e))
+	public boolean exec(Entity e) {
+		if (!condition.eval(e))
 			return false;
-		if(action!=null)
+		if (action != null)
 			action.exec(e);
 		return true;
 	}
