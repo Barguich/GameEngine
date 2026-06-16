@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import engine.Game;
 import engine.model.Entity;
 import engine.model.Model;
+import game.pengo.model.PengoModel;
 import oop.graphics.Canvas;
 import oop.graphics.Graphics;
 
@@ -35,7 +36,7 @@ public class View implements Canvas.PaintListener {
 	}
 
 	public void update() {
-		if (followed == null && followed.center() == null) {
+		if (followed == null || followed.center() == null) {
 			return;
 		}
 
@@ -75,6 +76,13 @@ public class View implements Canvas.PaintListener {
 			}
 			int px = viewPort.toPixelX(canvas, e.center().x());
 			int py = viewPort.toPixelY(canvas, e.center().y());
+
+			// Vibration si PengoModel l'indique
+			if (model instanceof PengoModel pm && pm.isVibrating(e)) {
+				int shake = (int) (Math.random() * 5) - 2;
+				px += shake;
+				py += shake;
+			}
 			e.avatar().paint(g, px, py, scale);
 		}
 	}
