@@ -1,5 +1,6 @@
 package engine.gal.arguments;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -7,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-
 
 /**
  * Direction : prédicats absolu/relatif et conversion en angle.
@@ -72,8 +72,13 @@ class DirectionTest {
 		// (new Direction(name)) au lieu de chercher dans la map `directions` ;
 		// il ne renvoie donc PAS l'instance partagée Direction.N.
 		Direction n2 = Direction.N.canonical("N");
+		assertSame(Direction.N, n2);
+	}
 
-		assertNotSame(Direction.N, n2);
-		assertEquals("N", n2.name());
+	@Test
+	void directionNature() {
+		assertTrue(Direction.N.isAbsolute());
+		assertTrue(Direction.F.isRelative());
+		assertFalse(Direction.F.isAbsolute());
 	}
 }

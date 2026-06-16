@@ -52,7 +52,7 @@ public class Category {
     private String name;
     // FACTORY
 
-    public Category canonical(String name) {
+    public static Category canonical(String name) {
         return categories.get(name);
     }
 
@@ -63,6 +63,7 @@ public class Category {
     public Category(String name, int index) {
         this.name = name;
         this.index = index;
+        this.categories.put(name, this);
     }
 
     // SETTER
@@ -87,5 +88,9 @@ public class Category {
      */
     public boolean interactsWith(Category c) {
         return interaction[this.index][c.index];
+    }
+
+    public String name(){
+        return this.name;
     }
 }
