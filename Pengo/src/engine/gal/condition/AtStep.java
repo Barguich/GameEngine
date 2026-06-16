@@ -105,7 +105,7 @@ public class AtStep extends GALCondition {
             if (candidate == e) {
                 continue;
             }
-            if (category.category() == category) {
+            if (candidate.category() == category) {
                 setSelected(e, candidate);
                 return true;
             }
@@ -115,11 +115,10 @@ public class AtStep extends GALCondition {
     }
 
     private static void setSelected(Entity e, Entity found) {
-        Stunt stunt = e.stunt();
-        if (e.bot() instanceof GALBot galBot) {
-            galBot.selectedEntity(found);
-        }
-
+        // Stunt stunt = e.stunt();
+        // if (e.bot() instanceof GALBot galBot) {
+        //     galBot.selectedEntity(found);
+        // }
     }
 
     @Override
