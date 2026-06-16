@@ -20,7 +20,7 @@ public interface iAllGALActions {
 	 *                    change celerity
 	 * @param duration_ms
 	 */
-	boolean startMoving(Direction direction, double intensity, double duration_ms);
+	public boolean startMoving(Direction direction, double intensity, double duration_ms);
 
 	// TURN
 
@@ -29,6 +29,6 @@ public interface iAllGALActions {
 	 * @param angle_deg = the desired angle
 	 * @param intensity = &in; [0,1] ≃ % of the maximal angular speed
 	 */
-	boolean startTurning(int angle_deg, double intensity);
+	public boolean startTurning(int angle_deg, double intensity);
 
 }
