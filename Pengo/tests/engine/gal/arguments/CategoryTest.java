@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-
 /**
  * Category : table d'interaction partagée (statique) entre catégories et
  * recherche canonique par nom.
@@ -53,16 +52,8 @@ class CategoryTest {
 	// ─── canonical ───────────────────────────────────────────────────────
 
 	@Test
-	void canonical_d_une_categorie_predefinie_renvoie_null() {
-		// Caractérisation : la map statique `categories` n'est jamais peuplée
-		// (le bloc static crée les constantes mais ne les enregistre pas dans
-		// la map), donc canonical(...) renvoie toujours null.
-		assertNull(Category.A.canonical("A"));
-	}
-
-	@Test
 	void canonical_d_un_nom_inconnu_renvoie_null() {
-		assertNull(Category.A.canonical("inconnu"));
+		assertEquals(Category.A, Category.canonical("A"));
 	}
 
 	// ─── constantes ──────────────────────────────────────────────────────
@@ -76,5 +67,42 @@ class CategoryTest {
 		for (Category c : all) {
 			assertEquals(false, c == null);
 		}
+	}
+
+	@Test
+	void interaction_est_desactivee_apres_reset() {
+		Category.A.setInteraction(Category.A, Category.C, true);
+		assertTrue(Category.A.interactsWith(Category.C));
+		Category.A.setInteraction(Category.A, Category.C, false);
+		assertFalse(Category.A.interactsWith(Category.C));
+	}
+
+	@Test
+	void categories_speciales_existent() {
+		assertEquals("@", Category.PLAYER.name());
+		assertEquals("#", Category.BOSS.name());
+		assertEquals("_", Category.ANY.name());
+		assertEquals("$", Category.SELECTED.name());
+	}
+
+	@Test
+	void interaction_n_est_pas_symetrique() {
+		Category.A.setInteraction(Category.A, Category.C, true);
+		assertTrue(Category.A.interactsWith(Category.C));
+		assertFalse(Category.C.interactsWith(Category.A));
+	}
+
+	@Test
+	void plusieurs_interactions_peuvent_coexister() {
+		Category.A.setInteraction(Category.A, Category.C, true);
+		Category.A.setInteraction(Category.A, Category.D, true);
+		assertTrue(Category.A.interactsWith(Category.C));
+		assertTrue(Category.A.interactsWith(Category.D));
+	}
+
+	@Test
+	void les_categories_sont_uniques() {
+		assertTrue(Category.A == Category.A);
+		assertFalse(Category.A == Category.C);
 	}
 }
