@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import engine.gal.State;
-import engine.gal.action.Mode;
 
 /**
  * Caractérisation : Automaton n'est pas encore implémenté.

@@ -95,7 +95,7 @@ public class MainEngine {
                         double s = SPEED_CM_S;
                         switch (keyCode) {
                             case VirtualKeyCodes.VK_UP:
-                            case VirtualKeyCodes.VK_W:
+                            case VirtualKeyCodes.VK_Z:
                                 player.setLinearSpeed(isu.new Vector(0, -s));
                                 player.turnTo(270);
                                 break;
@@ -105,7 +105,7 @@ public class MainEngine {
                                 player.turnTo(90);
                                 break;
                             case VirtualKeyCodes.VK_LEFT:
-                            case VirtualKeyCodes.VK_A:
+                            case VirtualKeyCodes.VK_Q:
                                 player.setLinearSpeed(isu.new Vector(-s, 0));
                                 player.turnTo(180);
                                 break;
@@ -126,9 +126,9 @@ public class MainEngine {
                             case VirtualKeyCodes.VK_DOWN:
                             case VirtualKeyCodes.VK_LEFT:
                             case VirtualKeyCodes.VK_RIGHT:
-                            case VirtualKeyCodes.VK_W:
+                            case VirtualKeyCodes.VK_Z:
                             case VirtualKeyCodes.VK_S:
-                            case VirtualKeyCodes.VK_A:
+                            case VirtualKeyCodes.VK_Q:
                             case VirtualKeyCodes.VK_D:
                                 player.stop();
                                 break;
