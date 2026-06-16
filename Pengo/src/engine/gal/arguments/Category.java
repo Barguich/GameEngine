@@ -93,4 +93,7 @@ public class Category {
     public String name(){
         return this.name;
     }
+     public String toString() {
+        return name;
+    }
 }

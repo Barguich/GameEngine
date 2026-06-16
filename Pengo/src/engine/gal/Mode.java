@@ -28,6 +28,7 @@ public class Mode {
 		modes.put("Running", Running);
 		modes.put("Searching", Searching);
 		modes.put("Sleeping", Sleeping);
+		modes.put("Waiting", Waiting);
 		modes.put("Walking", Walking);
 
 	}

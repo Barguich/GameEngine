@@ -42,6 +42,8 @@ public class GALBot extends Bot {
 	 */
 	@Override
 	public void tick(double elapsed) {
+		if (automaton == null)
+			return;
 		automaton.step(entity);
 	}
 
