@@ -1,0 +1,4 @@
+Pengo(S){
+	* (S):
+	| True ? Move(N) :(S)
+}
