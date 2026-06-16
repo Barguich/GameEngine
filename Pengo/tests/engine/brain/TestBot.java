@@ -1,4 +1,4 @@
-package test;
+package engine.brain;
 
 import static org.junit.jupiter.api.Assertions.*;
 

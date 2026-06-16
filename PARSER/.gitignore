@@ -5,11 +5,10 @@
 .Trashes
 
 # --- Dossiers de build (générés par Java/Maven/Gradle) ---
-/bin/
+bin/
 /build/
 /target/
 /out/
-.classpath
 
 # --- IDE (IntelliJ, Eclipse, VS Code) ---
 .idea/
@@ -17,10 +16,11 @@
 *.iml
 *.ipr
 .settings/
+.classpath
 .project
 .metadata/
 .vscode/
-lib/
+
 # --- Fichiers temporaires ---
 *.log
 *.tmp
