@@ -32,36 +32,39 @@ public class View implements Canvas.PaintListener {
 
 	@Override
 	public void visible(Canvas canvas) {
-		this.h_cm = canvas.getHeight();
-		this.w_cm = canvas.getWidth();
+	}
+
+	public void update() {
+		if (followed == null && followed.center() == null) {
+			return;
+		}
+
+		double vpW = viewPort.getWidth_cm();
+		double vpH = viewPort.getHeight_cm();
+		double mapW = Game.game().width_cm;
+		double mapH = Game.game().height_cm;
+
+		double x = followed.center().x() - vpW / 2.0;
+		double y = followed.center().y() - vpH / 2.0;
+
+		// Clamping Non-Tore
+		x = Math.max(0, Math.min(x, mapW - vpW));
+		y = Math.max(0, Math.min(y, mapH - vpH));
+
+		viewPort.MoveTo(x, y);
 	}
 
 	@Override
 	public void paint(Canvas canvas, Graphics g) {
-		
+
 		// On calcule l'origine idéale (centrée sur followed),
 		// puis on la clamp pour que le viewport reste dans la map
 
-		if (followed != null && followed.center() != null) {
-
-			double vpW = viewPort.getWidth_cm();
-			double vpH = viewPort.getHeight_cm();
-			double mapW = Game.game().width_cm;
-			double mapH = Game.game().height_cm;
-
-			double x = followed.center().x() - vpW / 2.0;
-			double y = followed.center().y() - vpH / 2.0;
-
-			// Clamping Non-Tore
-			x = Math.max(0, Math.min(x, mapW - vpW));
-			y = Math.max(0, Math.min(y, mapH - vpH));
-
-			viewPort.MoveTo(x, y);
-		}
 		g.setColor(Graphics.Colors.darkGray);
 		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		g.setColor(Graphics.Colors.black);
 		viewPort.fill(canvas, g);
+		viewPort.clip(canvas, g);
 		double scale = viewPort.scale(canvas);
 		for (Entity e : new ArrayList<>(model.getEntities())) {
 			if (e.center() == null || e.avatar() == null) {
@@ -78,8 +81,6 @@ public class View implements Canvas.PaintListener {
 
 	@Override
 	public void revoked(Canvas canvas) {
-		w_cm = 0;
-		h_cm = 0;
 	}
 
 }

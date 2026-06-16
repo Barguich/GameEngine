@@ -71,8 +71,12 @@ public class BasicStunt extends Stunt {
 
 	@Override
 	public void collision(Entity e) {
-		System.out.println("Collision avec " + e);
+	    if (e == null) {
+	        return;
+	    }
 
+	    System.out.println("Collision avec " + e);
+	    entity.stop();
 	}
 
 	@Override

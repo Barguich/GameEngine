@@ -2,6 +2,7 @@
 package engine.geometry;
 
 import java.io.PrintStream;
+import java.util.logging.Level;
 
 import engine.Game;
 
@@ -117,14 +118,26 @@ public class ISU {
 				if (Math.abs(dy) > yAxis.perimeter / 2)
 					dy -= Math.signum(dy) * yAxis.perimeter;
 			}
+
+			if (Log.FINER)
+				Log.logger.log(Level.FINER,
+						"mkVectorToward: dx={0} dy={1}", new Object[] { dx, dy });
+
 			return new Vector(dx, dy);
 		}
 
+		// CONVERSION
 		// CONVERSION
 		public Grid.Position toGridPosition() {
 			assert grid != null;
 			int x_ncell = (int) Math.floor(x_cm / game.cmPerCell);
 			int y_ncell = (int) Math.floor(y_cm / game.cmPerCell);
+
+			if (Log.FINER)
+				Log.logger.log(Level.FINER,
+						"toGridPosition: ({0},{1})cm -> cell({2},{3})",
+						new Object[] { x_cm, y_cm, x_ncell, y_ncell });
+
 			return grid.new Position(x_ncell, y_ncell);
 		}
 

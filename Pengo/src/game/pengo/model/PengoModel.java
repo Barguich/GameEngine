@@ -9,158 +9,234 @@ import engine.model.Model;
 
 public class PengoModel extends Model {
 
-	private PengoPlayer player;
-	private int score;
-	private boolean won;
-	private boolean lost;
+    private PengoPlayer player;
+    private int score;
+    private boolean won;
+    private boolean lost;
 
-	private boolean doubleScore;
-	private long doubleScoreRemaining;
+    private boolean doubleScore;
+    private long doubleScoreRemaining;
+    //la vibrations des entites quand le mur vibres
+    private boolean wallVibration;
+    private long wallVibrationRemaining;
+    private List<Entity> vibratingEntities;//liste partagée
 
-	public PengoModel(Grid grid) {
-		super(grid);
+    // Temps d'invincibilité après une collision avec un ennemi
+    private long invincibleRemaining;
 
-		this.player = null;
-		this.score = 0;
-		this.won = false;
-		this.lost = false;
+    public PengoModel(Grid grid) {
+        super(grid);
 
-		this.doubleScore = false;
-		this.doubleScoreRemaining = 0;
-	}
+        this.player = null;
+        this.score = 0;
+        this.won = false;
+        this.lost = false;
 
-	public void setPlayer(PengoPlayer player) {
-		assert player != null;
-		this.player = player;
+        this.doubleScore = false;
+        this.doubleScoreRemaining = 0;
 
-		if (!entities().contains(player)) {
-			add(player);
-		}
-	}
+        this.invincibleRemaining = 0;
+        //vibration false par defaut 
+        this.wallVibration = false;
+        this.wallVibrationRemaining = 0;
+        this.vibratingEntities = new ArrayList<Entity>();
+    }
 
-	public PengoPlayer player() {
-		return player;
-	}
+    public void setPlayer(PengoPlayer player) {
+        assert player != null;
+        this.player = player;
 
-	public int score() {
-		return score;
-	}
+        if (!entities().contains(player)) {
+            add(player);
+        }
+    }
 
-	public void addScore(int points) {
-		assert points >= 0;
+    public PengoPlayer player() {
+        return player;
+    }
 
-		if (doubleScore) {
-			score += points * 2;
-		} else {
-			score += points;
-		}
-	}
+    public int score() {
+        return score;
+    }
 
-	public void activateDoubleScore(long duration) {
-		assert duration >= 0;
+    public void addScore(int points) {
+        assert points >= 0;
 
-		doubleScore = true;
-		doubleScoreRemaining = duration;
-	}
+        if (doubleScore) {
+            score += points * 2;
+        } else {
+            score += points;
+        }
 
-	public boolean doubleScore() {
-		return doubleScore;
-	}
+        System.out.println("Score = " + score);
+    }
 
-	public void freezeEnemies(long duration) {
-		assert duration >= 0;
+    public void activateDoubleScore(long duration) {
+        assert duration >= 0;
 
-		for (Entity e : entities()) {
-			if (e instanceof Enemy) {
-				((Enemy) e).freeze(duration);
-			}
-		}
-	}
+        doubleScore = true;
+        doubleScoreRemaining = duration;
+    }
 
-	@Override
-	public void tick(long elapsed) {
-		assert elapsed >= 0;
+    public boolean doubleScore() {
+        return doubleScore;
+    }
 
-		super.tick(elapsed);
+    public void freezeEnemies(long duration) {
+        assert duration >= 0;
 
-		if (doubleScore) {
-			doubleScoreRemaining -= elapsed;
+        for (Entity e : entities()) {
+            if (e instanceof Enemy) {
+                ((Enemy) e).freeze(duration);
+            }
+        }
+    }
 
-			if (doubleScoreRemaining <= 0) {
-				doubleScore = false;
-				doubleScoreRemaining = 0;
-			}
-		}
+    @Override
+    public void tick(long elapsed) {
+        assert elapsed >= 0;
 
-		checkVictory();
+        super.tick(elapsed);
 
-		if (player != null && player.dead()) {
-			lost = true;
-		}
-	}
+        if (invincibleRemaining > 0) {
+            invincibleRemaining -= elapsed;
 
-	public void checkVictory() {
-		if (allEnemiesDead()) {
-			won = true;
-			return;
-		}
+            if (invincibleRemaining < 0) {
+                invincibleRemaining = 0;
+            }
+        }
 
-		if (diamondBlocksAligned()) {
-			won = true;
-		}
-	}
+        if (doubleScore) {
+            doubleScoreRemaining -= elapsed;
 
-	private boolean allEnemiesDead() {
-		for (Entity e : entities()) {
-			if (e instanceof Enemy) {
-				return false;
-			}
-		}
+            if (doubleScoreRemaining <= 0) {
+                doubleScore = false;
+                doubleScoreRemaining = 0;
+               
+            }
+        }
+        
 
-		return true;
-	}
+        checkVictory();
 
-	private boolean diamondBlocksAligned() {
-		List<DiamondBlock> diamonds = new ArrayList<DiamondBlock>();
+        if (player != null && player.dead()) {
+            lost = true;
+        }
+        if (wallVibration) {
+            wallVibrationRemaining -= elapsed;
 
-		for (Entity e : entities()) {
-			if (e instanceof DiamondBlock) {
-				diamonds.add((DiamondBlock) e);
-			}
-		}
+            if (wallVibrationRemaining <= 0) {
+                wallVibration = false;
+                wallVibrationRemaining = 0;
+                vibratingEntities.clear();
+            }
+        }
+    }
 
-		if (diamonds.size() < 3) {
-			return false;
-		}
+    public void checkVictory() {
+        if (allEnemiesDead()) {
+            won = true;
+            return;
+        }
 
-		Grid.Position p0 = diamonds.get(0).position();
-		Grid.Position p1 = diamonds.get(1).position();
-		Grid.Position p2 = diamonds.get(2).position();
+        if (diamondBlocksAligned()) {
+            won = true;
+        }
+    }
 
-		boolean sameX = p0.x() == p1.x() && p1.x() == p2.x();
+    private boolean allEnemiesDead() {
+        for (Entity e : entities()) {
+            if (e instanceof Enemy) {
+                return false;
+            }
+        }
 
-		boolean sameY = p0.y() == p1.y() && p1.y() == p2.y();
+        return true;
+    }
 
-		return sameX || sameY;
-	}
+    private boolean diamondBlocksAligned() {
+        List<DiamondBlock> diamonds = new ArrayList<DiamondBlock>();
 
-	public void loseLife() {
-		if (player == null) {
-			return;
-		}
+        for (Entity e : entities()) {
+            if (e instanceof DiamondBlock) {
+                diamonds.add((DiamondBlock) e);
+            }
+        }
 
-		player.loseLife();
+        if (diamonds.size() < 3) {
+            return false;
+        }
 
-		if (player.dead()) {
-			lost = true;
-		}
-	}
+        Grid.Position p0 = diamonds.get(0).position();
+        Grid.Position p1 = diamonds.get(1).position();
+        Grid.Position p2 = diamonds.get(2).position();
 
-	public boolean won() {
-		return won;
-	}
+        boolean sameX =
+            p0.x() == p1.x()
+         && p1.x() == p2.x();
 
-	public boolean lost() {
-		return lost;
-	}
+        boolean sameY =
+            p0.y() == p1.y()
+         && p1.y() == p2.y();
+
+        return sameX || sameY;
+    }
+
+    public void loseLife() {
+        if (player == null) {
+            return;
+        }
+
+        // Si le joueur est encore invincible, il ne perd pas de vie
+        if (invincibleRemaining > 0) {
+            return;
+        }
+
+        player.loseLife();
+
+        // 2 secondes d'invincibilité
+        invincibleRemaining = 2000;
+
+        System.out.println("Le joueur perd une vie");
+
+        if (player.dead()) {
+            lost = true;
+            System.out.println("GAME OVER");
+        }
+    }
+
+    public boolean won() {
+        return won;
+    }
+
+    public boolean lost() {
+        return lost;
+    }
+    //cas de la vibration du mur 
+    public void startWallVibration(Entity source, long duration) {
+        assert source != null;
+        assert duration >= 0;
+
+        wallVibration = true;
+        wallVibrationRemaining = duration;
+
+        vibratingEntities.clear();
+
+        for (Entity e : entities()) {//si c un ennemy pres du mur ca doit vibrer 
+            if (e instanceof Enemy) {
+                if (e.distanceCenterToCenter(source) <= source.step().x() * 2) {
+                    vibratingEntities.add(e);
+                }
+            }
+        }
+    }
+
+    public boolean wallVibration() {
+        return wallVibration;
+    }
+
+    public boolean isVibrating(Entity e) {
+    	 return e != null && vibratingEntities.contains(e);
+    }
+    
 }

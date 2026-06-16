@@ -31,11 +31,22 @@ public class Bounding {
 		return false;
 	}
 
-	public boolean intersects(Bounding bounding) {
-		assert bounding != null;
+	public boolean intersects(Bounding other) {
 
+		if (other == null) {
+			return false;
+		}
+
+		// Test rapide avec les Box
+		if (this.box() != null && other.box() != null) {
+			if (!this.box().overlaps(other.box())) {
+				return false;
+			}
+		}
+
+		// Test précis forme contre forme
 		for (iShape s1 : this.boundings) {
-			for (iShape s2 : bounding.boundings) {
+			for (iShape s2 : other.boundings) {
 				if (s1.intersects(s2)) {
 					return true;
 				}
