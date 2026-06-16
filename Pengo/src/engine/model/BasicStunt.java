@@ -3,8 +3,6 @@ package engine.model;
 import java.util.List;
 
 import engine.geometry.Grid.Cell;
-import engine.geometry.ISU;
-import engine.geometry.ISU.Vector;
 
 public class BasicStunt extends Stunt {
 	// Le stunt est responsable de l'exécution des mouvements
@@ -71,12 +69,12 @@ public class BasicStunt extends Stunt {
 
 	@Override
 	public void collision(Entity e) {
-	    if (e == null) {
-	        return;
-	    }
+		if (e == null) {
+			return;
+		}
 
-	    System.out.println("Collision avec " + e);
-	    entity.stop();
+		System.out.println("Collision avec " + e);
+		entity.stop();
 	}
 
 	@Override
