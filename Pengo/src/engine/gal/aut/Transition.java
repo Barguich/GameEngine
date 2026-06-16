@@ -19,6 +19,7 @@ public class Transition {
 		this.source = source;
 		this.tgt = target;
 		this.condition = condition;
+		this.action = action;
 	}
 
 	public State source() {
