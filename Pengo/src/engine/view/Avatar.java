@@ -31,4 +31,8 @@ public abstract class Avatar {
 	public void setView(View view) {
 		this.view = view;
 	}
+
+	public void buildBounding(engine.collision.Bounding bounding, engine.geometry.ISU.Coord center, engine.geometry.ISU.Dimension size) {
+		bounding.add(new engine.collision.Rect(center, size, entity.orientation()));
+	}
 }
