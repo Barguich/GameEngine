@@ -13,7 +13,6 @@ public class True implements iGALCondition {
 	// EVAL
 	@Override
 	public boolean eval(Entity e) {
-
 		return true;
 	}
 

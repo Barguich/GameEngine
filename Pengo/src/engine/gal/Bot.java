@@ -5,26 +5,23 @@ import engine.model.Stunt;
 
 public class Bot {
 
-	private Entity entity;
+	protected Entity entity;
+	private GALStunt stunt;
+	private State state;
+	private int healthPercent;
 
 	// CONSTRUCTOR
-
 	public Bot(Entity e) {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `Bot`");
+		this.entity = e;
+		this.healthPercent = 100;
 	}
 
 	// STUNT
-
-	GALStunt stunt;
-
-	void stunt(GALStunt stunt) {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `stunt`");
+	public void stunt(GALStunt stunt) {
+		this.stunt = stunt;
 	}
 
 	// STATE
-
-	State state;
-
 	/**
 	 * @apiNote The state can be used
 	 *          <UL>
@@ -33,12 +30,12 @@ public class Bot {
 	 *          </UL>
 	 * @return the state of mind of the Bot
 	 */
-	State state() {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `state`");
+	public State state() {
+		return state;
 	}
 
-	void state(State state) {
-		throw new UnsupportedOperationException("UNIMPLEMENTED METHOD `state`");
+	public void state(State state) {
+		this.state = state;
 	}
 
 	// HEALTH
@@ -46,7 +43,6 @@ public class Bot {
 	/**
 	 * @apiNote 0 &le; health &le; 100
 	 */
-	int healthPercent;
 
 	// TICK & COLLISION & COMPLETED
 
@@ -72,5 +68,9 @@ public class Bot {
 	 * @apiNote notifies the Bot that the action of its Stunt is completed.
 	 */
 	void completed() {
+	}
+
+	public GALStunt stunt() {
+		return stunt;
 	}
 }

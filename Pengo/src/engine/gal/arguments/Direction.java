@@ -49,8 +49,8 @@ public class Direction {
      *          parser encounters a direction.
      * @return the existing direction associated to a name if it already exists
      */
-    public Direction canonical(String name) {
-        return new Direction(name);
+    public static Direction canonical(String name) {
+        return directions.get(name);
     }
 
     // STATIC INITIALIZATION

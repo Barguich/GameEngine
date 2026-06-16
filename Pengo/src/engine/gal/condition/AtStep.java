@@ -4,11 +4,9 @@ import engine.gal.GALBot;
 import engine.gal.arguments.Category;
 import engine.gal.arguments.Direction;
 import engine.gal.aut.iGALAction;
-import engine.gal.aut.iGALCondition;
 import engine.geometry.Grid;
 import engine.model.Entity;
 import java.util.List;
-import javax.sql.rowset.CachedRowSet;
 import engine.model.Stunt;
 
 public class AtStep extends GALCondition {
@@ -86,15 +84,15 @@ public class AtStep extends GALCondition {
     }
 
     private boolean checkCategory(Entity e, List<Entity> occupants) {
-        if (category == Category.Void) {
+        if (category == Category.V) {
             for (Entity candidate : occupants) {
                 if (candidate != e) {
                     return false;
                 }
             }
-
+            return true;
         }
-        if (category == Category.Any) {
+        if (category == Category.ANY) {
             for (Entity candidate : occupants) {
                 if (candidate != e) {
                     setSelected(e, candidate);
@@ -107,7 +105,7 @@ public class AtStep extends GALCondition {
             if (candidate == e) {
                 continue;
             }
-            if (category.matches(candidate.category())) {
+            if (candidate.category() == category) {
                 setSelected(e, candidate);
                 return true;
             }
@@ -117,11 +115,10 @@ public class AtStep extends GALCondition {
     }
 
     private static void setSelected(Entity e, Entity found) {
-        Stunt stunt = e.stunt();
-        if (stunt instanceof GALBot galBot) {
-            galBot.selectedEntity(found);
-        }
-
+        // Stunt stunt = e.stunt();
+        // if (e.bot() instanceof GALBot galBot) {
+        //     galBot.selectedEntity(found);
+        // }
     }
 
     @Override
