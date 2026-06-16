@@ -119,4 +119,11 @@ class TurnTest {
 
 		assertEquals(90, e.orientation());
 	}
+	@Test
+void exec_avec_angle_zero_ne_change_pas_l_orientation() {
+    Entity e = new Entity("e");
+    e.turnTo(45);
+    new Turn(0).exec(e);
+    assertEquals(45, e.orientation());
+}
 }

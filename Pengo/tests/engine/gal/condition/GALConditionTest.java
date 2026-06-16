@@ -1,6 +1,11 @@
 package engine.gal.condition;
 
+import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -12,8 +17,32 @@ import org.junit.jupiter.api.Test;
  */
 class GALConditionTest {
 
-	@Test
-	void la_construction_echoue_via_l_initialisation_du_champ_TRUE() {
-		assertThrows(UnsupportedOperationException.class, () -> new GALCondition());
-	}
+	
+    @Test
+    void TRUE_est_non_null() {
+        assertNotNull(GALCondition.TRUE);
+    }
+
+    @Test
+    void TRUE_est_une_instance_de_True() {
+        assertInstanceOf(True.class, GALCondition.TRUE);
+    }
+
+    @Test
+    void TRUE_eval_retourne_toujours_true() {
+        assertTrue(GALCondition.TRUE.eval(null));
+    }
+
+    @Test
+    void TRUE_est_partage_meme_instance() {
+        // Flyweight : TRUE est une constante statique partagée
+        assertSame(GALCondition.TRUE, GALCondition.TRUE);
+    }
+
+    @Test
+    void une_sous_classe_concrete_est_instanciable() {
+        // GALCondition est abstraite — on passe par une sous-classe concrète
+        assertDoesNotThrow(() -> new True());
+        assertDoesNotThrow(() -> new Conjunction());
+    }
 }

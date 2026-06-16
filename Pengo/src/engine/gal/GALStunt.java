@@ -26,6 +26,7 @@ public class GALStunt extends Stunt implements iAllGALActions {
 
 	public GALStunt(Model model, Entity e) {
 		super(model, e);
+		this.entity=e;
 		step_cm = 10;
 		max_cmPer_ms = 0.1;
 		max_degPer_ms = 0.1;

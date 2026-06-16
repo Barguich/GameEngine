@@ -135,4 +135,7 @@ public class Direction {
     public String name() {
         return name;
     }
+     public String toString() {
+        return name;
+    }
 }
