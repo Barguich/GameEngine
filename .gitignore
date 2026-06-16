@@ -20,7 +20,7 @@
 .project
 .metadata/
 .vscode/
-
+lib/
 # --- Fichiers temporaires ---
 *.log
 *.tmp

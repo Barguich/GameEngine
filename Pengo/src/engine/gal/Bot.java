@@ -1,7 +1,6 @@
 package engine.gal;
 
 import engine.model.Entity;
-import engine.model.Stunt;
 
 public class Bot {
 
