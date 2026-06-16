@@ -88,4 +88,7 @@ public class Category {
     public boolean interactsWith(Category c) {
         return interaction[this.index][c.index];
     }
+     public String toString() {
+        return name;
+    }
 }

@@ -36,7 +36,7 @@ public class Mode {
 
 	// FACTORY
 
-	public Mode canonical(String name) {
+	public static Mode canonical(String name) {
 		return modes.get(name);
 	}
 
