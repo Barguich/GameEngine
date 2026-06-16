@@ -3,7 +3,7 @@ package engine.model;
 import oop.graphics.Canvas;
 import oop.tasks.Task;
 
-public class Ticker implements Runnable {
+public class Ticker implements oop.tasks.Runnable {
 
 	private static final int PERIOD_MS = 16;
 
@@ -30,7 +30,7 @@ public class Ticker implements Runnable {
 
 		model.tick(elapsed_ms);
 
-		Task.task().post((oop.tasks.Runnable) this, PERIOD_MS);
+		Task.task().post(this, PERIOD_MS);
 	}
 }
 

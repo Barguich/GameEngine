@@ -128,6 +128,8 @@ public class Entity {
 
 	public void setAvatar(Avatar avatar) {
 		this.avatar = avatar;
+		if (center != null && size != null)
+			setBounding();
 	}
 
 	public void setLinearSpeed(ISU.Vector v) {
@@ -307,7 +309,14 @@ public class Entity {
 	}
 
 	public void setBounding() {
+		if (center == null || size == null)
+			return;
 		this.bounding = new Bounding();
+		if (avatar != null) {
+			avatar.buildBounding(bounding, center, size);
+		} else {
+			bounding.add(new engine.collision.Rect(center, size, orientation_degree));
+		}
 	}
 
 	public void collision(Entity e) {
