@@ -11,6 +11,8 @@
 /out/
 .classpath
 *.jpg
+*.dot
+*.pdf
 
 # --- IDE (IntelliJ, Eclipse, VS Code) ---
 .idea/
