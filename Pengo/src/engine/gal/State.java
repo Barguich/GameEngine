@@ -42,4 +42,8 @@ public class State {
 		return Objects.hash(mode, id);
 	}
 
+	@Override
+	public String toString() {
+		return mode.name() + "_" + id;
+	}
 }
