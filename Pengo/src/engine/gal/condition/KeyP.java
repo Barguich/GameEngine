@@ -5,7 +5,6 @@ import engine.gal.arguments.Key;
 import engine.gal.aut.iGALCondition;
 import engine.model.Entity;
 
-/** @apiNote KeyP(K) : vraie tant que la touche K est enfoncée. */
 public class KeyP implements iGALCondition {
 
 	private final Key key;

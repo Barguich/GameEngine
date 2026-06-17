@@ -9,7 +9,7 @@ public class MainGame {
 
 	public static void main(String[] args) throws Exception {
 
-		String[] map = PengoMapLoader.readMap("rsrc/maps/lvl1.txt");
+		String[] map = PengoMapLoader.readMap("Pengo/rsrc/maps/lvl1.txt");
 
 		Game game = new Game(
 				PengoMapLoader.width(map),
