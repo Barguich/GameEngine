@@ -2,15 +2,16 @@ package engine.gal.condition;
 
 import engine.gal.aut.iGALCondition;
 import engine.model.Entity;
+
 import java.util.LinkedList;
 
-public class Conjunction extends GALCondition {
+public class Disjunction extends GALCondition {
 
-	// FIELDS
+	// FIELD
 	private LinkedList<iGALCondition> conditions;
 
 	// CONSTRUCTOR
-	public Conjunction() {
+	public Disjunction() {
 		this.conditions = new LinkedList<>();
 	}
 
@@ -22,9 +23,9 @@ public class Conjunction extends GALCondition {
 	// EVAL
 	public boolean eval(Entity e) {
 		for (iGALCondition c : conditions) {
-			if (c.eval(e) == false)
-				return false;
+			if (c.eval(e))
+				return true;
 		}
-		return true;
+		return false;
 	}
 }
