@@ -84,7 +84,7 @@ que vous pouvez parcourir en explorant ses champs pour y piocher les information
 La méthode `accept(Visitor)` de l'AST déclenche un parcours d'arbre et appelle les fonctions du Visitor
 sur chacun des noeuds de l'arbre.
 
-Pour générer les automates il _suffit_ donc de fournir l'implémentation de ces fonctions en respectant l'interface [IVisitor](../gal/ast/IVisitor.java).
+Pour générer les automates il _suffit_ donc de fournir l'implémentation de ces fonctions en respectant l'interface [IVisitor](../gal/ast/iVisitor.java).
 
 Voici trois exemples d'implémentations de l'interface `IVisitor`
 
@@ -96,4 +96,3 @@ Voici trois exemples d'implémentations de l'interface `IVisitor`
 
 ---
 	AUTHOR: Michaël PÉRIN, Polytech'Grenoble, Univ. Grenoble Alpes
-

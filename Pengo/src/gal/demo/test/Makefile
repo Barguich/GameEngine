@@ -1,14 +1,14 @@
-JAVAPROJECT = ../../../..
-CLASSPATH = $(JAVAPROJECT)/bin
+PROJECT = ../../../..
+CLASSPATH = $(PROJECT)/bin
 PARSER = gal.parser.Parser
 
 help:
 	@echo "1. INSTALL JavaCC with command: apt get install javacc"
 	@echo "2. RUN JavaCC + JavaCompiler with command: make parser"
-	@echo "3. PARSE file.gal with command: make file.txt, make file.aut.jpg, make file.ast.jpg"  
+	@echo "3. PARSE file.gal with command: make file.txt, make file.aut.jpg, make file.ast.jpg"
 
 parser:
-	@make -C $(JAVAPROJECT)/src/gal/parser/
+	@make -C $(PROJECT)/src/gal/parser/
 
 %.txt: %.gal 
 	@java -cp $(CLASSPATH) $(PARSER) -file $< -txt	

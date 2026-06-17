@@ -10,6 +10,7 @@
 /target/
 /out/
 .classpath
+*.jpg
 
 # --- IDE (IntelliJ, Eclipse, VS Code) ---
 .idea/

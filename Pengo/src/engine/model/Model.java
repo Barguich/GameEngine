@@ -123,7 +123,7 @@ public class Model {
 		// 1) Les Bots réfléchissent
 		for (Entity e : copy) {
 			if (entities.contains(e) && e.bot() != null) {
-				e.bot().think();
+				e.bot().tick(elapsed);
 			}
 		}
 

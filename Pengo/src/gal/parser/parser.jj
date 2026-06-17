@@ -611,7 +611,8 @@ Variable pVariable():
   ( i = pInteger() )?
   { var = new Variable(i); }
   ( "." 
- 	 (       < DIRVAR > { var.direction(); }
+ 	 (
+       < DIRVAR > { var.direction(); }
      |
        < CATVAR > { var.category(); }
      )
@@ -659,4 +660,3 @@ int pInteger():
 }
   
   
-

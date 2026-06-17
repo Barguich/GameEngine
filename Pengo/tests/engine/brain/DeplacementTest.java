@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import engine.Game;
-import engine.brain.AttackBot;
-import engine.brain.PatrolBot;
 import engine.geometry.Grid.Position;
 import engine.geometry.ISU;
 import engine.model.BasicStunt;
@@ -218,8 +216,8 @@ public class DeplacementTest {
         AttackBot enemyBot = new AttackBot(enemyStunt, player);
 
         enemy.setStunt(enemyStunt);
-        enemy.setBot(enemyBot);
 
+        enemyBot.think();
         model.tick(1000);
 
         assertEquals(4, enemy.position().x());
@@ -273,13 +271,19 @@ public class DeplacementTest {
 
         BasicStunt stunt = new BasicStunt(model, enemy);
         enemy.setStunt(stunt);
-        enemy.setBot(new PatrolBot(stunt));
+        PatrolBot bot = new PatrolBot(stunt);
 
         model.add(enemy);
 
+        bot.think();
         model.tick(1000);
         assertEquals(game.grid().new Position(5, 5), enemy.position());
 
+        for (Entity other : model.collisions(enemy)) {
+            bot.collision(other);
+        }
+
+        bot.think();
         model.tick(1000);
         assertEquals(game.grid().new Position(5, 4), enemy.position());
     }

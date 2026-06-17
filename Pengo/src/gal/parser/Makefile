@@ -1,6 +1,6 @@
-JAVAPROJECT = ../../../../JavaProject
-CLASS_PATH = $(JAVAPROJECT)/bin
-SRC = $(JAVAPROJECT)/src
+PROJECT = ../../..
+CLASS_PATH = $(PROJECT)/bin
+SRC = $(PROJECT)/src
 
 AST = $(SRC)/gal/ast
 UTIL = $(SRC)/gal/util

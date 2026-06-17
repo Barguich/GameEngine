@@ -29,7 +29,7 @@ class BotTest {
     void state_peut_etre_modifie() {
         Bot bot = new Bot(new Entity("player"));
         State walking = new State("Walking", 1);
-        bot.state(walking);
+        bot.setState(walking);
         assertEquals(walking, bot.state());
     }
 
@@ -38,8 +38,8 @@ class BotTest {
         Bot bot = new Bot(new Entity("player"));
         State s1 = new State("Walking", 1);
         State s2 = new State("Running", 2);
-        bot.state(s1);
-        bot.state(s2);
+        bot.setState(s1);
+        bot.setState(s2);
         assertEquals(s2, bot.state());
     }
 
@@ -94,11 +94,11 @@ class BotTest {
         State walking = new State("Walking", 1);
         State running = new State("Running", 2);
         State fighting = new State("Fighting", 3);
-        bot.state(walking);
+        bot.setState(walking);
         assertEquals(walking, bot.state());
-        bot.state(running);
+        bot.setState(running);
         assertEquals(running, bot.state());
-        bot.state(fighting);
+        bot.setState(fighting);
         assertEquals(fighting, bot.state());
     }
 
@@ -107,8 +107,8 @@ class BotTest {
     @Test
     void state_peut_etre_remis_a_null() {
         Bot bot = new Bot(new Entity("player"));
-        bot.state(new State("Walking", 1));
-        bot.state(null);
+        bot.setState(new State("Walking", 1));
+        bot.setState(null);
         assertNull(bot.state());
     }
 }

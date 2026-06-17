@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import engine.brain.Bot;
+import engine.gal.Bot;
 import engine.collision.Bounding;
 import engine.collision.Box;
 import engine.geometry.Grid;
@@ -361,7 +361,7 @@ public class Entity {
 		}
 
 		if (bot != null) {
-			bot.collision(e);
+			bot.collision(e, 0);
 		}
 	}
 
@@ -370,7 +370,7 @@ public class Entity {
 			stunt.done();
 
 		if (bot != null)
-			bot.done();
+			bot.completed();
 	}
 
 	// DEPLOY / OCCUPY / RETRACT

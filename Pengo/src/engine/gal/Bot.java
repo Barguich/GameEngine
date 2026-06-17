@@ -33,7 +33,7 @@ public class Bot {
 		return state;
 	}
 
-	public void state(State state) {
+	public void setState(State state) {
 		this.state = state;
 	}
 
@@ -49,7 +49,7 @@ public class Bot {
 	 * @apiNote wakes up the Bot so that it can take action
 	 * @param elapsed_ms
 	 */
-	void tick(double elapsed_ms) {
+	public void tick(double elapsed_ms) {
 
 	}
 
@@ -59,14 +59,14 @@ public class Bot {
 	 * @param impactor
 	 * @param elapsed_ms
 	 */
-	void collision(Entity impactor, double elapsed_ms) {
+	public void collision(Entity impactor, double elapsed_ms) {
 
 	}
 
 	/**
 	 * @apiNote notifies the Bot that the action of its Stunt is completed.
 	 */
-	void completed() {
+	public void completed() {
 	}
 
 	public GALStunt stunt() {

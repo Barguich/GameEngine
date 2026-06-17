@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import engine.Game;
 import engine.geometry.Grid;
 import engine.model.BasicStunt;
-import engine.brain.AttackBot;
-import engine.brain.PatrolBot;
 
 import game.pengo.model.*;
 
@@ -31,10 +29,11 @@ public class TestBot {
 
         BasicStunt stunt = new BasicStunt(model, enemy);
         enemy.setStunt(stunt);
-        enemy.setBot(new PatrolBot(stunt));
+        PatrolBot bot = new PatrolBot(stunt);
 
         model.add(enemy);
 
+        bot.think();
         model.tick(1000);
 
         assertEquals(grid.new Position(6, 5), enemy.position());
@@ -51,10 +50,11 @@ public class TestBot {
 
         BasicStunt stunt = new BasicStunt(model, enemy);
         enemy.setStunt(stunt);
-        enemy.setBot(new PatrolBot(stunt));
+        PatrolBot bot = new PatrolBot(stunt);
 
         model.add(enemy);
 
+        bot.think();
         model.tick(1000);
 
         assertEquals(grid.new Position(0, 5), enemy.position());
@@ -76,10 +76,11 @@ public class TestBot {
 
         BasicStunt stunt = new BasicStunt(model, enemy);
         enemy.setStunt(stunt);
-        enemy.setBot(new AttackBot(stunt, player));
+        AttackBot bot = new AttackBot(stunt, player);
 
         model.add(enemy);
 
+        bot.think();
         model.tick(1000);
 
         assertFalse(model.lost());
@@ -106,10 +107,11 @@ public class TestBot {
 
         BasicStunt stunt = new BasicStunt(model, enemy);
         enemy.setStunt(stunt);
-        enemy.setBot(new AttackBot(stunt, player));
+        AttackBot bot = new AttackBot(stunt, player);
 
         model.add(enemy);
 
+        bot.think();
         model.tick(1000);
 
         assertTrue(enemy.frozen());
