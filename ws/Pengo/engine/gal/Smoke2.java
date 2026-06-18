@@ -1,4 +1,4 @@
-package gal.parser_engine;
+package gal;
 
 import java.util.List;
 

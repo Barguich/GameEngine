@@ -2,8 +2,8 @@ package gal_engine;
 
 import java.util.List;
 
-import action.iAllGALActions;
-import arguments.Direction;
+import gal.action.iAllGALActions;
+import gal.arguments.Direction;
 import geometry.ISU;
 import geometry.Grid.Cell;
 import model.Entity;

@@ -1,4 +1,4 @@
-package action;
+package gal.action;
 
 import model.Entity;
 

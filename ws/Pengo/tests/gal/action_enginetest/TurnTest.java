@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import action.Turn;
-import arguments.Direction;
+import gal.action.Turn;
+import gal.arguments.Direction;
 import engine.Game;
 import model.Entity;
 

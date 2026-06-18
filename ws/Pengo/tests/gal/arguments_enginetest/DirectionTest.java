@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.junit.jupiter.api.Test;
 
-import arguments.Direction;
+import gal.arguments.Direction;
 
 /**
  * Direction : prédicats absolu/relatif et conversion en angle.

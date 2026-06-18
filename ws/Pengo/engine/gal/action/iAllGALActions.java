@@ -1,6 +1,6 @@
-package action;
+package gal.action;
 
-import arguments.Direction;
+import gal.arguments.Direction;
 
 public interface iAllGALActions {
 

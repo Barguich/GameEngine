@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import arguments.Category;
+import gal.arguments.Category;
 
 /**
  * Category : table d'interaction partagée (statique) entre catégories et
