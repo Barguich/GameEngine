@@ -6,16 +6,16 @@ import org.junit.jupiter.api.Test;
 
 import brain.AttackBot;
 import engine.Game;
-import game.pengo.model.Enemy;
-import game.pengo.model.IceBlock;
-import game.pengo.model.PengoPlayer;
-import game.pengo.model.PengoModel;
-import game.pengo.model.Wall;
 import geometry.ISU;
 import geometry.Grid.Position;
 import model.BasicStunt;
 import model.Entity;
 import model.Model;
+import pengo.model.Enemy;
+import pengo.model.IceBlock;
+import pengo.model.PengoModel;
+import pengo.model.PengoPlayer;
+import pengo.model.Wall;
 
 public class DeplacementTest {
 

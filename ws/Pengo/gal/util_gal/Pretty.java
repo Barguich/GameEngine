@@ -1,4 +1,4 @@
-package gal.util;
+package util_gal;
 
 import java.util.List;
 import java.util.ListIterator;

@@ -10,15 +10,15 @@ import arguments.Category;
 import collision.Bounding;
 import collision.Box;
 import gal_engine.Bot;
-import game.pengo.model.PengoModel;
-import game.pengo.model.PengoPlayer;
 import geometry.Grid;
 import geometry.ISU;
+import pengo.model.Enemy;
+import pengo.model.FishBonus;
+import pengo.model.GoldBlock;
+import pengo.model.IceBlock;
+import pengo.model.PengoModel;
+import pengo.model.PengoPlayer;
 import view.Avatar;
-import game.pengo.model.Enemy;
-import game.pengo.model.GoldBlock;
-import game.pengo.model.FishBonus;
-import game.pengo.model.IceBlock;
 
 public class Entity {
 

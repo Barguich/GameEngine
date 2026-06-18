@@ -1,4 +1,4 @@
-package game.pengo.model;
+package pengo.model;
 
 import java.util.ArrayList;
 import java.util.List;

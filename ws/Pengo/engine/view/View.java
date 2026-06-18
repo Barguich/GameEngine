@@ -3,11 +3,11 @@ package view;
 import java.util.ArrayList;
 
 import engine.Game;
-import game.pengo.model.PengoModel;
 import model.Entity;
 import model.Model;
 import oop.graphics.Canvas;
 import oop.graphics.Graphics;
+import pengo.model.PengoModel;
 
 public class View implements Canvas.PaintListener {
 

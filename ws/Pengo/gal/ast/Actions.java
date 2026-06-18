@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import gal.util.Pretty;
+import util_gal.Pretty;
 
 public class Actions extends Node {
 

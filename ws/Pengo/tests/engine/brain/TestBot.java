@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import brain.AttackBot;
 import brain.PatrolBot;
 import engine.Game;
-import game.pengo.model.*;
 import geometry.Grid;
 import model.BasicStunt;
+import pengo.model.*;
 
 public class TestBot {
 

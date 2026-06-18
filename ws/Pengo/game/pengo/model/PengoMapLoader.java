@@ -1,4 +1,4 @@
-package game.pengo.model;
+package pengo.model;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -10,7 +10,7 @@ import action.Move;
 import ast.*;
 import gal.aut.iGALCondition;
 import gal.condition.True;
-import gal.parser.Parser;
+import parser.Parser;
 
 public class GalBuilder implements iVisitor {
 	public static List<gal.aut.Automaton> loadAutomata(String filename) throws Exception {

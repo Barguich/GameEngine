@@ -1,4 +1,4 @@
-package game.pengo.model;
+package pengo.model;
 
 import collision.Bounding;
 import collision.Rect;
