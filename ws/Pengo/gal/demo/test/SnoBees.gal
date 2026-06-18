@@ -1,0 +1,5 @@
+Patrol(Patrol){
+    * (Patrol)
+    | Step(F,V) ? Move(F) :(Patrol)
+    | True ? Turn(R) :(Patrol)
+}
