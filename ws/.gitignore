@@ -1,0 +1,28 @@
+# --- Fichiers système macOS ---
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# --- Dossiers de build (générés par Java/Maven/Gradle) ---
+/bin/
+/build/
+/target/
+/out/
+
+# --- IDE (IntelliJ, Eclipse, VS Code) ---
+.idea/
+*.iws
+*.iml
+*.ipr
+.settings/
+.classpath
+.project
+.metadata/
+.vscode/
+
+# --- Fichiers temporaires ---
+*.log
+*.tmp
+*.bak
+*.class
