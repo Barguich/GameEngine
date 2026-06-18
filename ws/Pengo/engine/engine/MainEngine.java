@@ -87,7 +87,7 @@ public class MainEngine {
                 Canvas canvas = (Canvas) Task.task().find("canvas");
                 canvas.set(view);
                 new Painter(canvas).run();
-                new Ticker(model, canvas,view).run();
+                new Ticker(model,view).run();
 
                 canvas.set(new Canvas.KeyListener() {
                     @Override
