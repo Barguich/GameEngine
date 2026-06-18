@@ -80,13 +80,13 @@ class BoundingTest {
 
 	@Test
 	void intersects_bounding_vrai_si_un_couple_de_formes_touche() {
-		Bounding b1 = new Bounding();
-		b1.add(new FakeShape(true, new Box(0, 0, 1, 1)));
+	    Bounding b1 = new Bounding();
+	    b1.add(new FakeShape(true, new Box(0, 0, 2, 2)));
 
-		Bounding b2 = new Bounding();
-		b2.add(new FakeShape(false, new Box(5, 5, 6, 6)));
+	    Bounding b2 = new Bounding();
+	    b2.add(new FakeShape(false, new Box(1, 1, 3, 3)));
 
-		assertTrue(b1.intersects(b2));
+	    assertTrue(b1.intersects(b2));
 	}
 
 	@Test

@@ -207,7 +207,7 @@ public class TestBot {
 
     @Test
     public void testMapLoader() throws Exception {
-        String[] map = PengoMapLoader.readMap("rsrc/maps/lvl1.txt");
+        String[] map = PengoMapLoader.readMap("Asset/rsrc/maps/lvl1.txt");
 
         assertEquals(10, PengoMapLoader.width(map));
         assertEquals(5, PengoMapLoader.height(map));

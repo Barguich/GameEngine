@@ -4,68 +4,74 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Bounding {
-	// FIELDS
-	private final Set<iShape> boundings;
 
-	// CONSTRUCTOR
-	public Bounding() {
-		this.boundings = new HashSet<iShape>();
-	}
+    private final Set<iShape> boundings;
 
-	// BUILDER
-	public void add(iShape shape) {
-		assert shape != null;
-		boundings.add(shape);
-	}
+    public Bounding() {
+        this.boundings = new HashSet<iShape>();
+    }
 
-	// INTERSECTION
-	public boolean intersects(iShape shape) {
-		assert shape != null;
+    public void add(iShape shape) {
+        assert shape != null;
+        boundings.add(shape);
+    }
 
-		for (iShape s : boundings) {
-			if (s.intersects(shape)) {
-				return true;
-			}
-		}
+    public boolean isEmpty() {
+        return boundings.isEmpty();
+    }
 
-		return false;
-	}
+    public Box box() {
+        Box result = null;
 
-	public boolean intersects(Bounding other) {
+        for (iShape shape : boundings) {
+            Box b = shape.box();
 
-		if (other == null) {
-			return false;
-		}
+            if (result == null) {
+                result = b;
+            } else {
+                result = Box.union(result, b);
+            }
+        }
 
-		// Test rapide avec les Box
-		if (this.box() != null && other.box() != null) {
-			if (!this.box().overlaps(other.box())) {
-				return false;
-			}
-		}
+        return result;
+    }
 
-		// Test précis forme contre forme
-		for (iShape s1 : this.boundings) {
-			for (iShape s2 : other.boundings) {
-				if (s1.intersects(s2)) {
-					return true;
-				}
-			}
-		}
+    public boolean intersects(iShape shape) {
+        assert shape != null;
 
-		return false;
-	}
+        for (iShape s : boundings) {
+            if (s.intersects(shape)) {
+                return true;
+            }
+        }
 
-	public Box box() {
-		Box result = null;
-		for (iShape shape : boundings) {
-			Box b = shape.box();
-			if (result == null) {
-				result = b;
-			} else {
-				result = Box.union(result, b);
-			}
-		}
-		return result;
-	}
+        return false;
+    }
+
+    public boolean intersects(Bounding other) {
+        if (other == null) {
+            return false;
+        }
+
+        Box b1 = this.box();
+        Box b2 = other.box();
+
+        if (b1 == null || b2 == null) {
+            return false;
+        }
+
+        if (!b1.overlaps(b2)) {
+            return false;
+        }
+
+        for (iShape s1 : this.boundings) {
+            for (iShape s2 : other.boundings) {
+                if (s1.intersects(s2)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

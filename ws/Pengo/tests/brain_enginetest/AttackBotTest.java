@@ -68,7 +68,7 @@ class AttackBotTest {
 	@Test
 	void target_au_nord_avec_meme_x_fait_marcher_vers_le_nord() {
 		Entity me = entityAt("me", 5, 5);
-		Entity target = entityAt("target", 5, 8);
+		Entity target = entityAt("target", 5, 2);
 		BasicStunt stunt = new BasicStunt(model, me);
 		me.setStunt(stunt);
 
@@ -81,8 +81,8 @@ class AttackBotTest {
 
 	@Test
 	void target_au_sud_avec_meme_x_fait_marcher_vers_le_sud() {
-		Entity me = entityAt("me", 5, 8);
-		Entity target = entityAt("target", 5, 5);
+		Entity me = entityAt("me", 5, 5);
+		Entity target = entityAt("target", 5, 8);
 		BasicStunt stunt = new BasicStunt(model, me);
 		me.setStunt(stunt);
 

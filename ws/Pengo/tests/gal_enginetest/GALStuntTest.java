@@ -309,11 +309,21 @@ void done_remet_action_a_zero_et_arrete_l_entite() {
     // ─── update ──────────────────────────────────────────────────────────
 
     @Test
-    void update_ne_fait_rien() {
+    void update_decremente_la_duree_de_l_action_en_cours() {
         stunt.startMoving(Direction.E, 1.0, 100);
 
         stunt.update(16);
 
-        assertEquals(100, stunt.actionDuration(), DELTA);
+        assertEquals(84, stunt.actionDuration(), DELTA);
+    }
+    @Test
+    void update_termine_l_action_si_le_temps_est_suffisant() {
+        stunt.startMoving(Direction.E, 1.0, 100);
+
+        stunt.update(100);
+
+        assertEquals(0, stunt.actionDuration(), DELTA);
+        assertEquals(0, entity.linearSpeed().x(), DELTA);
+        assertEquals(0, entity.linearSpeed().y(), DELTA);
     }
 }
