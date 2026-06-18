@@ -1,4 +1,4 @@
-package gal.aut_engimetest;
+package gal.aut_enginetest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
