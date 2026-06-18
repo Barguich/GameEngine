@@ -61,7 +61,7 @@ public class MainGALTest {
 				Canvas canvas = (Canvas) Task.task().find("canvas");
 				canvas.set(view);
 				new Painter(canvas).run();
-				new Ticker(model, canvas).run();
+				new Ticker(model, view).run();
 			});
 
 		} catch (Exception e) {
