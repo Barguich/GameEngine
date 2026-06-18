@@ -1,6 +1,5 @@
 package model;
 
-import oop.graphics.Canvas;
 import oop.tasks.Task;
 import view.View;
 
@@ -11,13 +10,11 @@ public class Ticker implements oop.tasks.Runnable {
 	private final View view;
 
 	private Model model;
-	private Canvas canvas;
 	private long lastTime;
 	private boolean firstRun = true;
 
-	public Ticker(Model model, Canvas canvas,View view) {
+	public Ticker(Model model, View view) {
 		this.model = model;
-		this.canvas = canvas;
 		this.lastTime = System.currentTimeMillis();
 		this.view = view;
 	}
