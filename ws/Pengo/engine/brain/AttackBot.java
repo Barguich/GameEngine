@@ -1,6 +1,5 @@
 package brain;
 
-import model.BasicStunt;
 import model.Entity;
 import model.Stunt;
 
