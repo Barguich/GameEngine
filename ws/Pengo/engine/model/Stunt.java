@@ -27,5 +27,6 @@ public abstract class Stunt {
 	public abstract void done() ;
 	public abstract void update(long elapsed);
 	public  abstract  void collision(List<Entity> others) ;
+	public abstract void walk(int degree);
 
 }

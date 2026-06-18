@@ -2,13 +2,14 @@ package brain;
 
 import model.BasicStunt;
 import model.Entity;
+import model.Stunt;
 
 public class AttackBot extends Bot {
 
 	private boolean moving;
 	private Entity target;
 
-	public AttackBot(BasicStunt stunt, Entity target) {
+	public AttackBot(Stunt stunt, Entity target) {
 		super(stunt);
 
 		assert target != null;

@@ -167,8 +167,36 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		action_ms = 0;
 	}
 
+	
+
 	@Override
 	public void update(long elapsed) {
+	    tick(elapsed);
+	}
+
+	@Override
+	public void walk(int degree) {
+	    Direction dir;
+
+	    degree = ((degree % 360) + 360) % 360;
+
+	    if (degree == 0) {
+	        dir = Direction.E;
+	        entity.turnTo(0);
+	    } else if (degree == 90) {
+	        dir = Direction.S;
+	        entity.turnTo(90);
+	    } else if (degree == 180) {
+	        dir = Direction.W;
+	        entity.turnTo(180);
+	    } else if (degree == 270) {
+	        dir = Direction.N;
+	        entity.turnTo(270);
+	    } else {
+	        return;
+	    }
+
+	    startMoving(dir, 1.0, 1000.0);
 	}
 
 }

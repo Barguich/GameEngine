@@ -6,9 +6,9 @@ import model.Stunt;
 
 public abstract class Bot {
 
-    protected BasicStunt stunt;
+    protected Stunt stunt;
 
-    public Bot(BasicStunt stunt) {
+    public Bot(Stunt stunt) {
         this.stunt = stunt;
     }
 

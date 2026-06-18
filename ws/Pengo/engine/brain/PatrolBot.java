@@ -2,6 +2,7 @@ package brain;
 
 import model.BasicStunt;
 import model.Entity;
+import model.Stunt;
 
 public class PatrolBot extends Bot {
 
@@ -9,7 +10,7 @@ public class PatrolBot extends Bot {
     private int index;
     private boolean moving;
 
-    public PatrolBot(BasicStunt stunt) {
+    public PatrolBot(Stunt stunt) {
         super(stunt);
         this.index = 0;
         this.moving = false;

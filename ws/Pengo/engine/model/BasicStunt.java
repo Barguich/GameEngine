@@ -34,6 +34,7 @@ public class BasicStunt extends Stunt {
 
 	}
 
+	@Override
 	public void walk(int degree) {
 
 		double speed = entity.step().x(); // 1 cellule par seconde
