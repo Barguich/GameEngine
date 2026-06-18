@@ -1,4 +1,4 @@
-package game;
+package Main;
 
 import engine.Game;
 import engine.geometry.Grid;

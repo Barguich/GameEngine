@@ -1,4 +1,4 @@
-package game.testSprite;
+package Main;
 
 import java.awt.Dimension;
 
@@ -12,6 +12,7 @@ import engine.model.Model;
 import engine.view.Painter;
 import engine.view.View;
 import engine.view.ViewPort;
+import game.testSprite.FixedMap;
 
 public class Main {
 	public static void main(String[] args) {

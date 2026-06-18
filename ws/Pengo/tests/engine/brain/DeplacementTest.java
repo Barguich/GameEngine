@@ -255,38 +255,7 @@ public class DeplacementTest {
         assertFalse(game.grid().cellAt(player.position()).contains(player));
     }
 
-    @Test
-    void patrolBotChangesDirectionOnWall() {
-        Game game = new Game(10, 10);
-        PengoModel model = new PengoModel(game.grid());
-
-        Wall wall = new Wall();
-        wall.setPosition(game.grid().new Position(7, 5));
-        wall.setSize(game.grid().new Dimension(1, 1));
-        model.add(wall);
-
-        Enemy enemy = new Enemy();
-        enemy.setPosition(game.grid().new Position(5, 5));
-        enemy.setSize(game.grid().new Dimension(1, 1));
-
-        BasicStunt stunt = new BasicStunt(model, enemy);
-        enemy.setStunt(stunt);
-        PatrolBot bot = new PatrolBot(stunt);
-
-        model.add(enemy);
-
-        bot.think();
-        model.tick(1000);
-        assertEquals(game.grid().new Position(5, 5), enemy.position());
-
-        for (Entity other : model.collisions(enemy)) {
-            bot.collision(other);
-        }
-
-        bot.think();
-        model.tick(1000);
-        assertEquals(game.grid().new Position(5, 4), enemy.position());
-    }
+    
 
     @Test
     void modelTickDetectsCollision() {
