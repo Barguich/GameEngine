@@ -1,10 +1,10 @@
 package gal.action_enginetest;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +50,13 @@ class ModeTest {
     }
 
     @Test
-    void canonical_nom_inconnu_retourne_null() {
-        assertNull(Mode.canonical("Inexistant"));
+    void canonical_nom_inconnu_cree_un_nouveau_mode() {
+        Mode m = Mode.canonical("Inexistant");
+
+        assertNotNull(m);
+        assertEquals("Inexistant", m.name());
+
+        // Vérifie qu'on récupère la même instance ensuite
+        assertSame(m, Mode.canonical("Inexistant"));
     }
 }
