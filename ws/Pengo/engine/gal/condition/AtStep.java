@@ -4,8 +4,8 @@ import model.Entity;
 
 import java.util.List;
 
-import arguments.Category;
-import arguments.Direction;
+import gal.arguments.Category;
+import gal.arguments.Direction;
 import geometry.Grid;
 
 public class AtStep extends GALCondition {

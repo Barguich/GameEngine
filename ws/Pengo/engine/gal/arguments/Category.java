@@ -1,4 +1,4 @@
-package arguments;
+package gal.arguments;
 
 import java.util.HashMap;
 import java.util.Map;

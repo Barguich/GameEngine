@@ -1,6 +1,6 @@
 package gal_engine;
 
-import arguments.Key;
+import gal.arguments.Key;
 
 public class Keyboard {
 

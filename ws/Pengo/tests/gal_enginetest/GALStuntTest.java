@@ -10,7 +10,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import arguments.Direction;
+import gal.arguments.Direction;
 import engine.Game;
 import gal_engine.GALStunt;
 import model.Entity;

@@ -1,6 +1,6 @@
 package gal.aut;
 
-import action.GALAction;
+import gal.action.*;
 import gal_engine.State;
 import model.Entity;
 

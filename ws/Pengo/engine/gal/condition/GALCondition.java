@@ -1,7 +1,7 @@
 package gal.condition;
 
-import arguments.Category;
-import arguments.Direction;
+import gal.arguments.Category;
+import gal.arguments.Direction;
 import gal.aut.iGALCondition;
 
 public abstract class GALCondition implements iGALCondition {

@@ -1,12 +1,11 @@
-package gal.parser_engine;
+package gal;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import action.GALAction;
-import action.Move;
+import gal.action.*;
 import ast.*;
 import gal.aut.iGALCondition;
 import gal.condition.True;
@@ -203,10 +202,10 @@ public class GalBuilder implements iVisitor {
 	private GALAction buildAction(FunCall fc, List<Object> parameters) {
 		switch (fc.name) {
 			case "Move": {
-				arguments.Direction dir = arguments.Direction.F;
+				gal.arguments.Direction dir = gal.arguments.Direction.F;
 				for (Object p : parameters) {
-					if (p instanceof arguments.Direction)
-						dir = (arguments.Direction) p;
+					if (p instanceof gal.arguments.Direction)
+						dir = (gal.arguments.Direction) p;
 				}
 				return new Move(dir);
 			}
@@ -256,7 +255,7 @@ public class GalBuilder implements iVisitor {
 
 	@Override
 	public Object visit(Direction dir) {
-		return arguments.Direction.canonical(dir.terminal.content);
+		return gal.arguments.Direction.canonical(dir.terminal.content);
 	}
 
 	@Override

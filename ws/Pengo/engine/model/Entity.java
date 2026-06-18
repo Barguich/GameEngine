@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import arguments.Category;
+import gal.arguments.Category;
 import collision.Bounding;
 import collision.Box;
 import gal_engine.Bot;

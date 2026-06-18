@@ -1,15 +1,15 @@
 package gal.condition;
 
-import arguments.Key;
+import gal.arguments.Key;
 import gal.aut.iGALCondition;
 import gal_engine.Keyboard;
 import model.Entity;
 
-public class KeyP implements iGALCondition {
+public class KeyR implements iGALCondition {
 
 	private final Key key;
 
-	public KeyP(Key key) {
+	public KeyR(Key key) {
 		if (key == null)
 			throw new IllegalArgumentException();
 		this.key = key;
@@ -17,6 +17,6 @@ public class KeyP implements iGALCondition {
 
 	@Override
 	public boolean eval(Entity e) {
-		return Keyboard.self().isDown(key);
+		return Keyboard.self().consumeRelease(key);
 	}
 }
