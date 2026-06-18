@@ -41,7 +41,7 @@ import ast.UnaryOp;
 import ast.Underscore;
 import ast.Variable;
 import ast.iVisitor;
-import gal.util.Dot;
+import util_gal.Dot;
 
 public class AstPrinter implements iVisitor {
 

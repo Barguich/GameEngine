@@ -4,8 +4,8 @@ import geometry.ISU;
 
 public class Shape {
 	// FIELD
-	ISU isu;
-	ISU.Coord center;
+	public ISU isu;
+	public ISU.Coord center;
 
 	// CONSTRUCTOR
 	public Shape(ISU.Coord center) {

@@ -15,7 +15,7 @@
  *  Created on: March, 2020
  *      Author: Dr. Michael PÉRIN, Verimag / Univ. Grenoble-Alpes
  */
-package gal.util;
+package util_gal;
 
 import java.io.PrintStream;
 

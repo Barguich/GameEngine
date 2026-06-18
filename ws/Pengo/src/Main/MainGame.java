@@ -1,9 +1,9 @@
 package Main;
 
 import engine.Game;
-import game.pengo.model.PengoMapLoader;
-import game.pengo.model.PengoModel;
 import geometry.Grid;
+import pengo.model.PengoMapLoader;
+import pengo.model.PengoModel;
 
 public class MainGame {
 

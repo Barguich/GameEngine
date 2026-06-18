@@ -1,4 +1,4 @@
-package game.testSprite;
+package testSprite;
 
 import java.util.HashMap;
 import java.util.Map;

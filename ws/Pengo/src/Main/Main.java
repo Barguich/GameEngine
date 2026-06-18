@@ -5,13 +5,13 @@ import java.awt.Dimension;
 import oop.tasks.Runtime;
 import oop.tasks.Runnable;
 import oop.tasks.Task;
+import testSprite.FixedMap;
 import view.Painter;
 import view.View;
 import view.ViewPort;
 import oop.graphics.Canvas;
 
 import engine.Game;
-import game.testSprite.FixedMap;
 import model.Model;
 
 public class Main {

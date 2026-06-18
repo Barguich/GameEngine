@@ -1,4 +1,4 @@
-package game.pengo.model;
+package pengo.model;
 
 public class GoldBlock extends IceBlock {
 

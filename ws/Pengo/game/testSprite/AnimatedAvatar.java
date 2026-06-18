@@ -1,4 +1,4 @@
-package game.testSprite;
+package testSprite;
 
 import engine.Game;
 import model.Entity;
