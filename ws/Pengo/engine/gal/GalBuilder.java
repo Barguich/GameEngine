@@ -8,6 +8,12 @@ import java.util.Map;
 import gal.action.*;
 import ast.*;
 import gal.aut.iGALCondition;
+import gal.condition.AtStep;
+import gal.condition.Closest;
+import gal.condition.Conjunction;
+import gal.condition.Disjunction;
+import gal.condition.KeyP;
+import gal.condition.Not;
 import gal.condition.True;
 import parser.Parser;
 
@@ -193,6 +199,55 @@ public class GalBuilder implements iVisitor {
 		switch (fc.name) {
 			case "True":
 				return new True();
+
+			case "Step": {
+				gal.arguments.Direction dir = gal.arguments.Direction.F;
+				gal.arguments.Category cat = gal.arguments.Category.ANY;
+				int nbStep = 1;
+
+				for (Object p : parameters) {
+					if (p instanceof gal.arguments.Direction) {
+						dir = (gal.arguments.Direction) p;
+					} else if (p instanceof gal.arguments.Category) {
+						cat = (gal.arguments.Category) p;
+					} else if (p instanceof Integer) {
+						nbStep = (Integer) p;
+					}
+				}
+				return new AtStep(dir, cat, nbStep);
+			}
+
+			case "Closest": {
+				gal.arguments.Category cat = gal.arguments.Category.ANY;
+				gal.arguments.Direction dir = null;
+
+				for (Object p : parameters) {
+					if (p instanceof gal.arguments.Category) {
+						cat = (gal.arguments.Category) p;
+					} else if (p instanceof gal.arguments.Direction) {
+						dir = (gal.arguments.Direction) p;
+					}
+				}
+
+				if (dir != null) {
+					return new Closest(cat, dir);
+				}
+				return new Closest(cat);
+			}
+
+			case "Key": {
+				gal.arguments.Key key = null;
+				for (Object p : parameters) {
+					if (p instanceof gal.arguments.Key) {
+						key = (gal.arguments.Key) p;
+					}
+				}
+				if (key != null) {
+					return new KeyP(key);
+				}
+				throw new IllegalArgumentException("Condition Key sans paramètre Key valide");
+			}
+
 			default:
 				throw new UnsupportedOperationException(
 						"Condition GAL non encore supportée : " + fc.name);
@@ -209,6 +264,22 @@ public class GalBuilder implements iVisitor {
 				}
 				return new Move(dir);
 			}
+
+			case "Turn": {
+				gal.arguments.Direction dir = null;
+				int angle = 90;
+				for (Object p : parameters) {
+					if (p instanceof gal.arguments.Direction) {
+						dir = (gal.arguments.Direction) p;
+					} else if (p instanceof Integer) {
+						angle = (Integer) p;
+					}
+				}
+				if (dir != null)
+					return new Turn(dir);
+				return new Turn(angle);
+			}
+
 			default:
 				throw new UnsupportedOperationException(
 						"Action GAL non encore supportée : " + fc.name);
@@ -231,6 +302,18 @@ public class GalBuilder implements iVisitor {
 
 	@Override
 	public Object build(BinaryOp binop, Object left, Object right) {
+		if (binop.operator.equals("&")) {
+			Conjunction conj = new Conjunction();
+			conj.add((iGALCondition) left);
+			conj.add((iGALCondition) right);
+			return conj;
+		} else if (binop.operator.equals("/")) {
+			Disjunction disj = new Disjunction();
+			disj.add((iGALCondition) left);
+			disj.add((iGALCondition) right);
+			return disj;
+		}
+
 		throw new UnsupportedOperationException(
 				"Opérateur binaire non encore supporté : " + binop.operator);
 	}
@@ -247,6 +330,10 @@ public class GalBuilder implements iVisitor {
 
 	@Override
 	public Object build(UnaryOp unop, Object expression) {
+		if (unop.operator.equals("!")) {
+			return new Not((iGALCondition) expression);
+		}
+
 		throw new UnsupportedOperationException(
 				"Opérateur unaire non encore supporté : " + unop.operator);
 	}
@@ -260,36 +347,36 @@ public class GalBuilder implements iVisitor {
 
 	@Override
 	public Object visit(Category cat) {
-		throw new UnsupportedOperationException("Category non encore supportée");
+		return gal.arguments.Category.canonical(cat.terminal.content);
 	}
 
 	@Override
 	public Object visit(Key key) {
-		throw new UnsupportedOperationException("Key non encore supportée");
+		return gal.arguments.Key.canonical(key.terminal.content);
 	}
 
 	@Override
 	public Object visit(IntValue v) {
-		throw new UnsupportedOperationException("IntValue non encore supporté");
-	}
-
-	@Override
-	public Object visit(IntPercent per) {
-		throw new UnsupportedOperationException("IntPercent non encore supporté");
-	}
-
-	@Override
-	public Object visit(IntDegree deg) {
-		throw new UnsupportedOperationException("IntDegree non encore supporté");
+		return v.value;
 	}
 
 	@Override
 	public Object visit(Underscore u) {
-		throw new UnsupportedOperationException("Underscore non encore supporté");
+		return gal.arguments.Category.ANY;
+	}
+
+	@Override
+	public Object visit(IntPercent per) {
+		return per.value / 100.0;
+	}
+
+	@Override
+	public Object visit(IntDegree deg) {
+		return deg.value;
 	}
 
 	@Override
 	public Object visit(Variable v) {
-		throw new UnsupportedOperationException("Variable non encore supportée");
+		return new UnsupportedOperationException("Variable non encore supportée");
 	}
 }
