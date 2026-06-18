@@ -27,6 +27,7 @@ public class MainEngine {
         double mapH = game.height_cm;
         ViewPort viewPort = new ViewPort(mapW, mapH, mapW, mapH);
         View view = new View(model, viewPort);
+		view.debug().setEnabled(true);
 
         // Player — yellow oval at cell (5,5)
         Entity player = new Entity("Player");
@@ -86,7 +87,7 @@ public class MainEngine {
                 Canvas canvas = (Canvas) Task.task().find("canvas");
                 canvas.set(view);
                 new Painter(canvas).run();
-                new Ticker(model, canvas).run();
+                new Ticker(model, canvas,view).run();
 
                 canvas.set(new Canvas.KeyListener() {
                     @Override
