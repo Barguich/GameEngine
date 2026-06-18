@@ -9,6 +9,17 @@ import oop.graphics.Canvas;
 import oop.graphics.Graphics;
 import pengo.model.PengoModel;
 
+/**
+ * Couche de rendu du moteur : observe le {@link Model} et le projette à l'écran
+ * à travers un {@link ViewPort} (caméra). Suit éventuellement une entité.
+ *
+ * @apiNote {@code update()} et {@code paint()} ont des responsabilités
+ *          disjointes : {@code update()} mute la position caméra,
+ *          {@code paint()}
+ *          ne fait que dessiner. Ne jamais déplacer la logique de l'un vers
+ *          l'autre — cela casse la séparation MVCB.
+ */
+
 public class View implements Canvas.PaintListener {
 
 	private final Model model;
@@ -24,6 +35,7 @@ public class View implements Canvas.PaintListener {
 		this.viewPort = viewPort;
 	}
 
+	/** Désigne l'entité que la caméra recentre à chaque {@code update()}. */
 	public void follow(Entity e) {
 		this.followed = e;
 	}
@@ -35,6 +47,17 @@ public class View implements Canvas.PaintListener {
 	@Override
 	public void visible(Canvas canvas) {
 	}
+
+	/**
+	 * Recentre le viewport sur l'entité suivie, puis clamp pour rester dans la
+	 * map.
+	 *
+	 * @apiNote lit les dimensions via {@code Game.game()} à chaque appel plutôt
+	 *          que de les cacher en champ : indispensable pour supporter des
+	 *          maps de taille variable.
+	 * @implNote seul endroit de la View qui mute l'état caméra ; appelé depuis
+	 *           la boucle logique, jamais depuis {@code paint()}.
+	 */
 
 	public void update() {
 		if (followed == null || followed.center() == null) {
@@ -56,6 +79,15 @@ public class View implements Canvas.PaintListener {
 		viewPort.MoveTo(x, y);
 	}
 
+	/**
+	 * Rend la scène complète pour une frame : fond, entités visibles, puis HUD.
+	 *
+	 * @apiNote ordre de rendu imposé. Les bounding boxes sont dessinées dans le
+	 *          clip du viewpor. Le panneau de debug est
+	 *          dessiné après le déclip pour s'afficher plein écran.
+	 * @implNote {@code paint()} ne mute pas le modèle. La seule mutation est
+	 *           {@code debug.begin()}, confinée au sous-système de mesure.
+	 */
 	@Override
 	public void paint(Canvas canvas, Graphics g) {
 
@@ -97,6 +129,7 @@ public class View implements Canvas.PaintListener {
 
 	}
 
+	/* alimentation du tick rate */
 	public DebugOverlay debug() {
 		return this.debug;
 	}

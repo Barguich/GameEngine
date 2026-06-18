@@ -25,6 +25,7 @@ public class ShapeAvatar extends Avatar {
 		this.b = b;
 	}
 
+	/** @apiNote forme de collision alignée avec la forme visuelle */
 	@Override
 	public void buildBounding(collision.Bounding bounding, geometry.ISU.Coord center, geometry.ISU.Dimension size) {
 		if (shape == Shape.OVAL) {
@@ -39,6 +40,11 @@ public class ShapeAvatar extends Avatar {
 		flashUntil = System.currentTimeMillis() + 300;
 	}
 
+	/**
+	 * @implNote couleurs résolues paresseusement : {@code getColor} exige un
+	 *           Graphics vivant, indisponible au constructeur. Rotation appliquée
+	 *           autour du centre via translate puis rotate.
+	 */
 	@Override
 	public void paint(Graphics g, int xPix, int yPix, double scale) {
 		if (color == null) {
