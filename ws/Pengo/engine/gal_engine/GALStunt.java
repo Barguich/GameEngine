@@ -2,6 +2,7 @@ package gal_engine;
 
 import java.util.List;
 
+import engine.Game;
 import gal.action.iAllGALActions;
 import gal.arguments.Direction;
 import geometry.ISU;
@@ -27,10 +28,10 @@ public class GALStunt extends Stunt implements iAllGALActions {
 	public GALStunt(Model model, Entity e) {
 		super(model, e);
 		this.entity=e;
-		step_cm = 10;
-		max_cmPer_ms = 0.1;
-		max_degPer_ms = 0.1;
-		action_ms = 0;
+		step_cm = entity.step().x();
+		max_cmPer_ms = Game.game().cmPerCell / 1000.0;
+		max_degPer_ms = 90.0 / 1000.0;
+		action_ms = step_cm / max_cmPer_ms;;
 	}
 
 	// STEP
