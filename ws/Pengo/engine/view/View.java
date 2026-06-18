@@ -17,6 +17,7 @@ public class View implements Canvas.PaintListener {
 	private int w_cm;
 
 	private Entity followed;
+	private final DebugOverlay debug = new DebugOverlay();
 
 	public View(Model model, ViewPort viewPort) {
 		this.model = model;
@@ -58,6 +59,8 @@ public class View implements Canvas.PaintListener {
 	@Override
 	public void paint(Canvas canvas, Graphics g) {
 
+		debug.begin();
+
 		// On calcule l'origine idéale (centrée sur followed),
 		// puis on la clamp pour que le viewport reste dans la map
 
@@ -67,7 +70,8 @@ public class View implements Canvas.PaintListener {
 		viewPort.fill(canvas, g);
 		viewPort.clip(canvas, g);
 		double scale = viewPort.scale(canvas);
-		for (Entity e : new ArrayList<>(model.getEntities())) {
+		ArrayList<Entity> entities = new ArrayList<>(model.getEntities());
+		for (Entity e : entities) {
 			if (e.center() == null || e.avatar() == null) {
 				continue;
 			}
@@ -85,6 +89,16 @@ public class View implements Canvas.PaintListener {
 			}
 			e.avatar().paint(g, px, py, scale);
 		}
+		debug.paintBoundingBoxes(canvas, g, viewPort, entities);
+
+		// On retire le clip avant le HUD pour qu'il s'affiche plein écran.
+		g.setClip(0, 0, canvas.getWidth(), canvas.getHeight());
+		debug.paintPanel(canvas, g, followed);
+
+	}
+
+	public DebugOverlay debug() {
+		return this.debug;
 	}
 
 	@Override
