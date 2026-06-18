@@ -4,7 +4,6 @@ import java.io.PrintStream;
 
 import geometry.ISU;
 
-
 public class Picture {
 
 	private Game game;
