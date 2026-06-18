@@ -1,8 +1,8 @@
 package game.pengo.model;
 
-import engine.collision.Bounding;
-import engine.collision.Circle;
-import engine.model.Entity;
+import collision.Bounding;
+import collision.Circle;
+import model.Entity;
 
 public class FishBonus extends Entity {
 

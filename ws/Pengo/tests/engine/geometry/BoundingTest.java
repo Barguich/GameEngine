@@ -7,11 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import engine.collision.Box;
-import engine.collision.Circle;
-import engine.collision.Rect;
-import engine.collision.iShape;
-import engine.collision.Bounding;
+import collision.Bounding;
+import collision.Box;
+import collision.Circle;
+import collision.Rect;
+import collision.iShape;
 
 /**
  * Bounding agrège des iShape. On le teste avec un faux iShape contrôlable

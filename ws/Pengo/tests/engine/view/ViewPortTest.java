@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import engine.Game;
+import view.ViewPort;
 
 /**
  * ViewPort : déplacement, centrage avec clamping aux bords de la map,

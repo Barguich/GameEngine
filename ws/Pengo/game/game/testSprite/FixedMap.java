@@ -1,8 +1,8 @@
 package game.testSprite;
 
 import engine.Game;
-import engine.model.Entity;
-import engine.model.Model;
+import model.Entity;
+import model.Model;
 
 public class FixedMap {
 

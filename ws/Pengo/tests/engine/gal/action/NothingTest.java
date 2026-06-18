@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import action.GALAction;
+import action.Nothing;
+
 
 /**
  * Nothing (engine.gal.action) : action GAL neutre, toujours réussie.

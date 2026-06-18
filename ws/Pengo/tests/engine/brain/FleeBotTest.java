@@ -6,10 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import brain.FleeBot;
 import engine.Game;
-import engine.model.BasicStunt;
-import engine.model.Entity;
-import engine.model.Model;
+import model.BasicStunt;
+import model.Entity;
+import model.Model;
 
 /**
  * FleeBot : s'éloigne de l'ennemi, en se déplaçant en direction opposée à

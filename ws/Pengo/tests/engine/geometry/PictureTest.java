@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import engine.Game;
 import engine.Picture;
+import geometry.ISU;
 
 /**
  * Picture convertit des cm en pixels (× pixelPerCm = 7) avec arrondi.

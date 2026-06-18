@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import engine.model.Entity;
+import gal.condition.Conjunction;
+import gal.condition.True;
+import model.Entity;
 
 /**
  * Caractérisation : Conjunction (conjonction de conditions GAL) n'est pas

@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import gal_engine.Mode;
+
 /**
  * Caractérisation : Mode (engine.gal) n'est pas encore implémenté.
  * Son constructeur lève systématiquement UnsupportedOperationException.

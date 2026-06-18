@@ -5,14 +5,14 @@ import java.awt.Dimension;
 import oop.tasks.Runtime;
 import oop.tasks.Runnable;
 import oop.tasks.Task;
+import view.Painter;
+import view.View;
+import view.ViewPort;
 import oop.graphics.Canvas;
 
 import engine.Game;
-import engine.model.Model;
-import engine.view.Painter;
-import engine.view.View;
-import engine.view.ViewPort;
 import game.testSprite.FixedMap;
+import model.Model;
 
 public class Main {
 	public static void main(String[] args) {

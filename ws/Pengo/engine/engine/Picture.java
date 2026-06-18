@@ -2,7 +2,7 @@ package engine;
 
 import java.io.PrintStream;
 
-import engine.geometry.ISU;
+import geometry.ISU;
 
 
 public class Picture {

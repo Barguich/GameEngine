@@ -9,8 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import engine.gal.State;
-import engine.gal.condition.True;
+import gal.aut.Transition;
+import gal.condition.True;
+import gal_engine.State;
 
 /**
  * Caractérisation : Transition n'est pas encore implémentée.

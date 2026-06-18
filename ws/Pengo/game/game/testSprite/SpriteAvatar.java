@@ -1,10 +1,10 @@
 package game.testSprite;
 
 import engine.Game;
-import engine.model.Entity;
-import engine.view.Avatar;
+import model.Entity;
 import oop.graphics.BufferedImage;
 import oop.graphics.Graphics;
+import view.Avatar;
 
 public class SpriteAvatar extends Avatar {
 

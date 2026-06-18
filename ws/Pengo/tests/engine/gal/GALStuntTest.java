@@ -10,10 +10,11 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import arguments.Direction;
 import engine.Game;
-import engine.gal.arguments.Direction;
-import engine.model.Entity;
-import engine.model.Model;
+import gal_engine.GALStunt;
+import model.Entity;
+import model.Model;
 
 /**
  * GALStunt : déplacements et rotations temporisés pilotés par {@code tick}.

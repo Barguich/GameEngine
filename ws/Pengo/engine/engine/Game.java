@@ -3,8 +3,8 @@ package engine;
 
 import java.io.PrintStream;
 
-import engine.geometry.Grid;
-import engine.geometry.ISU;
+import geometry.Grid;
+import geometry.ISU;
 
 public class Game {
 

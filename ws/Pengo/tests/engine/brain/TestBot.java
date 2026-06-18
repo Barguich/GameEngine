@@ -4,11 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import brain.AttackBot;
+import brain.PatrolBot;
 import engine.Game;
-import engine.geometry.Grid;
-import engine.model.BasicStunt;
-
 import game.pengo.model.*;
+import geometry.Grid;
+import model.BasicStunt;
 
 public class TestBot {
 

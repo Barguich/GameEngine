@@ -7,9 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import engine.collision.Circle;
+import collision.Box;
+import collision.Circle;
 import engine.Game;
-import engine.collision.Box;
+import geometry.ISU;
 
 /**
  * Circle : intersection cercle-cercle et boîte englobante.

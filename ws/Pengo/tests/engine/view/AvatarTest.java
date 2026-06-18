@@ -8,7 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import engine.Game;
-import engine.model.Entity;
+import model.Entity;
+import view.View;
+import view.ViewPort;
 
 /**
  * Avatar : constructeur, setView, et helpers protégés saveTransform /
@@ -42,7 +44,7 @@ class AvatarTest {
 	void setView_memorise_la_vue() {
 		Entity e = new Entity("e");
 		FakeAvatar avatar = new FakeAvatar(e);
-		View view = new View(new engine.model.Model(Game.grid()), new ViewPort(74, 74));
+		View view = new View(new model.Model(Game.grid()), new ViewPort(74, 74));
 
 		avatar.setView(view);
 

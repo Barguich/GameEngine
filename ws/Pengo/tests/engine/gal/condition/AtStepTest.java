@@ -7,8 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import engine.gal.arguments.Category;
-import engine.gal.arguments.Direction;
+import arguments.Category;
+import arguments.Direction;
+import gal.condition.AtStep;
+import gal.condition.Conjunction;
+import gal.condition.True;
 
 /**
  * Caractérisation : AtStep (condition GAL "à l'étape N") n'est pas encore

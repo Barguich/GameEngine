@@ -1,7 +1,9 @@
 package engine.view;
 
-import engine.model.Entity;
+import model.Entity;
 import oop.graphics.Graphics;
+import view.Avatar;
+import view.View;
 
 /** Sous-classe concrète minimale de Avatar (abstrait) pour les tests. */
 public class FakeAvatar extends Avatar {

@@ -7,8 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import collision.Box;
+import collision.Circle;
+import collision.Rect;
 import engine.Game;
-import engine.geometry.ISU;
+import geometry.ISU;
 
 /**
  * Rect : intersection rect-rect, rect-cercle et boîtes englobantes.

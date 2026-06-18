@@ -7,8 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import collision.Shape;
 import engine.Game;
-import engine.geometry.ISU;
+import geometry.ISU;
 
 /**
  * Shape est la base commune de Circle/Rect : elle copie le centre reçu et

@@ -1,9 +1,9 @@
 package game.pengo.model;
 
-import engine.collision.Bounding;
-import engine.collision.Rect;
-import engine.model.BasicStunt;
-import engine.model.Entity;
+import collision.Bounding;
+import collision.Rect;
+import model.BasicStunt;
+import model.Entity;
 
 public class IceBlock extends Entity {
 

@@ -11,8 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import engine.Game;
-import engine.geometry.Grid;
-import engine.geometry.ISU;
+import geometry.Grid;
+import geometry.ISU;
+import model.Entity;
 
 /**
  * Entity : positionnement, déplacement, orientation, occupation de cellules

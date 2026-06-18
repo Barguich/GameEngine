@@ -10,7 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import engine.Game;
-import engine.model.Entity;
+import geometry.Grid;
+import geometry.ISU;
+import model.Entity;
 
 /**
  * Grid : dimensions, normalisation toroïdale des Position/Dimension/Vector,

@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import engine.gal.aut.Automaton;
-import engine.model.Entity;
+import gal.aut.Automaton;
+import gal_engine.Bot;
+import gal_engine.GALBot;
+import gal_engine.State;
+import model.Entity;
 
 class GALBotTest {
 

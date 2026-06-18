@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import geometry.Axis;
+
 
 /**
  * Axis est une classe pure : normalisation et distance avec/sans tore.

@@ -3,9 +3,9 @@ package game.pengo.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.geometry.Grid;
-import engine.model.Entity;
-import engine.model.Model;
+import geometry.Grid;
+import model.Entity;
+import model.Model;
 
 public class PengoModel extends Model {
 

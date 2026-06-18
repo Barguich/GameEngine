@@ -1,17 +1,17 @@
 package engine;
 
-import engine.model.BasicStunt;
-import engine.model.Entity;
-import engine.model.Model;
-import engine.model.Ticker;
-import engine.view.Painter;
-import engine.view.ShapeAvatar;
-import engine.view.ViewPort;
-import engine.view.View;
-import engine.geometry.ISU;
+import geometry.ISU;
+import model.BasicStunt;
+import model.Entity;
+import model.Model;
+import model.Ticker;
 import oop.graphics.Canvas;
 import oop.graphics.VirtualKeyCodes;
 import oop.tasks.Task;
+import view.Painter;
+import view.ShapeAvatar;
+import view.View;
+import view.ViewPort;
 import oop.tasks.Runtime;
 
 public class MainEngine {

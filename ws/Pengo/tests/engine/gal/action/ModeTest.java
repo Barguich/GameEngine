@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import engine.gal.Mode;
-
 import org.junit.jupiter.api.Test;
+
+import gal_engine.Mode;
 
 /**
  * Caractérisation : Mode (engine.gal.action) n'est pas encore implémenté.

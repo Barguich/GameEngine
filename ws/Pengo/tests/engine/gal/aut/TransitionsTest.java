@@ -11,8 +11,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import engine.gal.State;
-import engine.gal.condition.True;
+import gal.aut.Transition;
+import gal.aut.Transitions;
+import gal.condition.True;
+import gal_engine.State;
 
 /**
  * Caractérisation : Transitions (implémentation par défaut de iTransitions)

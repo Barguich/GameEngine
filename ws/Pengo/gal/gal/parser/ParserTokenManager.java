@@ -7,8 +7,9 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import gal.ast.* ;
-import gal.ast.export.*;
+
+import ast.*;
+import ast.export.*;
 import gal.util.*;
 
 /** Token Manager. */

@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import engine.model.Entity;
+import gal.condition.True;
+import model.Entity;
 
 /**
  * Caractérisation : True (condition GAL toujours vraie) n'est pas encore

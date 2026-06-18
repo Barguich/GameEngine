@@ -10,6 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import engine.Game;
+import model.BasicStunt;
+import model.Entity;
+import model.Model;
 
 /**
  * BasicStunt : exécution des mouvements et changements d'orientation d'une
@@ -63,7 +66,7 @@ class BasicStuntTest {
 		// assert c != null : AssertionError si les assertions JVM sont actives
 		// (-ea, par défaut sous Eclipse JUnit), sinon NullPointerException sur
 		// c.position().
-		assertThrows(Throwable.class, () -> stunt.set((engine.geometry.Grid.Cell) null));
+		assertThrows(Throwable.class, () -> stunt.set((geometry.Grid.Cell) null));
 	}
 
 	// ─── set(double x_cm, double y_cm) ───────────────────────────────────

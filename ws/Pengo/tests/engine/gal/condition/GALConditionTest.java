@@ -9,6 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import gal.condition.Conjunction;
+import gal.condition.GALCondition;
+import gal.condition.True;
+
 /**
  * Caractérisation : GALCondition n'a pas de constructeur explicite, mais son
  * champ d'instance {@code TRUE = new True()} est initialisé à la

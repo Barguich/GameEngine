@@ -7,9 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import action.Turn;
+import arguments.Direction;
 import engine.Game;
-import engine.gal.arguments.Direction;
-import engine.model.Entity;
+import model.Entity;
 
 /**
  * Turn (engine.gal.action) : action GAL qui fait tourner une entité d'un

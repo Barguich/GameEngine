@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.geometry.Grid;
-import engine.model.Entity;
+import geometry.Grid;
+import model.Entity;
 
 public class PengoMapLoader {
 

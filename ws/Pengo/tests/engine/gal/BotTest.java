@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import engine.model.Entity;
+import gal_engine.Bot;
+import gal_engine.State;
+import model.Entity;
 
 class BotTest {
 
