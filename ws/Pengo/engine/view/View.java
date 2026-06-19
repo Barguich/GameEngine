@@ -21,6 +21,7 @@ public class View implements Canvas.PaintListener {
 
 	private Entity followed;
 	private final DebugOverlay debug = new DebugOverlay();
+	private final MenuOverlay menu = new MenuOverlay();
 
 	public View(Model model, ViewPort viewPort) {
 		this.model = model;
@@ -124,21 +125,19 @@ public class View implements Canvas.PaintListener {
 
 			g.drawString("Enemies : " + pm.enemiesRemaining(), x, y + 2 * lineH);
 
-			int cx = canvas.getWidth() / 2;
-			int cy = canvas.getHeight() / 2;
-
-			if (pm.won()) {
-				g.drawString("YOU WIN", cx - 60 * scaleD, cy);
-			}
-
-			if (pm.lost()) {
-				g.drawString("GAME OVER", cx - 80 * scaleD, cy);
+			// Menu plein écran (pause / game over / victoire) en surimpression.
+			if (pm.menuVisible()) {
+				menu.paint(canvas, g);
 			}
 		}
 	}
 
 	public DebugOverlay debug() {
 		return this.debug;
+	}
+
+	public MenuOverlay menu() {
+		return this.menu;
 	}
 
 	@Override

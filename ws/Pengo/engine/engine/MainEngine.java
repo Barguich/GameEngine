@@ -18,6 +18,7 @@ import view.Painter;
 import view.ShapeAvatar;
 import view.View;
 import view.ViewPort;
+import view.MenuOverlay;
 
 public class MainEngine {
 
@@ -35,6 +36,122 @@ public class MainEngine {
 		View view = new View(model, viewPort);
 		view.debug().setEnabled(true);
 
+		// Construit la scène initiale, et permet à model.reset() de la rebâtir
+		// à l'identique lors d'un « Recommencer ».
+		model.setSceneBuilder(() -> buildScene(model, view));
+		buildScene(model, view);
+
+		int winW = (int) (mapW * game.pixelPerCm);
+		int winH = (int) (mapH * game.pixelPerCm);
+
+		Runtime.boot(new java.awt.Dimension(winW, winH), (oop.tasks.Runnable) () -> {
+			Canvas canvas = (Canvas) Task.task().find("canvas");
+
+			canvas.set(view);
+
+			new Painter(canvas).run();
+			new Ticker(model, view).run();
+
+			refreshMenu(model, view);
+
+			canvas.set(new Canvas.KeyListener() {
+				@Override
+				public void pressed(Canvas canvas, int keyCode, char keyChar) {
+					// ESC : ouvre/ferme le menu de pause.
+					if (keyCode == VirtualKeyCodes.VK_ESCAPE) {
+						model.togglePause();
+						refreshMenu(model, view);
+						return;
+					}
+
+					// Tant qu'un menu est affiché, les flèches/Entrée le pilotent
+					// et n'agissent pas sur le joueur.
+					if (model.menuVisible()) {
+						handleMenuKey(model, view, keyCode);
+						return;
+					}
+
+					PengoPlayer player = model.player();
+					if (player == null) {
+						return;
+					}
+
+					ISU isu = Game.isu();
+					double s = SPEED_CM_S * player.speedMultiplier();
+
+					switch (keyCode) {
+						case VirtualKeyCodes.VK_UP:
+						case VirtualKeyCodes.VK_Z:
+							player.setLinearSpeed(isu.new Vector(0, -s));
+							player.turnTo(270);
+							break;
+
+						case VirtualKeyCodes.VK_DOWN:
+						case VirtualKeyCodes.VK_S:
+							player.setLinearSpeed(isu.new Vector(0, s));
+							player.turnTo(90);
+							break;
+
+						case VirtualKeyCodes.VK_LEFT:
+						case VirtualKeyCodes.VK_Q:
+							player.setLinearSpeed(isu.new Vector(-s, 0));
+							player.turnTo(180);
+							break;
+
+						case VirtualKeyCodes.VK_RIGHT:
+						case VirtualKeyCodes.VK_D:
+							player.setLinearSpeed(isu.new Vector(s, 0));
+							player.turnTo(0);
+							break;
+
+						default:
+							break;
+					}
+				}
+
+				@Override
+				public void released(Canvas canvas, int keyCode, char keyChar) {
+					if (model.menuVisible()) {
+						return;
+					}
+
+					PengoPlayer player = model.player();
+					if (player == null) {
+						return;
+					}
+
+					switch (keyCode) {
+						case VirtualKeyCodes.VK_UP:
+						case VirtualKeyCodes.VK_DOWN:
+						case VirtualKeyCodes.VK_LEFT:
+						case VirtualKeyCodes.VK_RIGHT:
+						case VirtualKeyCodes.VK_Z:
+						case VirtualKeyCodes.VK_S:
+						case VirtualKeyCodes.VK_Q:
+						case VirtualKeyCodes.VK_D:
+							player.stop();
+							break;
+						case VirtualKeyCodes.VK_SPACE:
+							damageBlockInFront(player, model);
+							break;
+
+						default:
+							break;
+					}
+				}
+
+				@Override
+				public void typed(Canvas canvas, char keyChar) {
+				}
+			});
+		});
+	}
+
+	/**
+	 * Peuple la grille avec la disposition de départ. Réutilisable : appelée au
+	 * lancement et par {@code model.reset()} pour « Recommencer ».
+	 */
+	private static void buildScene(PengoModel model, View view) {
 		// Player
 		PengoPlayer player = new PengoPlayer();
 		player.setPosition(Game.grid().new Position(2, 5));
@@ -98,81 +215,86 @@ public class MainEngine {
 		addWall(model, view, 18, 4);
 
 		view.follow(player);
+	}
 
-		int winW = (int) (mapW * game.pixelPerCm);
-		int winH = (int) (mapH * game.pixelPerCm);
 
-		Runtime.boot(new java.awt.Dimension(winW, winH), (oop.tasks.Runnable) () -> {
-			Canvas canvas = (Canvas) Task.task().find("canvas");
+	// Libellés des entrées (l'ordre définit aussi l'index utilisé plus bas).
+	private static final String RESUME = "Reprendre";
+	private static final String RESTART = "Recommencer";
+	private static final String QUIT = "Quitter";
 
-			canvas.set(view);
+	/**
+	 * Synchronise le contenu du menu avec l'état courant du
+	 * modèle. À rappeler après chaque changement d'état (pause, victoire…).
+	 */
+	private static void refreshMenu(PengoModel model, View view) {
+		String title;
+		String[] items;
 
-			new Painter(canvas).run();
-			new Ticker(model, view).run();
+		switch (model.state()) {
+			case PAUSED:
+				title = "PAUSE";
+				items = new String[] { RESUME, RESTART, QUIT };
+				break;
+			case WON:
+				title = "VICTOIRE !";
+				items = new String[] { RESTART, QUIT };
+				break;
+			case GAME_OVER:
+				title = "GAME OVER";
+				items = new String[] { RESTART, QUIT };
+				break;
+			default:
+				return; // PLAYING : pas de menu, rien à synchroniser.
+		}
 
-			canvas.set(new Canvas.KeyListener() {
-				@Override
-				public void pressed(Canvas canvas, int keyCode, char keyChar) {
-					ISU isu = Game.isu();
-					double s = SPEED_CM_S * player.speedMultiplier();
+		view.menu().set(title, items, 0);
+	}
 
-					switch (keyCode) {
-						case VirtualKeyCodes.VK_UP:
-						case VirtualKeyCodes.VK_Z:
-							player.setLinearSpeed(isu.new Vector(0, -s));
-							player.turnTo(270);
-							break;
+	/** Traite une touche pendant qu'un menu est affiché. */
+	private static void handleMenuKey(PengoModel model, View view, int keyCode) {
+		MenuOverlay menu = view.menu();
 
-						case VirtualKeyCodes.VK_DOWN:
-						case VirtualKeyCodes.VK_S:
-							player.setLinearSpeed(isu.new Vector(0, s));
-							player.turnTo(90);
-							break;
+		switch (keyCode) {
+			case VirtualKeyCodes.VK_UP:
+			case VirtualKeyCodes.VK_Z:
+				menu.move(-1);
+				break;
 
-						case VirtualKeyCodes.VK_LEFT:
-						case VirtualKeyCodes.VK_Q:
-							player.setLinearSpeed(isu.new Vector(-s, 0));
-							player.turnTo(180);
-							break;
+			case VirtualKeyCodes.VK_DOWN:
+			case VirtualKeyCodes.VK_S:
+				menu.move(1);
+				break;
 
-						case VirtualKeyCodes.VK_RIGHT:
-						case VirtualKeyCodes.VK_D:
-							player.setLinearSpeed(isu.new Vector(s, 0));
-							player.turnTo(0);
-							break;
+			case VirtualKeyCodes.VK_ENTER:
+			case VirtualKeyCodes.VK_SPACE:
+				activateMenuItem(model, view, menu.items()[menu.selected()]);
+				break;
 
-						default:
-							break;
-					}
-				}
+			default:
+				break;
+		}
+	}
 
-				@Override
-				public void released(Canvas canvas, int keyCode, char keyChar) {
-					switch (keyCode) {
-						case VirtualKeyCodes.VK_UP:
-						case VirtualKeyCodes.VK_DOWN:
-						case VirtualKeyCodes.VK_LEFT:
-						case VirtualKeyCodes.VK_RIGHT:
-						case VirtualKeyCodes.VK_Z:
-						case VirtualKeyCodes.VK_S:
-						case VirtualKeyCodes.VK_Q:
-						case VirtualKeyCodes.VK_D:
-							player.stop();
-							break;
-						case VirtualKeyCodes.VK_SPACE:
-							damageBlockInFront(player, model);
-							break;
+	/** Exécute l'action correspondant à l'entrée de menu sélectionnée. */
+	private static void activateMenuItem(PengoModel model, View view, String item) {
+		switch (item) {
+			case RESUME:
+				model.resume();
+				break;
 
-						default:
-							break;
-					}
-				}
+			case RESTART:
+				model.reset();
+				refreshMenu(model, view);
+				break;
 
-				@Override
-				public void typed(Canvas canvas, char keyChar) {
-				}
-			});
-		});
+			case QUIT:
+				System.exit(0);
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	private static void addIce(PengoModel model, View view, int x, int y) {

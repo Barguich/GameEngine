@@ -9,6 +9,11 @@ import model.Model;
 
 public class PengoModel extends Model {
 
+	/** État global de la partie, piloté par le menu et le Ticker. */
+	public enum GameState { PLAYING, PAUSED, GAME_OVER, WON }
+
+	private GameState state = GameState.PLAYING;
+
 	private PengoPlayer player;
 	private int score;
 	private boolean won;
@@ -55,6 +60,76 @@ public class PengoModel extends Model {
 		return player;
 	}
 
+
+	public GameState state() {
+		return state;
+	}
+
+	/** True si la logique doit tourner */
+	public boolean running() {
+		return state == GameState.PLAYING;
+	}
+
+	/** Vrai dès qu'un menu doit s'afficher par-dessus la scène. */
+	public boolean menuVisible() {
+		return state != GameState.PLAYING;
+	}
+
+	public void pause() {
+		if (state == GameState.PLAYING) {
+			state = GameState.PAUSED;
+		}
+	}
+
+	public void resume() {
+		if (state == GameState.PAUSED) {
+			state = GameState.PLAYING;
+		}
+	}
+
+	/** Bascule pause/jeu (utilisé par la touche ESC). Sans effet si partie finie. */
+	public void togglePause() {
+		if (state == GameState.PLAYING) {
+			pause();
+		} else if (state == GameState.PAUSED) {
+			resume();
+		}
+	}
+
+
+	private Runnable sceneBuilder;
+
+	public void setSceneBuilder(Runnable sceneBuilder) {
+		this.sceneBuilder = sceneBuilder;
+	}
+
+	/**
+	 * Remet la partie à zéro : vide la scène, réinitialise les compteurs/flags,
+	 * puis laisse MainEngine repeupler la grille via le sceneBuilder.
+	 */
+	public void reset() {
+		clear();
+		player = null;
+
+		score = 0;
+		won = false;
+		lost = false;
+
+		doubleScore = false;
+		doubleScoreRemaining = 0;
+		invincibleRemaining = 0;
+
+		wallVibration = false;
+		wallVibrationRemaining = 0;
+		vibratingEntities.clear();
+
+		if (sceneBuilder != null) {
+			sceneBuilder.run();
+		}
+
+		state = GameState.PLAYING;
+	}
+
 	public int score() {
 		return score;
 	}
@@ -96,6 +171,11 @@ public class PengoModel extends Model {
 	public void tick(long elapsed) {
 		assert elapsed >= 0;
 
+		// ni déplacement des entités, ni décompte des timers.
+		if (state != GameState.PLAYING) {
+			return;
+		}
+
 		super.tick(elapsed);
 
 		if (invincibleRemaining > 0) {
@@ -120,6 +200,7 @@ public class PengoModel extends Model {
 
 		if (player != null && player.dead()) {
 			lost = true;
+			state = GameState.GAME_OVER;
 		}
 		if (wallVibration) {
 			wallVibrationRemaining -= elapsed;
@@ -140,6 +221,7 @@ public class PengoModel extends Model {
 		if (diamondBlocksAligned()) {
 			if (!won) {
 				won = true;
+				state = GameState.WON;
 				System.out.println("YOU WIN - DIAMOND ALIGNMENT");
 			}
 		}
