@@ -4,6 +4,16 @@ import geometry.ISU;
 import oop.graphics.Canvas;
 import oop.graphics.Graphics;
 
+/**
+ * Caméra du moteur : fenêtre rectangulaire du monde projetée sur le
+ * canvas. Convertit les coordonnées monde.
+ *
+ * @apiNote la zone de la map est figée à la construction et borne le
+ *          déplacement
+ *          de la caméra. La caméra ne sort jamais de la
+ *          map.
+ */
+
 public class ViewPort {
 
 	private double x_cm = 0;
@@ -15,7 +25,6 @@ public class ViewPort {
 	// Dimensions de la map — pour le clamping (contrainte Non-Tore)
 	private final double mapWidth_cm;
 	private final double mapHeight_cm;
-
 
 	public ViewPort(double width_cm, double height_cm) {
 		this.height_cm = height_cm;
@@ -31,6 +40,7 @@ public class ViewPort {
 		this.mapWidth_cm = mapWidth_cm;
 	}
 
+	/** @apiNote place l'origine de la caméra sans clamping */
 	public void MoveTo(double x_cm, double y_cm) {
 		this.x_cm = x_cm;
 		this.y_cm = y_cm;
@@ -38,7 +48,7 @@ public class ViewPort {
 
 	/* centre le viewport sur une coordonée ISU */
 	public void centerOn(ISU.Coord target) {
-		double nx =  target.x() - width_cm / 2;
+		double nx = target.x() - width_cm / 2;
 		double ny = target.y() - height_cm / 2;
 		this.x_cm = Math.max(0, Math.min(nx, mapWidth_cm - width_cm));
 		this.y_cm = Math.max(0, Math.min(ny, mapHeight_cm - height_cm));

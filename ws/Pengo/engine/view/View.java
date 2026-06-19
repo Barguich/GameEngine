@@ -9,6 +9,10 @@ import oop.graphics.Canvas;
 import oop.graphics.Graphics;
 import pengo.model.PengoModel;
 
+/**
+ * Couche de rendu du moteur : observe le Model et le projette à l'écran
+ * à travers un ViewPort.
+ */
 public class View implements Canvas.PaintListener {
 
     private final Model model;
@@ -22,6 +26,7 @@ public class View implements Canvas.PaintListener {
         this.viewPort = viewPort;
     }
 
+    /** Désigne l'entité que la caméra recentre à chaque update(). */
     public void follow(Entity e) {
         this.followed = e;
     }
@@ -34,6 +39,9 @@ public class View implements Canvas.PaintListener {
     public void visible(Canvas canvas) {
     }
 
+    /**
+     * Recentre le viewport sur l'entité suivie, puis clamp pour rester dans la map.
+     */
     public void update() {
         if (followed == null || followed.center() == null) {
             return;
@@ -53,9 +61,11 @@ public class View implements Canvas.PaintListener {
         viewPort.MoveTo(x, y);
     }
 
+    /**
+     * Rend la scène complète : fond, entités, debug, puis HUD.
+     */
     @Override
     public void paint(Canvas canvas, Graphics g) {
-
         debug.begin();
 
         g.setColor(Graphics.Colors.darkGray);
@@ -66,7 +76,6 @@ public class View implements Canvas.PaintListener {
         viewPort.clip(canvas, g);
 
         double scale = viewPort.scale(canvas);
-
         ArrayList<Entity> entities = new ArrayList<>(model.getEntities());
 
         for (Entity e : entities) {
@@ -92,6 +101,7 @@ public class View implements Canvas.PaintListener {
 
         debug.paintBoundingBoxes(canvas, g, viewPort, entities);
 
+        // HUD plein écran
         g.setClip(0, 0, canvas.getWidth(), canvas.getHeight());
 
         debug.paintPanel(canvas, g, followed);

@@ -1,23 +1,22 @@
 package brain;
 
-import model.BasicStunt;
 import model.Entity;
 import model.Stunt;
 
 public abstract class Bot {
 
-    protected Stunt stunt;
+	protected Stunt stunt;
 
-    public Bot(Stunt stunt) {
-        this.stunt = stunt;
-    }
+	public Bot(Stunt stunt) {
+		this.stunt = stunt;
+	}
 
-    public abstract void think();
+	public abstract void think();
 
-    public void collision(Entity e) {
-    }
+	public void collision(Entity e) {
+	}
 
-    public void done() {
-    }
-   
+	public void done() {
+	}
+
 }

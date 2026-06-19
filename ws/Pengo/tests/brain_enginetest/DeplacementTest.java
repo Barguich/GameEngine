@@ -9,13 +9,11 @@ import engine.Game;
 import geometry.ISU;
 import geometry.Grid.Position;
 import model.BasicStunt;
-import model.Entity;
 import model.Model;
 import pengo.model.Enemy;
 import pengo.model.IceBlock;
 import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
-import pengo.model.Wall;
 
 public class DeplacementTest {
 

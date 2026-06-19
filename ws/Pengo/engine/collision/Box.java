@@ -1,7 +1,5 @@
 package collision;
 
-import geometry.ISU.Coord;
-import geometry.ISU.Dimension;
 
 public class Box {
 	// FIELDS
