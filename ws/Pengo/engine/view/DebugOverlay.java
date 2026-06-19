@@ -33,6 +33,7 @@ public class DebugOverlay {
 	private static final int PANEL_X = 12;
 	private static final int PANEL_Y = 12;
 	private static final int PANEL_W = 260;
+	private static final int PANEL_LINES = 5;
 	private static final int LINE_H = 18;
 	private static final int PADDING = 10;
 
@@ -45,6 +46,8 @@ public class DebugOverlay {
 	private Color hudText;
 	private Color bbColor;
 	private Font hudFont;
+	private int cachedFontSize = -1;
+	private int lastPanelBottom = PANEL_Y;
 
 	// Tick rate logique poussé depuis l'extérieur (mesuré par la boucle Ticker).
 	private double lastTickMs = 0.0;
@@ -95,7 +98,7 @@ public class DebugOverlay {
 			return;
 		}
 
-		resolveResources(g);
+		resolveColors(g);
 		g.setColor(bbColor);
 
 		for (Entity e : entities) {
@@ -116,37 +119,45 @@ public class DebugOverlay {
 			return;
 		}
 
-		resolveResources(g);
+		int scale = uiScale(canvas);
+		resolveColors(g);
+		resolveFont(g, scale);
 
-		int lines = 5;
-		int panelH = PADDING * 2 + lines * LINE_H;
+		int padding = PADDING * scale;
+		int lineH = LINE_H * scale;
+		int panelX = PANEL_X * scale;
+		int panelY = PANEL_Y * scale;
+		int panelW = PANEL_W * scale;
+
+		int panelH = padding * 2 + PANEL_LINES * lineH;
 
 		g.setColor(hudBg);
-		g.fillRect(PANEL_X, PANEL_Y, PANEL_W, panelH);
+		g.fillRect(panelX, panelY, panelW, panelH);
 
 		g.setFont(hudFont);
 		g.setColor(hudText);
 
-		int tx = PANEL_X + PADDING;
-		int ty = PANEL_Y + PADDING + LINE_H - 4;
+		int tx = panelX + padding;
+		int ty = panelY + padding + lineH - 4 * scale;
 
-		drawLine(g, tx, ty, 0, String.format(
+		drawLine(g, tx, ty, 0, lineH, String.format(
 				"FPS   %5.1f  (%.1f ms/frame)",
 				frameClock.fps(), frameClock.lastFrameMs()));
-		drawLine(g, tx, ty, 1, String.format(
+		drawLine(g, tx, ty, 1, lineH, String.format(
 				"TICK  #%d  (%.0f ms)", tickCount, lastTickMs));
-		drawLine(g, tx, ty, 2, String.format(
+		drawLine(g, tx, ty, 2, lineH, String.format(
 				"CANVAS %dx%d px", canvas.getWidth(), canvas.getHeight()));
 
 		String followedName = (followed == null) ? "—" : safeName(followed);
-		drawLine(g, tx, ty, 3, "FOLLOW " + followedName);
-		drawLine(g, tx, ty, 4, "ACT   " + ActionInference.describe(followed));
+		drawLine(g, tx, ty, 3, lineH, "FOLLOW " + followedName);
+		drawLine(g, tx, ty, 4, lineH, "ACT   " + ActionInference.describe(followed));
+		lastPanelBottom = panelY + panelH;
 	}
 
 	// ─── helpers de rendu ────────────────────────────────────────────────────
 
-	private void drawLine(Graphics g, int x, int yBase, int index, String text) {
-		g.drawString(text, x, yBase + index * LINE_H);
+	private void drawLine(Graphics g, int x, int yBase, int index, int lineH, String text) {
+		g.drawString(text, x, yBase + index * lineH);
 	}
 
 	private void drawBox(Canvas canvas, Graphics g, ViewPort vp, Box box) {
@@ -164,19 +175,47 @@ public class DebugOverlay {
 		return (s == null) ? "?" : s;
 	}
 
-	/** Résout couleurs et police une seule fois (nécessite un Graphics vivant). */
-	private void resolveResources(Graphics g) {
-		if (hudFont == null) {
-			hudFont = g.getFont("Monospaced", Font.PLAIN, 13);
-		}
+	private void resolveColors(Graphics g) {
 		if (hudBg == null) {
-			hudBg = g.getColor(180, 0, 0, 0); // noir semi-transparent
+			hudBg = g.getColor(180, 0, 0, 0);
 		}
 		if (hudText == null) {
-			hudText = g.getColor(255, 0, 255, 90); // vert terminal
+			hudText = g.getColor(255, 0, 255, 90);
 		}
 		if (bbColor == null) {
-			bbColor = g.getColor(200, 255, 60, 60); // rouge BB
+			bbColor = g.getColor(200, 255, 60, 60);
 		}
+	}
+
+	private void resolveFont(Graphics g, int scale) {
+		int fontSize = 13 * scale;
+		if (hudFont == null || cachedFontSize != fontSize) {
+			hudFont = g.getFont("Monospaced", Font.PLAIN, fontSize);
+			cachedFontSize = fontSize;
+		}
+	}
+
+	/** Résout couleurs et police une seule fois (nécessite un Graphics vivant). */
+	// private void resolveResources(Graphics g) {
+	// 	if (hudFont == null) {
+	// 		hudFont = g.getFont("Monospaced", Font.PLAIN, 13);
+	// 	}
+	// 	if (hudBg == null) {
+	// 		hudBg = g.getColor(180, 0, 0, 0); // noir semi-transparent
+	// 	}
+	// 	if (hudText == null) {
+	// 		hudText = g.getColor(255, 0, 255, 90); // vert terminal
+	// 	}
+	// 	if (bbColor == null) {
+	// 		bbColor = g.getColor(200, 255, 60, 60); // rouge BB
+	// 	}
+	// }
+
+	static int uiScale(Canvas canvas) {
+		return Math.max(1, Math.round(canvas.getWidth() / 1920f));
+	}
+
+	public int panelBottom() {
+		return enabled ? lastPanelBottom : 0;
 	}
 }
