@@ -118,7 +118,6 @@ public class PengoPlayer extends Entity {
 			System.out.println("PENGO TOUCHE ICEBLOCK");
 
 			if (!block.sliding()) {
-				block.damage();
 				block.startSlide(this.orientation());
 			}
 		}
