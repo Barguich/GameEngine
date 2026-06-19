@@ -6,10 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import ast.*;
-import ast.Automaton;
-import ast.Transition;
 import gal.action.*;
-import gal.aut.*;
 import gal.condition.*;
 import parser.Parser;
 

@@ -1,6 +1,7 @@
 package gal.aut;
 
 import gal.action.*;
+import gal.condition.iGALCondition;
 import gal_engine.State;
 import model.Entity;
 

@@ -4,8 +4,6 @@ import model.Entity;
 
 import java.util.LinkedList;
 
-import gal.aut.iGALCondition;
-
 public class Disjunction extends GALCondition {
 
 	// FIELD

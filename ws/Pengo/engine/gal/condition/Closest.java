@@ -2,7 +2,6 @@ package gal.condition;
 
 import gal.arguments.Category;
 import gal.arguments.Direction;
-import gal.aut.iGALCondition;
 import geometry.ISU;
 import model.Entity;
 

@@ -2,14 +2,13 @@ package gal.condition;
 
 import gal.arguments.Category;
 import gal.arguments.Direction;
-import gal.aut.iGALCondition;
 
 public abstract class GALCondition implements iGALCondition {
 
-   protected Direction direction;
-   protected Category category;
+	protected Direction direction;
+	protected Category category;
 
-   // CONSTANT
+	// CONSTANT
 
-   public static final True TRUE = new True();
+	public static final True TRUE = new True();
 }
