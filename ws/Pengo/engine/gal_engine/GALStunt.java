@@ -27,11 +27,12 @@ public class GALStunt extends Stunt implements iAllGALActions {
 
 	public GALStunt(Model model, Entity e) {
 		super(model, e);
-		this.entity=e;
+		this.entity = e;
 		step_cm = entity.step().x();
 		max_cmPer_ms = Game.game().cmPerCell / 1000.0;
 		max_degPer_ms = 90.0 / 1000.0;
-		action_ms = step_cm / max_cmPer_ms;;
+		action_ms = 0;
+		;
 	}
 
 	// STEP
@@ -71,6 +72,8 @@ public class GALStunt extends Stunt implements iAllGALActions {
 	 * @implNote {@code action_ms} is updated according to the {@code elapsed_ms}
 	 */
 	public void tick(double elapsed_ms) {
+		if (action_ms > 0)
+			System.out.println("[GALStunt] tick action_ms=" + action_ms);
 		if (action_ms <= 0)
 			return;
 
@@ -168,36 +171,34 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		action_ms = 0;
 	}
 
-	
-
 	@Override
 	public void update(long elapsed) {
-	    tick(elapsed);
+		tick(elapsed);
 	}
 
 	@Override
 	public void walk(int degree) {
-	    Direction dir;
+		Direction dir;
 
-	    degree = ((degree % 360) + 360) % 360;
+		degree = ((degree % 360) + 360) % 360;
 
-	    if (degree == 0) {
-	        dir = Direction.E;
-	        entity.turnTo(0);
-	    } else if (degree == 90) {
-	        dir = Direction.S;
-	        entity.turnTo(90);
-	    } else if (degree == 180) {
-	        dir = Direction.W;
-	        entity.turnTo(180);
-	    } else if (degree == 270) {
-	        dir = Direction.N;
-	        entity.turnTo(270);
-	    } else {
-	        return;
-	    }
+		if (degree == 0) {
+			dir = Direction.E;
+			entity.turnTo(0);
+		} else if (degree == 90) {
+			dir = Direction.S;
+			entity.turnTo(90);
+		} else if (degree == 180) {
+			dir = Direction.W;
+			entity.turnTo(180);
+		} else if (degree == 270) {
+			dir = Direction.N;
+			entity.turnTo(270);
+		} else {
+			return;
+		}
 
-	    startMoving(dir, 1.0, 1000.0);
+		startMoving(dir, 1.0, 1000.0);
 	}
 
 }
