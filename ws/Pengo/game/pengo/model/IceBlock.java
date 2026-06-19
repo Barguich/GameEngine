@@ -9,12 +9,14 @@ public class IceBlock extends Entity {
 	private boolean sliding;
 	private int direction;
 	private boolean broken;
+	private int hp;
 
 	public IceBlock() {
 		super("IceBlock");
 		sliding = false;
 		direction = 0;
 		broken = false;
+		hp = 3;
 	}
 
 	public boolean sliding() {
@@ -27,6 +29,23 @@ public class IceBlock extends Entity {
 
 	public boolean broken() {
 		return broken;
+	}
+	public int hp() {
+	    return hp;
+	}
+
+	public void damage() {
+	    if (broken) {
+	        return;
+	    }
+
+	    hp--;
+
+	    System.out.println("ICEBLOCK DAMAGE, hp = " + hp);
+
+	    if (hp <= 0) {
+	        breakBlock();
+	    }
 	}
 
 	public void startSlide(int direction) {

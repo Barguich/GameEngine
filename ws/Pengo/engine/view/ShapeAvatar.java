@@ -3,6 +3,8 @@ package view;
 import oop.graphics.Graphics;
 import model.Entity;
 import oop.graphics.Color;
+import pengo.model.IceBlock;
+import oop.graphics.Color;
 
 public class ShapeAvatar extends Avatar {
 
@@ -51,7 +53,25 @@ public class ShapeAvatar extends Avatar {
 		int halfH = (int) (entity.size().y() / 2 * scale);
 
 		boolean flashing = System.currentTimeMillis() < flashUntil;
-		Color active = flashing ? getFlashColor(g) : color;
+		Color active;
+
+		if (flashing) {
+			active = getFlashColor(g);
+		} else if (entity instanceof IceBlock ice) {
+
+			if (ice.hp() == 3) {
+				active = g.getColor(255, 120, 180, 255);
+			} else if (ice.hp() == 2) {
+				active = g.getColor(255, 100, 140, 220);
+			} else if (ice.hp() == 1) {
+				active = g.getColor(255, 180, 80, 80);
+			} else {
+				active = color;
+			}
+
+		} else {
+			active = color;
+		}
 
 		Object saved = saveTransform(g);
 		g.translate(xPix, yPix);
