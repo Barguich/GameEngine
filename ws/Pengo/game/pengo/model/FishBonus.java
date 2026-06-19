@@ -41,7 +41,10 @@ public class FishBonus extends Entity {
 
         System.out.println("Fish Bonus récupéré");
 
-        // supprimer le bonus du modèle
+        if (player != null) {
+            player.activateSpeedBoost(8000); // 8 secondes
+        }
+
         if (model != null) {
             model.remove(this);
         }

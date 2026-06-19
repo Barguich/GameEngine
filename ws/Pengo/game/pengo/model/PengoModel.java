@@ -74,7 +74,7 @@ public class PengoModel extends Model {
     public void activateDoubleScore(long duration) {
         assert duration >= 0;
 
-        doubleScore = true;
+        doubleScore = true;  
         doubleScoreRemaining = duration;
     }
 
@@ -237,6 +237,20 @@ public class PengoModel extends Model {
 
     public boolean isVibrating(Entity e) {
     	 return e != null && vibratingEntities.contains(e);
+    }
+    //methode killenemy
+    public void killEnemy(Enemy enemy) {
+        if (enemy == null) {
+            return;
+        }
+
+        if (enemy.dead()) {
+            return;
+        }
+
+        enemy.kill();
+        addScore(100);
+        checkVictory();
     }
     
 }

@@ -26,7 +26,7 @@ public class IceBlock extends Entity {
 	}
 
 	public boolean broken() {
-		return broken;
+		return broken;   
 	}
 
 	public void startSlide(int direction) {
@@ -81,6 +81,10 @@ public class IceBlock extends Entity {
 		// Important :
 		// PAS de super.collision(e), sinon Entity.collision() fait stop()
 		// et le bloc s'arrête immédiatement.
+		//cas de kill enemy
+		if (e instanceof Enemy && model instanceof PengoModel) {
+		    ((PengoModel) model).killEnemy((Enemy) e);
+		}
 	}
 
 	@Override

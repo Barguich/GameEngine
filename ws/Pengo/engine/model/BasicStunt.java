@@ -3,6 +3,7 @@ package model;
 import java.util.List;
 
 import geometry.Grid.Cell;
+import pengo.model.PengoPlayer;
 
 public class BasicStunt extends Stunt {
 	// Le stunt est responsable de l'exécution des mouvements
@@ -26,7 +27,7 @@ public class BasicStunt extends Stunt {
 
 	}
 
-	@Override
+	@Override   
 	public void collision(List<Entity> entities) {
 		for (Entity e : entities) {
 			collision(e);
@@ -37,30 +38,32 @@ public class BasicStunt extends Stunt {
 	@Override
 	public void walk(int degree) {
 
-		double speed = entity.step().x(); // 1 cellule par seconde
+	    double speed = entity.step().x();
 
-		if (degree == 0) {
-			entity.turnTo(0);
-			// Le stunt ne déplace pas directement l'entité. Il définit simplement sa
-			// vitesse.
-			entity.setLinearSpeed(entity.center().isu().new Vector(speed, 0));
-		}
+	    if (entity instanceof PengoPlayer) {
+	        speed *= ((PengoPlayer) entity).speedMultiplier();
+	    }
 
-		else if (degree == 90) {
-			entity.turnTo(90);
-			entity.setLinearSpeed(entity.center().isu().new Vector(0, -speed));
-		}
+	    if (degree == 0) {
+	        entity.turnTo(0);
+	        entity.setLinearSpeed(entity.center().isu().new Vector(speed, 0));
+	    }
 
-		else if (degree == 180) {
-			entity.turnTo(180);
-			entity.setLinearSpeed(entity.center().isu().new Vector(-speed, 0));
-		}
+	    else if (degree == 90) {
+	        entity.turnTo(90);
+	        entity.setLinearSpeed(entity.center().isu().new Vector(0, -speed));
+	    }
 
-		else if (degree == 270) {
-			entity.turnTo(270);
-			entity.setLinearSpeed(entity.center().isu().new Vector(0, speed));
-		}
-	}
+	    else if (degree == 180) {
+	        entity.turnTo(180);
+	        entity.setLinearSpeed(entity.center().isu().new Vector(-speed, 0));
+	    }
+
+	    else if (degree == 270) {
+	        entity.turnTo(270);
+	        entity.setLinearSpeed(entity.center().isu().new Vector(0, speed));
+	    }
+	}  
 
 	@Override
 	public void set(double x_cm, double y_cm) {

@@ -18,7 +18,7 @@ public class PengoPlayer extends Entity {
         this.score = 0;
         this.speedBoost = false;
         this.speedBoostRemaining = 0;
-    }
+    } 
 
     public int lives() {
         return lives;
@@ -107,5 +107,8 @@ public class PengoPlayer extends Entity {
                 block.startSlide(this.orientation());
             }
         }
+    }
+    public double speedMultiplier() {
+        return speedBoost ? 2.0 : 1.0;
     }
 }
