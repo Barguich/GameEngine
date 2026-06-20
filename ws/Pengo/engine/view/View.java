@@ -11,8 +11,8 @@ import pengo.model.PengoModel;
 import oop.graphics.Font;
 
 /**
- * Couche de rendu du moteur : observe le Model et le projette à l'écran
- * à travers un ViewPort.
+ * Couche de rendu du moteur : observe le Model et le projette à l'écran à
+ * travers un ViewPort.
  */
 public class View implements Canvas.PaintListener {
 
@@ -124,7 +124,18 @@ public class View implements Canvas.PaintListener {
 			}
 
 			g.drawString("Enemies : " + pm.enemiesRemaining(), x, y + 2 * lineH);
+			if (pm.lost()) {
 
+				menu.set("GAME OVER", new String[] { "R : Restart", "Q : Quit" }, 0);
+
+			} else if (pm.won()) {
+
+				menu.set("YOU WIN", new String[] { "R : Play Again", "Q : Quit" }, 0);
+
+			} else if (pm.state() == PengoModel.GameState.PAUSED) {
+
+				menu.set("PAUSED", new String[] { "ESC : Continue", "Q : Quit" }, 0);
+			}
 			// Menu plein écran (pause / game over / victoire) en surimpression.
 			if (pm.menuVisible()) {
 				menu.paint(canvas, g);

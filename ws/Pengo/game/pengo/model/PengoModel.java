@@ -213,24 +213,61 @@ public class PengoModel extends Model {
 	}
 
 	public void checkVictory() {
+
 	    if (lost) {
 	        return;
 	    }
 
-	    if (allEnemiesDead()) {
+	    if (diamondBlocksAligned() || allEnemiesDead()) {
+
 	        if (!won) {
+
 	            won = true;
 	            state = GameState.WON;
-	            System.out.println("YOU WIN - ALL ENEMIES DEAD");
+
+	            if (diamondBlocksAligned()) {
+	                System.out.println("YOU WIN - DIAMOND ALIGNMENT");
+	            } else {
+	                System.out.println("YOU WIN - ALL ENEMIES DEAD");
+	            }
 	        }
+	    }
+	}
+	public void respawnPlayerNearSafePlace() {
+
+	    if (player == null) {
 	        return;
 	    }
 
-	    if (diamondBlocksAligned()) {
-	        if (!won) {
-	            won = true;
-	            state = GameState.WON;
-	            System.out.println("YOU WIN - DIAMOND ALIGNMENT");
+	    int[][] positions = {
+	        {2, 2},
+	        {2, 3},
+	        {3, 2},
+	        {3, 3},
+	        {1, 2}
+	    };
+
+	    for (int[] p : positions) {
+
+	        boolean safe = true;
+
+	        for (Entity e : entities()) {
+
+	            if (e instanceof Enemy && e.position() != null) {
+
+	                if (e.position().x() == p[0]
+	                        && e.position().y() == p[1]) {
+
+	                    safe = false;
+	                    break;
+	                }
+	            }
+	        }
+
+	        if (safe) {
+	            player.setPosition(grid().new Position(p[0], p[1]));
+	            player.stop();
+	            return;
 	        }
 	    }
 	}
@@ -311,14 +348,20 @@ public class PengoModel extends Model {
 
 		player.loseLife();
 
-		// 2 secondes d'invincibilité
 		invincibleRemaining = 2000;
 
 		System.out.println("Le joueur perd une vie");
 
 		if (player.dead()) {
-			lost = true;
-			System.out.println("GAME OVER");
+
+		    lost = true;
+		    state = GameState.GAME_OVER;
+
+		    System.out.println("GAME OVER");
+
+		} else {
+
+		    respawnPlayerNearSafePlace();
 		}
 	}
 
