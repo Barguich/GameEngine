@@ -127,4 +127,9 @@ public class PengoPlayer extends Entity {
         }
         return 1.0;
     }
+    public void attack() {
+        if (model instanceof PengoModel) {
+            ((PengoModel) model).damageBlockInFront(this);
+        }
+    }
 }

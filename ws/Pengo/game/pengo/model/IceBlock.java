@@ -2,6 +2,7 @@ package pengo.model;
 
 import collision.Bounding;
 import collision.Rect;
+import geometry.Grid;
 import model.Entity;
 
 public class IceBlock extends Entity {
@@ -10,13 +11,18 @@ public class IceBlock extends Entity {
 	private int direction;
 	private boolean broken;
 	private int hp;
+	private double friction;
 
 	public IceBlock() {
 		super("IceBlock");
 		sliding = false;
 		direction = 0;
 		broken = false;
-		hp = 3;
+		hp = 3;//destruction totale sur 3 coups 
+		friction = 0.98;
+	}
+	public double friction() {
+	    return friction;
 	}
 
 	public boolean sliding() {
@@ -33,6 +39,13 @@ public class IceBlock extends Entity {
 
 	public int hp() {
 		return hp;
+	}
+	public boolean cracked() {//1er coup une fissure simple
+	    return hp == 2;
+	}
+
+	public boolean veryCracked() {// le 2 emme coup a bigger crack
+	    return hp == 1;
 	}
 
 	public void damage() {
@@ -87,40 +100,41 @@ public class IceBlock extends Entity {
 			model.remove(this);
 		}
 	}
-
 	@Override
 	public void collision(Entity e) {
-		if (e == null) {
-			return;
-		}
+	    if (e == null) {
+	        return;
+	    }
 
-		if (sliding && e instanceof Enemy) {
-			((Enemy) e).kill();
+	    if (e instanceof PengoPlayer) {
+	        stopSlide();
+	        return;
+	    }
 
-			if (model instanceof PengoModel) {
-				((PengoModel) model).addScore(100);
-			}
+	    if (sliding && e instanceof Enemy && model instanceof PengoModel) {
+	        PengoModel pm = (PengoModel) model;
+	        Enemy enemy = (Enemy) e;
 
-			return;
-		}
+	        Grid.Position next = pm.nextPosition(enemy, direction);
 
-		if (e instanceof Wall || e instanceof IceBlock ) {
-			stopSlide();
-		}
+	        if (pm.blocked(next)) {
+	            pm.killEnemy(enemy);
+	        } else {
+	            enemy.setPosition(next);
+	        }
 
+	        return;
+	    }
 
-		// Important :
-		// PAS de super.collision(e), sinon Entity.collision() fait stop()
-		// et le bloc s'arrête immédiatement.
-		//cas de kill enemy
-		if (e instanceof Enemy && model instanceof PengoModel) {
-		    ((PengoModel) model).killEnemy((Enemy) e);
-		}
-
+	    if (e instanceof Wall || e instanceof IceBlock) {
+	        stopSlide();
+	        return;
+	    }
 	}
 
 	@Override
 	public void tick(long elapsed) {
+		
 		if (broken) {
 			return;
 		}
@@ -146,12 +160,16 @@ public class IceBlock extends Entity {
 		boolean moved = model.move(this, movement);
 
 		if (!moved) {
-			if (sliding && linearSpeed() != null && linearSpeed().norm() != 0) {
-				// Collision avec ennemi tué : on continue
-				return;
-			}
+		    stopSlide();
+		    return;
+		}
 
-			stopSlide();
+		if (linearSpeed() != null) {
+		    linearSpeed().scale(friction);
+
+		    if (linearSpeed().norm() < 0.5) {
+		        stopSlide();
+		    }
 		}
 	}
 

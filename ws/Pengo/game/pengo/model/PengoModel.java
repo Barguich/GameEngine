@@ -213,17 +213,26 @@ public class PengoModel extends Model {
 	}
 
 	public void checkVictory() {
-		if (lost) {
-			return;
-		}
+	    if (lost) {
+	        return;
+	    }
 
-		if (diamondBlocksAligned()) {
-			if (!won) {
-				won = true;
-				state = GameState.WON;
-				System.out.println("YOU WIN - DIAMOND ALIGNMENT");
-			}
-		}
+	    if (allEnemiesDead()) {
+	        if (!won) {
+	            won = true;
+	            state = GameState.WON;
+	            System.out.println("YOU WIN - ALL ENEMIES DEAD");
+	        }
+	        return;
+	    }
+
+	    if (diamondBlocksAligned()) {
+	        if (!won) {
+	            won = true;
+	            state = GameState.WON;
+	            System.out.println("YOU WIN - DIAMOND ALIGNMENT");
+	        }
+	    }
 	}
 
 	public int enemiesRemaining() {
@@ -362,6 +371,67 @@ public class PengoModel extends Model {
         addScore(100);
         checkVictory();
     }
+    //on detruit le block de ice in front of us 
+    public void damageBlockInFront(PengoPlayer player) {
+        if (player == null || player.position() == null) {
+            return;
+        }
+
+        int x = player.position().x();
+        int y = player.position().y();
+
+        switch (player.orientation()) {
+            case 0:
+                x++;
+                break;
+            case 90:
+                y++;
+                break;
+            case 180:
+                x--;
+                break;
+            case 270:
+                y--;
+                break;
+            default:
+                return;
+        }
+
+        Entity e = firstAt(grid().new Position(x, y));
+
+        if (e instanceof IceBlock && !(e instanceof DiamondBlock)) {
+            ((IceBlock) e).damage();
+        }
+    }
+    public Grid.Position nextPosition(Entity e, int direction) {
+        int x = e.position().x();
+        int y = e.position().y();
+
+        switch (direction) {
+            case 0:
+                x++;
+                break;
+            case 90:
+                y++;
+                break;
+            case 180:
+                x--;
+                break;
+            case 270:
+                y--;
+                break;
+            default:
+                break;
+        }
+
+        return grid().new Position(x, y);
+    }
+    public boolean blocked(Grid.Position p) {
+        Entity e = firstAt(p);
+
+        return e instanceof Wall || e instanceof IceBlock;
+    }
+    
     
 
 }
