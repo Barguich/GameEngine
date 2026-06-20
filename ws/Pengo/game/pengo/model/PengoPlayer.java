@@ -18,7 +18,7 @@ public class PengoPlayer extends Entity {
         this.score = 0;
         this.speedBoost = false;
         this.speedBoostRemaining = 0;
-    } 
+    }
 
     public int lives() {
         return lives;
@@ -54,6 +54,8 @@ public class PengoPlayer extends Entity {
 
         speedBoost = true;
         speedBoostRemaining = duration_ms;
+
+        System.out.println("SPEED BOOST ACTIVATED");
     }
 
     @Override
@@ -66,6 +68,8 @@ public class PengoPlayer extends Entity {
             if (speedBoostRemaining <= 0) {
                 speedBoost = false;
                 speedBoostRemaining = 0;
+
+                System.out.println("SPEED BOOST FINISHED");
             }
         }
     }
@@ -98,9 +102,17 @@ public class PengoPlayer extends Entity {
             ((FishBonus) e).consume(this);
         }
 
-        if (e instanceof IceBlock) {
-            System.out.println("PENGO TOUCHE ICEBLOCK");
+        if (e instanceof DiamondBlock) {
+            DiamondBlock diamond = (DiamondBlock) e;
 
+            if (!diamond.sliding()) {
+                diamond.startSlide(this.orientation());
+            }
+
+            return;
+        }
+
+        if (e instanceof IceBlock) {
             IceBlock block = (IceBlock) e;
 
             if (!block.sliding()) {
@@ -108,6 +120,7 @@ public class PengoPlayer extends Entity {
             }
         }
     }
+
     public double speedMultiplier() {
         return speedBoost ? 2.0 : 1.0;
     }

@@ -5,16 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import gal.action.*;
 import ast.*;
-import gal.aut.iGALCondition;
-import gal.condition.AtStep;
-import gal.condition.Closest;
-import gal.condition.Conjunction;
-import gal.condition.Disjunction;
-import gal.condition.KeyP;
-import gal.condition.Not;
-import gal.condition.True;
+import gal.action.*;
+import gal.condition.*;
 import parser.Parser;
 
 public class GalBuilder implements iVisitor {

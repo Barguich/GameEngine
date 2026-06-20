@@ -34,12 +34,16 @@ public class Enemy extends Entity {
 			return;
 		}
 
+		System.out.println("ENEMY FREEZE");
+
 		frozen = true;
 		frozenRemaining = duration_ms;
 		stop();
 	}
 
 	public void unfreeze() {
+		System.out.println("ENEMY UNFREEZE");
+
 		if (dead) {
 			return;
 		}

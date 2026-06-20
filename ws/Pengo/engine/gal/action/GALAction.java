@@ -1,8 +1,6 @@
 package gal.action;
 
-import gal.aut.iGALAction;
-
-public abstract class GALAction implements iGALAction{
+public abstract class GALAction implements iGALAction {
 
 	/**
 	 * @param intensity &in; [0,1] ≃ %

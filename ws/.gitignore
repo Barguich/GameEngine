@@ -20,6 +20,7 @@
 .project
 .metadata/
 .vscode/
+Drawios/
 
 # --- Fichiers temporaires ---
 *.log

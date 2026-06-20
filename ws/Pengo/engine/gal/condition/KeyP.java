@@ -1,7 +1,6 @@
 package gal.condition;
 
 import gal.arguments.Key;
-import gal.aut.iGALCondition;
 import gal_engine.Keyboard;
 import model.Entity;
 

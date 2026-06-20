@@ -9,12 +9,14 @@ public class IceBlock extends Entity {
 	private boolean sliding;
 	private int direction;
 	private boolean broken;
+	private int hp;
 
 	public IceBlock() {
 		super("IceBlock");
 		sliding = false;
 		direction = 0;
 		broken = false;
+		hp = 3;
 	}
 
 	public boolean sliding() {
@@ -27,6 +29,24 @@ public class IceBlock extends Entity {
 
 	public boolean broken() {
 		return broken;   
+	}
+
+	public int hp() {
+		return hp;
+	}
+
+	public void damage() {
+		if (broken) {
+			return;
+		}
+
+		hp--;
+
+		System.out.println("ICEBLOCK DAMAGE, hp = " + hp);
+
+		if (hp <= 0) {
+			breakBlock();
+		}
 	}
 
 	public void startSlide(int direction) {
@@ -74,9 +94,20 @@ public class IceBlock extends Entity {
 			return;
 		}
 
-		if (e instanceof Wall || e instanceof IceBlock) {
+		if (sliding && e instanceof Enemy) {
+			((Enemy) e).kill();
+
+			if (model instanceof PengoModel) {
+				((PengoModel) model).addScore(100);
+			}
+
+			return;
+		}
+
+		if (e instanceof Wall || e instanceof IceBlock ) {
 			stopSlide();
 		}
+
 
 		// Important :
 		// PAS de super.collision(e), sinon Entity.collision() fait stop()
@@ -85,6 +116,7 @@ public class IceBlock extends Entity {
 		if (e instanceof Enemy && model instanceof PengoModel) {
 		    ((PengoModel) model).killEnemy((Enemy) e);
 		}
+
 	}
 
 	@Override
@@ -93,9 +125,32 @@ public class IceBlock extends Entity {
 			return;
 		}
 
-		super.tick(elapsed);
+		if (!sliding) {
+			super.tick(elapsed);
+			return;
+		}
 
-		if (sliding && linearSpeed() != null && linearSpeed().norm() == 0) {
+		if (model == null || center == null || linearSpeed() == null) {
+			return;
+		}
+
+		if (linearSpeed().norm() == 0) {
+			stopSlide();
+			return;
+		}
+
+		double dt = elapsed / 1000.0;
+
+		geometry.ISU.Vector movement = center.isu().new Vector(linearSpeed().x() * dt, linearSpeed().y() * dt);
+
+		boolean moved = model.move(this, movement);
+
+		if (!moved) {
+			if (sliding && linearSpeed() != null && linearSpeed().norm() != 0) {
+				// Collision avec ennemi tué : on continue
+				return;
+			}
+
 			stopSlide();
 		}
 	}
