@@ -17,6 +17,7 @@ import view.Painter;
 import view.ShapeAvatar;
 import view.View;
 import view.ViewPort;
+import pengo.brain.PengoBots;
 
 public class MainEngine {
 
@@ -32,8 +33,13 @@ public class MainEngine {
         View view = new View(model, viewPort);
         view.debug().setEnabled(true);
 
-        model.setSceneBuilder(() -> buildScene(model, view));
+        model.setSceneBuilder(() -> {
+            buildScene(model, view);
+            PengoBots.configure(model);
+        });
+
         buildScene(model, view);
+        PengoBots.configure(model);
 
         int winW = (int) (mapW * game.pixelPerCm);
         int winH = (int) (mapH * game.pixelPerCm);
