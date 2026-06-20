@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import engine.Game;
 import pengo.model.DiamondBlock;
+import pengo.model.Enemy;
 import pengo.model.PengoModel;
 
 public class DiamondBlockTest {
@@ -73,18 +74,26 @@ public class DiamondBlockTest {
 
         DiamondBlock d1 = new DiamondBlock();
         d1.setPosition(Game.grid().new Position(2, 5));
+        d1.setSize(Game.grid().new Dimension(1, 1));
         model.add(d1);
 
         DiamondBlock d2 = new DiamondBlock();
         d2.setPosition(Game.grid().new Position(4, 5));
+        d2.setSize(Game.grid().new Dimension(1, 1));
         model.add(d2);
 
         DiamondBlock d3 = new DiamondBlock();
         d3.setPosition(Game.grid().new Position(6, 5));
+        d3.setSize(Game.grid().new Dimension(1, 1));
         model.add(d3);
+
+        Enemy enemy = new Enemy();
+        enemy.setPosition(Game.grid().new Position(8, 8));
+        enemy.setSize(Game.grid().new Dimension(1, 1));
+        model.add(enemy);
 
         model.checkVictory();
 
-        assertTrue(!model.won());
+        assertFalse(model.won());
     }
 }

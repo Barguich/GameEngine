@@ -86,49 +86,61 @@ public class PengoPlayer extends Entity {
 		double radius = Math.min(size.x(), size.y()) / 2.0;
 		bounding.add(new Circle(center, radius));
 	}
-
 	@Override
 	public void collision(Entity e) {
-		super.collision(e);
+	    if (e == null) {
+	        return;
+	    }
 
-		if (e instanceof Wall && model instanceof PengoModel) {
-			((PengoModel) model).startWallVibration(e, 1500);
-		}
+	    if (model instanceof PengoModel pm) {
+	        if (pm.lost() || pm.won()) {
+	            stop();
+	            return;
+	        }
+	    }
 
-		if (e instanceof Enemy && model instanceof PengoModel) {
-			((PengoModel) model).loseLife();
-		}
+	    if (e instanceof Wall && model instanceof PengoModel) {
+	        ((PengoModel) model).startWallVibration(e, 1500);
+	        stop();
+	        return;
+	    }
 
-		if (e instanceof FishBonus) {
-			((FishBonus) e).consume(this);
-		}
+	    if (e instanceof Enemy && model instanceof PengoModel) {
+	        ((PengoModel) model).loseLife();
+	        stop();
+	        return;
+	    }
 
+	    if (e instanceof FishBonus) {
+	        ((FishBonus) e).consume(this);
+	        return;
+	    }
 
-		if (e instanceof DiamondBlock) {
-			DiamondBlock diamond = (DiamondBlock) e;
+	    if (e instanceof DiamondBlock) {
+	        DiamondBlock diamond = (DiamondBlock) e;
 
-			if (!diamond.sliding()) {
-				diamond.startSlide(this.orientation());
-			}
+	        if (!diamond.sliding()) {
+	            diamond.startSlide(this.orientation());
+	        }
 
-			return;
-		}
+	        stop();
+	        return;
+	    }
 
-		if (e instanceof IceBlock) {
-			IceBlock block = (IceBlock) e;
+	    if (e instanceof IceBlock) {
+	        IceBlock block = (IceBlock) e;
 
-			System.out.println("PENGO TOUCHE ICEBLOCK");
+	        System.out.println("PENGO TOUCHE ICEBLOCK");
 
-			if (!block.sliding()) {
-				block.startSlide(this.orientation());
-			}
-		}
-		if (model instanceof PengoModel pm) {
-		    if (pm.lost() || pm.won()) {
-		        stop();
-		        return;
-		    }
-		}
+	        if (!block.sliding()) {
+	            block.startSlide(this.orientation());
+	        }
+
+	        stop();
+	        return;
+	    }
+
+	    super.collision(e);
 	}
 
 	public double speedMultiplier() {

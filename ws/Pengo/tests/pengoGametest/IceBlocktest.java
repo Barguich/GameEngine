@@ -8,6 +8,7 @@ import engine.Game;
 import pengo.model.Enemy;
 import pengo.model.IceBlock;
 import pengo.model.PengoModel;
+import pengo.model.PengoPlayer;
 import pengo.model.Wall;
 
 public class IceBlocktest {
@@ -242,4 +243,86 @@ public class IceBlocktest {
         assertTrue(speedAfter < speedBefore);
         assertTrue(block.sliding());
     }
+    @Test
+    public void testStartSlideSetsSlidingAndSpeed() {
+        new Game(10, 10);
+        PengoModel model = new PengoModel(Game.grid());
+
+        IceBlock block = new IceBlock();
+        block.setPosition(Game.grid().new Position(5, 5));
+        block.setSize(Game.grid().new Dimension(1, 1));
+        model.add(block);
+
+        block.startSlide(0);
+
+        assertTrue(block.sliding());
+        assertTrue(block.linearSpeed().x() > 0);
+        assertEquals(0, block.linearSpeed().y(), 1e-9);
+    }
+    @Test
+    public void testFrictionSlowsDownIceBlock() {
+        new Game(10, 10);
+        PengoModel model = new PengoModel(Game.grid());
+
+        IceBlock block = new IceBlock();
+        block.setPosition(Game.grid().new Position(5, 5));
+        block.setSize(Game.grid().new Dimension(1, 1));
+        model.add(block);
+
+        block.startSlide(0);
+
+        double before = block.linearSpeed().norm();
+
+        block.tick(100);
+
+        double after = block.linearSpeed().norm();
+
+        assertTrue(after < before);
+    }
+
+    @Test
+    public void testIceBlockStopsWhenTouchingWall() {
+        new Game(10, 10);
+        PengoModel model = new PengoModel(Game.grid());
+
+        IceBlock block = new IceBlock();
+        block.setPosition(Game.grid().new Position(5, 5));
+        block.setSize(Game.grid().new Dimension(1, 1));
+        model.add(block);
+
+        Wall wall = new Wall();
+        wall.setPosition(Game.grid().new Position(6, 5));
+        wall.setSize(Game.grid().new Dimension(1, 1));
+        model.add(wall);
+
+        block.startSlide(0);
+        block.collision(wall);
+
+        assertFalse(block.sliding());
+        assertEquals(0, block.linearSpeed().norm(), 1e-9);
+    }
+
+    @Test
+    public void testIceBlockStopsWhenTouchingPlayer() {
+        new Game(10, 10);
+        PengoModel model = new PengoModel(Game.grid());
+
+        IceBlock block = new IceBlock();
+        block.setPosition(Game.grid().new Position(5, 5));
+        block.setSize(Game.grid().new Dimension(1, 1));
+        model.add(block);
+
+        PengoPlayer player = new PengoPlayer();
+        player.setPosition(Game.grid().new Position(6, 5));
+        player.setSize(Game.grid().new Dimension(1, 1));
+        model.setPlayer(player);
+
+        block.startSlide(0);
+        block.collision(player);
+
+        assertFalse(block.sliding());
+        assertEquals(0, block.linearSpeed().norm(), 1e-9);
+    }
+
+
 }
