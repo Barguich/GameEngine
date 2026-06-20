@@ -122,6 +122,9 @@ public class PengoPlayer extends Entity {
     }
 
     public double speedMultiplier() {
-        return speedBoost ? 2.0 : 1.0;
+        if (speedBoost) {
+        	return 2.0;
+        }
+        return 1.0;
     }
 }
