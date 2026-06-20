@@ -46,9 +46,19 @@ public class AtStep extends GALCondition {
 		if (direction != Direction.H) {
 			int angle;
 			if (direction.isRelative()) {
-				angle = (e.orientation() + direction.toAngle() + 360) % 360;
+			    if (direction == Direction.F) {
+			        angle = e.orientation();
+			    } else if (direction == Direction.B) {
+			        angle = (e.orientation() + 180) % 360;
+			    } else if (direction == Direction.L) {
+			        angle = (e.orientation() + 270) % 360;
+			    } else if (direction == Direction.R) {
+			        angle = (e.orientation() + 90) % 360;
+			    } else {
+			        angle = e.orientation();
+			    }
 			} else {
-				angle = direction.toAngle();
+			    angle = direction.toAngle();
 			}
 			int dx = 0;
 			int dy = 0;
