@@ -18,14 +18,17 @@ import java.util.List;
 
 /** Branchement des catégories + automates GAL sur les entités Pengo. */
 public final class PengoBots {
-    private PengoBots() {}
+	private PengoBots() {
+	}
 
-    public static void configure(PengoModel model) {
-        if (model == null) return;
-        for (Entity e : model.entities()) {
-            configureEntity(model, e);
-        }
-    }
+	public static void configure(PengoModel model) {
+		if (model == null)
+			return;
+		for (Entity e : model.entities()) {
+			configureEntity(model, e);
+		}
+	}
+
 
     public static void configureEntity(PengoModel model, Entity e) {
         if (e == null) return;
