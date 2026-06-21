@@ -8,6 +8,9 @@ public class Enemy extends Entity {
 
 	private boolean frozen;
 	private long frozenRemaining;
+	private boolean dying;
+	private long dyingRemaining;
+	private long spawnAnimationRemaining;
 
 	private boolean dead;
 
@@ -17,6 +20,9 @@ public class Enemy extends Entity {
 		this.frozen = false;
 		this.frozenRemaining = 0;
 		this.dead = false;
+		this.dying = false;
+		this.dyingRemaining = 0;
+		this.spawnAnimationRemaining = 800;
 	}
 
 	public boolean frozen() {
@@ -25,6 +31,20 @@ public class Enemy extends Entity {
 
 	public boolean dead() {
 		return dead;
+	}
+	public boolean dying() {
+	    return dying;
+	}
+
+	public long dyingRemaining() {
+	    return dyingRemaining;
+	}
+	public boolean spawning() {
+	    return spawnAnimationRemaining > 0;
+	}
+
+	public long spawnAnimationRemaining() {
+	    return spawnAnimationRemaining;
 	}
 
 	public void freeze(long duration_ms) {
@@ -51,27 +71,49 @@ public class Enemy extends Entity {
 		frozen = false;
 		frozenRemaining = 0;
 	}
+	public boolean moving() {
+	    return linearSpeed() != null && linearSpeed().norm() > 0;
+	}
 
 	public void kill() {
-		if (dead) {
-			return;
-		}
+	    if (dead || dying) {
+	        return;
+	    }
 
-		dead = true;
-		frozen = false;
-		frozenRemaining = 0;
-		stop();
+	    dying = true;
+	    dyingRemaining = 1000;
+	    frozen = false;
+	    frozenRemaining = 0;
+	    stop();
 
-		System.out.println("Enemy killed");
-
-		if (model != null) {
-			model.remove(this);
-		}
+	    System.out.println("Enemy dying animation");
 	}
 
 	@Override
 	public void tick(long elapsed) {
 		assert elapsed >= 0;
+		if (spawnAnimationRemaining > 0) {
+		    spawnAnimationRemaining -= elapsed;
+
+		    if (spawnAnimationRemaining < 0) {
+		        spawnAnimationRemaining = 0;
+		    }
+		}
+		if (dying) {
+		    dyingRemaining -= elapsed;
+
+		    if (dyingRemaining <= 0) {
+		        dead = true;
+		        dying = false;
+		        dyingRemaining = 0;
+
+		        if (model != null) {
+		            model.remove(this);
+		        }
+		    }
+
+		    return;
+		}
 
 		if (dead) {
 			return;

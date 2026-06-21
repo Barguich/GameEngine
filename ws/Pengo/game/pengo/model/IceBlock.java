@@ -12,17 +12,24 @@ public class IceBlock extends Entity {
 	private boolean broken;
 	private int hp;
 	private double friction;
+	private boolean breakingAnimation;
+	private long breakingAnimationRemaining;
+	private int breakingFrame;
 
 	public IceBlock() {
 		super("IceBlock");
 		sliding = false;
 		direction = 0;
 		broken = false;
-		hp = 3;//destruction totale sur 3 coups 
+		hp = 3;// destruction totale sur 3 coups
 		friction = 0.98;
+		breakingAnimation = false;
+		breakingAnimationRemaining = 0;
+		breakingFrame = 0;
 	}
+
 	public double friction() {
-	    return friction;
+		return friction;
 	}
 
 	public boolean sliding() {
@@ -34,22 +41,31 @@ public class IceBlock extends Entity {
 	}
 
 	public boolean broken() {
-		return broken;   
+		return broken;
 	}
 
 	public int hp() {
 		return hp;
 	}
-	public boolean cracked() {//1er coup une fissure simple
-	    return hp == 2;
+
+	public boolean cracked() {// 1er coup une fissure simple
+		return hp == 2;
 	}
 
 	public boolean veryCracked() {// le 2 emme coup a bigger crack
-	    return hp == 1;
+		return hp == 1;
+	}
+
+	public boolean breakingAnimation() {
+		return breakingAnimation;
+	}
+
+	public int breakingFrame() {
+		return breakingFrame;
 	}
 
 	public void damage() {
-		if (broken) {
+		if (broken || breakingAnimation) {
 			return;
 		}
 
@@ -57,9 +73,9 @@ public class IceBlock extends Entity {
 
 		System.out.println("ICEBLOCK DAMAGE, hp = " + hp);
 
-		if (hp <= 0) {
-			breakBlock();
-		}
+		breakingAnimation = true;
+		breakingAnimationRemaining = 300;
+		breakingFrame = 0;
 	}
 
 	public void startSlide(int direction) {
@@ -100,41 +116,62 @@ public class IceBlock extends Entity {
 			model.remove(this);
 		}
 	}
+
 	@Override
 	public void collision(Entity e) {
-	    if (e == null) {
-	        return;
-	    }
+		if (e == null) {
+			return;
+		}
 
-	    if (e instanceof PengoPlayer) {
-	        stopSlide();
-	        return;
-	    }
+		if (e instanceof PengoPlayer) {
+			stopSlide();
+			return;
+		}
 
-	    if (sliding && e instanceof Enemy && model instanceof PengoModel) {
-	        PengoModel pm = (PengoModel) model;
-	        Enemy enemy = (Enemy) e;
+		if (sliding && e instanceof Enemy && model instanceof PengoModel) {
+			PengoModel pm = (PengoModel) model;
+			Enemy enemy = (Enemy) e;
 
-	        Grid.Position next = pm.nextPosition(enemy, direction);
+			Grid.Position next = pm.nextPosition(enemy, direction);
 
-	        if (pm.blocked(next)) {
-	            pm.killEnemy(enemy);
-	        } else {
-	            enemy.setPosition(next);
-	        }
+			if (pm.blocked(next)) {
+				pm.killEnemy(enemy);
+			} else {
+				enemy.setPosition(next);
+			}
 
-	        return;
-	    }
+			return;
+		}
 
-	    if (e instanceof Wall || e instanceof IceBlock) {
-	        stopSlide();
-	        return;
-	    }
+		if (e instanceof Wall || e instanceof IceBlock) {
+			stopSlide();
+			return;
+		}
 	}
 
 	@Override
 	public void tick(long elapsed) {
-		
+		if (breakingAnimation) {
+			breakingAnimationRemaining -= elapsed;
+
+			if (breakingAnimationRemaining > 200) {
+				breakingFrame = 0;
+			} else if (breakingAnimationRemaining > 100) {
+				breakingFrame = 1;
+			} else {
+				breakingFrame = 2;
+			}
+
+			if (breakingAnimationRemaining <= 0) {
+				breakingAnimation = false;
+				breakingAnimationRemaining = 0;
+
+				if (hp <= 0) {
+					breakBlock();
+					return;
+				}
+			}
+		}
 		if (broken) {
 			return;
 		}
@@ -160,16 +197,16 @@ public class IceBlock extends Entity {
 		boolean moved = model.move(this, movement);
 
 		if (!moved) {
-		    stopSlide();
-		    return;
+			stopSlide();
+			return;
 		}
 
 		if (linearSpeed() != null) {
-		    linearSpeed().scale(friction);
+			linearSpeed().scale(friction);
 
-		    if (linearSpeed().norm() < 0.5) {
-		        stopSlide();
-		    }
+			if (linearSpeed().norm() < 0.5) {
+				stopSlide();
+			}
 		}
 	}
 
