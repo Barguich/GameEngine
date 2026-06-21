@@ -29,9 +29,9 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		super(model, e);
 		this.entity=e;
 		step_cm = entity.step().x();
-		max_cmPer_ms = Game.game().cmPerCell / 1000.0;
+		max_cmPer_ms = Game.game().cmPerCell ;
 		max_degPer_ms = 90.0 / 1000.0;
-		action_ms = step_cm / max_cmPer_ms;;
+		action_ms = 0;
 	}
 
 	// STEP

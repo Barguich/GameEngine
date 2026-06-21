@@ -136,7 +136,7 @@ public class PengoPlayer extends Entity {
 	            block.startSlide(this.orientation());
 	        }
 
-	        stop();
+
 	        return;
 	    }
 

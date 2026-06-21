@@ -5,6 +5,7 @@ import model.Ticker;
 import oop.graphics.Canvas;
 import oop.tasks.Runtime;
 import oop.tasks.Task;
+import pengo.brain.PengoBots;
 import pengo.controller.PengoController;
 import pengo.model.DiamondBlock;
 import pengo.model.Enemy;
@@ -13,11 +14,12 @@ import pengo.model.GoldBlock;
 import pengo.model.IceBlock;
 import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
+import testSprite.AnimatedAvatar;
 import view.Painter;
 import view.ShapeAvatar;
 import view.View;
 import view.ViewPort;
-import pengo.brain.PengoBots;
+
 
 public class MainEngine {
 
@@ -62,8 +64,14 @@ public class MainEngine {
         player.setSize(Game.grid().new Dimension(1, 1));
         model.setPlayer(player);
 
-        ShapeAvatar playerAvatar =
-                new ShapeAvatar(player, ShapeAvatar.Shape.OVAL, 255, 220, 220, 0);
+        String[] pengoFrames = new String[32];
+        for (int i = 0; i < 32; i++) {
+            pengoFrames[i] = "Asset/pingu/sprite_pingu_" + i + ".png";
+        }
+
+        AnimatedAvatar playerAvatar =
+                new AnimatedAvatar(player, pengoFrames, 100);
+
         player.setAvatar(playerAvatar);
         playerAvatar.setView(view);
 
@@ -95,7 +103,7 @@ public class MainEngine {
         fishAvatar.setView(view);
 
         Enemy e1 = new Enemy();
-        e1.setPosition(Game.grid().new Position(8, 5));
+        e1.setPosition(Game.grid().new Position(9, 5));
         e1.setSize(Game.grid().new Dimension(1, 1));
         model.add(e1);
 
@@ -114,7 +122,7 @@ public class MainEngine {
         e2.setAvatar(e2Avatar);
         e2Avatar.setView(view);
 
-        addWall(model, view, 9, 5);
+        addWall(model, view, 13, 5);
         addWall(model, view, 18, 4);
 
         view.follow(player);
