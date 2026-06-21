@@ -154,7 +154,6 @@ public class DebugOverlay {
 		lastPanelBottom = panelY + panelH;
 	}
 
-	// ─── helpers de rendu ────────────────────────────────────────────────────
 
 	private void drawLine(Graphics g, int x, int yBase, int index, int lineH, String text) {
 		g.drawString(text, x, yBase + index * lineH);
@@ -194,22 +193,6 @@ public class DebugOverlay {
 			cachedFontSize = fontSize;
 		}
 	}
-
-	/** Résout couleurs et police une seule fois (nécessite un Graphics vivant). */
-	// private void resolveResources(Graphics g) {
-	// 	if (hudFont == null) {
-	// 		hudFont = g.getFont("Monospaced", Font.PLAIN, 13);
-	// 	}
-	// 	if (hudBg == null) {
-	// 		hudBg = g.getColor(180, 0, 0, 0); // noir semi-transparent
-	// 	}
-	// 	if (hudText == null) {
-	// 		hudText = g.getColor(255, 0, 255, 90); // vert terminal
-	// 	}
-	// 	if (bbColor == null) {
-	// 		bbColor = g.getColor(200, 255, 60, 60); // rouge BB
-	// 	}
-	// }
 
 	static int uiScale(Canvas canvas) {
 		return Math.max(1, Math.round(canvas.getWidth() / 1920f));

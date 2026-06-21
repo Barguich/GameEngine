@@ -14,6 +14,13 @@ public class PengoModel extends Model {
 
 	private GameState state = GameState.PLAYING;
 
+	/** Notifie l'extérieur (contrôleur/vue) dès que l'état de partie change. */
+	public interface StateListener {
+		void onStateChanged(GameState state);
+	}
+
+	private StateListener stateListener;
+
 	private PengoPlayer player;
 	private int score;
 	private boolean won;
@@ -65,6 +72,21 @@ public class PengoModel extends Model {
 		return state;
 	}
 
+	public void setStateListener(StateListener listener) {
+		this.stateListener = listener;
+	}
+
+	/** Change l'état et prévient le listener (utilisé par la vue pour le menu). */
+	private void setState(GameState newState) {
+		if (state == newState) {
+			return;
+		}
+		state = newState;
+		if (stateListener != null) {
+			stateListener.onStateChanged(state);
+		}
+	}
+
 	/** True si la logique doit tourner */
 	public boolean running() {
 		return state == GameState.PLAYING;
@@ -76,13 +98,13 @@ public class PengoModel extends Model {
 	}
 	public void pause() {
 		if (state == GameState.PLAYING) {
-			state = GameState.PAUSED;
+			setState(GameState.PAUSED);
 		}
 	}
 
 	public void resume() {
 		if (state == GameState.PAUSED) {
-			state = GameState.PLAYING;
+			setState(GameState.PLAYING);
 		}
 	}
 
@@ -126,7 +148,7 @@ public class PengoModel extends Model {
 			sceneBuilder.run();
 		}
 
-		state = GameState.PLAYING;
+		setState(GameState.PLAYING);
 	}
 
 	public int score() {
@@ -199,7 +221,7 @@ public class PengoModel extends Model {
 
 		if (player != null && player.dead()) {
 			lost = true;
-			state = GameState.GAME_OVER;
+			setState(GameState.GAME_OVER);
 		}
 		if (wallVibration) {
 			wallVibrationRemaining -= elapsed;
@@ -223,7 +245,7 @@ public class PengoModel extends Model {
 	        if (!won) {
 
 	            won = true;
-	            state = GameState.WON;
+	            setState(GameState.WON);
 
 	            if (diamondBlocksAligned()) {
 	                System.out.println("YOU WIN - DIAMOND ALIGNMENT");
@@ -355,7 +377,7 @@ public class PengoModel extends Model {
 		if (player.dead()) {
 
 		    lost = true;
-		    state = GameState.GAME_OVER;
+		    setState(GameState.GAME_OVER);
 
 		    System.out.println("GAME OVER");
 
@@ -473,6 +495,30 @@ public class PengoModel extends Model {
         Entity e = firstAt(p);
 
         return e instanceof Wall || e instanceof IceBlock;
+    }
+
+    /**
+     * Vrai si pousser l'entite d'une case dans cette direction la ferait
+     * sortir de la map. Comme la grille est un tore, la Position serait
+     * sinon "enroulee" de l'autre cote : on calcule donc la coordonnee
+     * brute (avant normalisation) pour detecter le franchissement du bord.
+     */
+    public boolean pushesOffEdge(Entity e, int direction) {
+        int x = e.position().x();
+        int y = e.position().y();
+
+        switch (direction) {
+            case 0:
+                return x + 1 >= grid().width();
+            case 90:
+                return y + 1 >= grid().height();
+            case 180:
+                return x - 1 < 0;
+            case 270:
+                return y - 1 < 0;
+            default:
+                return false;
+        }
     }
     
     

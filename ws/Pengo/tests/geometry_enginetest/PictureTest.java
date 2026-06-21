@@ -11,7 +11,7 @@ import engine.Picture;
 import geometry.ISU;
 
 /**
- * Picture convertit des cm en pixels (× pixelPerCm = 7) avec arrondi.
+ * Picture convertit des cm en pixels (× pixelPerCm = 2) avec arrondi.
  * Dépend d'un Game initialisé.
  */
 class PictureTest {
@@ -26,24 +26,24 @@ class PictureTest {
 	@Test
 	void toPixelLength_multiplie_par_pixelPerCm_et_arrondit() {
 		Picture pic = new Picture(game);
-		assertEquals(7, pic.toPixelLength(1.0));   // 1 × 7
-		assertEquals(35, pic.toPixelLength(5.0));  // 5 × 7
-		assertEquals(4, pic.toPixelLength(0.5));   // 3.5 → round = 4
+		assertEquals(2, pic.toPixelLength(1.0));   // 1 × 2
+		assertEquals(10, pic.toPixelLength(5.0));  // 5 × 2
+		assertEquals(1, pic.toPixelLength(0.5));   // 1.0 → round = 1
 	}
 
 	@Test
 	void dimensions_en_pixels_derivees_des_cm_du_jeu() {
 		Picture pic = new Picture(game);
-		// 74.0 × 7 = 518
-		assertEquals(518, pic.width());
-		assertEquals(518, pic.height());
+		// 74.0 × 2 = 148
+		assertEquals(148, pic.width());
+		assertEquals(148, pic.height());
 	}
 
 	@Test
 	void toPixelX_et_toPixelY_convertissent_une_coordonnee() {
 		Picture pic = new Picture(game);
-		assertEquals(70, pic.toPixelX(10.0));
-		assertEquals(140, pic.toPixelY(20.0));
+		assertEquals(20, pic.toPixelX(10.0));
+		assertEquals(40, pic.toPixelY(20.0));
 	}
 
 	@Test
@@ -51,8 +51,8 @@ class PictureTest {
 		Picture pic = new Picture(game);
 		ISU.Coord c = Game.isu().new Coord(10.0, 20.0);
 		Picture.Pixel p = pic.toPixel(c);
-		assertEquals(70, p.x());
-		assertEquals(140, p.y());
+		assertEquals(20, p.x());
+		assertEquals(40, p.y());
 	}
 
 	@Test

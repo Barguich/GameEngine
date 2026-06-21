@@ -8,6 +8,7 @@ import model.Entity;
 public class IceBlock extends Entity {
 
 	private boolean sliding;
+	private boolean justStarted;
 	private int direction;
 	private boolean broken;
 	private int hp;
@@ -16,6 +17,7 @@ public class IceBlock extends Entity {
 	public IceBlock() {
 		super("IceBlock");
 		sliding = false;
+		justStarted = false;
 		direction = 0;
 		broken = false;
 		hp = 3;//destruction totale sur 3 coups 
@@ -67,6 +69,7 @@ public class IceBlock extends Entity {
 
 		this.direction = direction;
 		this.sliding = true;
+		this.justStarted = true;
 
 		double speed = 12.0;
 
@@ -90,6 +93,7 @@ public class IceBlock extends Entity {
 
 	public void stopSlide() {
 		sliding = false;
+		justStarted = false;
 		stop();
 	}
 
@@ -107,7 +111,10 @@ public class IceBlock extends Entity {
 	    }
 
 	    if (e instanceof PengoPlayer) {
-	        stopSlide();
+
+	        if (sliding && !justStarted) {
+	            stopSlide();
+	        }
 	        return;
 	    }
 
@@ -117,7 +124,7 @@ public class IceBlock extends Entity {
 
 	        Grid.Position next = pm.nextPosition(enemy, direction);
 
-	        if (pm.blocked(next)) {
+	        if (pm.pushesOffEdge(enemy, direction) || pm.blocked(next)) {
 	            pm.killEnemy(enemy);
 	        } else {
 	            enemy.setPosition(next);
@@ -143,6 +150,9 @@ public class IceBlock extends Entity {
 			super.tick(elapsed);
 			return;
 		}
+
+		
+		justStarted = false;
 
 		if (model == null || center == null || linearSpeed() == null) {
 			return;
