@@ -15,6 +15,7 @@ public class IceBlock extends Entity {
 	private boolean breakingAnimation;
 	private long breakingAnimationRemaining;
 	private int breakingFrame;
+	private Enemy draggedEnemy;
 
 	public IceBlock() {
 		super("IceBlock");
@@ -79,6 +80,10 @@ public class IceBlock extends Entity {
 	}
 
 	public void startSlide(int direction) {
+		if (sliding) {
+			return;
+		}
+
 		System.out.println("ICE START direction = " + direction);
 
 		this.direction = direction;
@@ -124,8 +129,8 @@ public class IceBlock extends Entity {
 		}
 
 		if (e instanceof PengoPlayer) {
-			stopSlide();
 			return;
+
 		}
 
 		if (sliding && e instanceof Enemy && model instanceof PengoModel) {
@@ -141,6 +146,9 @@ public class IceBlock extends Entity {
 			}
 
 			return;
+		}
+		if (sliding && e instanceof Enemy) {
+			draggedEnemy = (Enemy) e;
 		}
 
 		if (e instanceof Wall || e instanceof IceBlock) {
@@ -194,19 +202,42 @@ public class IceBlock extends Entity {
 
 		geometry.ISU.Vector movement = center.isu().new Vector(linearSpeed().x() * dt, linearSpeed().y() * dt);
 
-		boolean moved = model.move(this, movement);
+		translate(movement);
 
-		if (!moved) {
-			stopSlide();
-			return;
+		java.util.List<Entity> cols = model.collisions(this);
+
+		boolean blocked = false;
+
+		for (Entity other : cols) {
+
+			if (other instanceof Enemy) {
+				draggedEnemy = (Enemy) other;
+			}
+
+			if (other instanceof Wall || other instanceof IceBlock) {
+				blocked = true;
+			}
 		}
 
-		if (linearSpeed() != null) {
-			linearSpeed().scale(friction);
+		if (draggedEnemy != null && !draggedEnemy.dead()) {
+			draggedEnemy.translate(movement);
+		}
 
-			if (linearSpeed().norm() < 0.5) {
-				stopSlide();
+		if (blocked) {
+
+			translate(center.isu().new Vector(-movement.x(), -movement.y()));
+
+			if (draggedEnemy != null) {
+				draggedEnemy.kill();
+
+				if (model instanceof PengoModel) {
+					((PengoModel) model).addScore(100);
+				}
+
+				draggedEnemy = null;
 			}
+
+			stopSlide();
 		}
 	}
 
