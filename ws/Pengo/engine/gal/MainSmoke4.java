@@ -30,14 +30,12 @@ public class MainSmoke4 {
 			Game game = new Game(20, 13);
 			Model model = new Model(Game.grid());
 
-			// --- Cible "P", statique ---
 			Entity target = new Entity("Target");
 			target.setCategory(Category.PLAYER);
 			target.setPosition(Game.grid().new Position(15, 6));
 			target.setSize(Game.grid().new Dimension(1, 1));
 			model.add(target);
 
-			// --- Chasseur, pilote par le GAL ---
 			Entity hunter = new Entity("Hunter");
 			hunter.setCategory(Category.A);
 			hunter.setPosition(Game.grid().new Position(5, 6));
@@ -52,6 +50,8 @@ public class MainSmoke4 {
 			hunter.setBot(bot);
 
 			model.add(hunter);
+
+			hunter.setLinearSpeed(Game.isu().new Vector(0, -10.0));
 
 			double mapW = game.width_cm;
 			double mapH = game.height_cm;
