@@ -192,6 +192,7 @@ public class MainEngine {
 		view.follow(player);
 	}
 
+
 	private static void addIce(PengoModel model, View view, int x, int y) {
 		IceBlock ice = new IceBlock();
 		ice.setPosition(Game.grid().new Position(x, y));
@@ -202,6 +203,7 @@ public class MainEngine {
 		ice.setAvatar(avatar);
 		avatar.setView(view);
 	}
+
 
 	private static void addEnemy(PengoModel model, View view, int x, int y, boolean frozen) {
 		Enemy enemy = new Enemy();
@@ -233,7 +235,22 @@ public class MainEngine {
 		avatar.setView(view);
 	}
 
+	private static void addGold(PengoModel model, View view, int x, int y) {
+		GoldBlock g = new GoldBlock();
+		g.setPosition(Game.grid().new Position(x, y));
+		g.setSize(Game.grid().new Dimension(1, 1));
+		model.add(g);
+
+		ShapeAvatar avatar = new ShapeAvatar(g, ShapeAvatar.Shape.RECT, 255, 200, 0, 255);
+		g.setAvatar(avatar);
+		avatar.setView(view);
+	}
+
 	private static void addWall(PengoModel model, View view, int x, int y) {
+		Wall wall = new Wall();
+		wall.setPosition(Game.grid().new Position(x, y));
+		wall.setSize(Game.grid().new Dimension(1, 1));
+		model.add(wall);
 		Wall wall = new Wall();
 		wall.setPosition(Game.grid().new Position(x, y));
 		wall.setSize(Game.grid().new Dimension(1, 1));
@@ -243,6 +260,7 @@ public class MainEngine {
 		wall.setAvatar(avatar);
 		avatar.setView(view);
 	}
+
 
 	private static void addBorders(PengoModel model, View view) {
 		int w = Game.game().width_ncell;
