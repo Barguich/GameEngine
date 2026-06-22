@@ -36,7 +36,7 @@ public final class PengoBots {
      * 3.0 = trois cellules par seconde (bon gameplay).
      * Augmenter si les ennemis semblent encore trop lents.
      */
-    private static final double SPEED_FACTOR = 3.0;
+    private static final double SPEED_FACTOR = 1024.0;
 
     private PengoBots() {
     }
