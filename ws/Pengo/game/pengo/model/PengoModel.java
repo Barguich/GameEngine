@@ -443,9 +443,12 @@ public class PengoModel extends Model {
 
         enemy.kill();
 
-        if (player != null) {
-            player.addScore(100);
-        }
+        /*
+         * Important :
+         * On ajoute le score au PengoModel, pas seulement au player.
+         * C'est probablement model.score() qui est affiché dans la vue.
+         */
+        addScore(100);
     }
     //on detruit le block de ice in front of us 
     public void damageBlockInFront(PengoPlayer player) {
