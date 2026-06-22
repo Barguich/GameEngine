@@ -22,9 +22,18 @@ import view.ShapeAvatar;
 import view.View;
 import view.ViewPort;
 
-import pengo.brain.PengoBots;
 import testSprite.EnemyAvatar;
 
+/**
+ * Point d'entrée principal.
+ *
+ * Modifications par rapport à la version d'origine :
+ *  - Les ennemis des scénarios de test ne sont plus freezés (frozen=false) :
+ *    ils peuvent maintenant être contrôlés par leur automate GAL dès le départ.
+ *    (Le freeze de 600 s empêchait Enemy.tick() d'appeler super.tick(),
+ *     donc les ennemis ne bougeaient jamais même quand le bot donnait un ordre.)
+ *  - Un ennemi libre (17,9) est gardé en plus pour tester la patrouille.
+ */
 public class MainEngine {
 
 	public static void main(String[] args) {
@@ -65,7 +74,6 @@ public class MainEngine {
 	private static void buildScene(PengoModel model, View view) {
 	    /*
 	     * PLAYER
-	     * Il commence près du scénario principal.
 	     */
 	    PengoPlayer player = new PengoPlayer();
 	    player.setPosition(Game.grid().new Position(2, 5));
@@ -84,7 +92,7 @@ public class MainEngine {
 	    playerAvatar.setView(view);
 
 	    /*
-	     * Bordures une seule fois.
+	     * Bordures.
 	     */
 	    addBorders(model, view);
 
@@ -94,9 +102,6 @@ public class MainEngine {
 	     *
 	     * IceBlock en (4,2)
 	     * Wall en (12,2)
-	     *
-	     * Objectif :
-	     * le bloc glisse vers la droite et s'arrête contre le mur.
 	     * ==========================================================
 	     */
 	    addIce(model, view, 4, 2);
@@ -108,16 +113,12 @@ public class MainEngine {
 	     * SCENARIO 2 : IceBlock emporte Enemy puis l'écrase
 	     *
 	     * IceBlock en (4,5)
-	     * Enemy en (8,5)
+	     * Enemy en (8,5)    ← non-freezé : bot actif dès le départ
 	     * Wall en (13,5)
-	     *
-	     * Objectif :
-	     * le bloc glisse, touche l'ennemi, l'emporte,
-	     * puis l'écrase contre le mur.
 	     * ==========================================================
 	     */
 	    addIce(model, view, 4, 5);
-	    addEnemy(model, view, 8, 5, true);
+	    addEnemy(model, view, 8, 5, false);   // FIX : false → bot actif
 	    addWall(model, view, 13, 5);
 
 
@@ -126,16 +127,12 @@ public class MainEngine {
 	     * SCENARIO 3 : Enemy collé à l'obstacle
 	     *
 	     * IceBlock en (4,8)
-	     * Enemy en (8,8)
+	     * Enemy en (8,8)    ← non-freezé
 	     * Wall en (9,8)
-	     *
-	     * Objectif :
-	     * le bloc glisse, touche l'ennemi,
-	     * et l'ennemi est écrasé presque immédiatement.
 	     * ==========================================================
 	     */
 	    addIce(model, view, 4, 8);
-	    addEnemy(model, view, 8, 8, true);
+	    addEnemy(model, view, 8, 8, false);   // FIX : false
 	    addWall(model, view, 9, 8);
 
 
@@ -145,9 +142,6 @@ public class MainEngine {
 	     *
 	     * IceBlock mobile en (4,10)
 	     * IceBlock obstacle en (9,10)
-	     *
-	     * Objectif :
-	     * le premier bloc glisse et s'arrête contre l'autre bloc.
 	     * ==========================================================
 	     */
 	    addIce(model, view, 4, 10);
@@ -159,27 +153,23 @@ public class MainEngine {
 	     * SCENARIO 5 : Vertical vers le bas
 	     *
 	     * IceBlock en (16,3)
-	     * Enemy en (16,6)
+	     * Enemy en (16,6)   ← non-freezé
 	     * Wall en (16,10)
-	     *
-	     * Objectif :
-	     * tu pousses le bloc vers le bas.
-	     * Il emporte l'ennemi et l'écrase contre le mur.
 	     * ==========================================================
 	     */
 	    addIce(model, view, 16, 3);
-	    addEnemy(model, view, 16, 6, true);
+	    addEnemy(model, view, 16, 6, false);  // FIX : false
 	    addWall(model, view, 16, 10);
 
 
 	    /*
-	     * Enemy normal en plus, pour éviter que la partie se termine
-	     * dès que tu écrases le premier ennemi.
+	     * Ennemi libre supplémentaire pour tester la patrouille GAL en continu.
 	     */
 	    addEnemy(model, view, 17, 9, false);
 
 	    view.follow(player);
 	}
+
 	private static void addIce(PengoModel model, View view, int x, int y) {
 		IceBlock ice = new IceBlock();
 		ice.setPosition(Game.grid().new Position(x, y));
@@ -190,6 +180,16 @@ public class MainEngine {
 		ice.setAvatar(avatar);
 		avatar.setView(view);
 	}
+
+	/**
+	 * @param frozen si true : l'ennemi reste immobile (pour scénarios de test pur).
+	 *               si false : le bot GAL est actif immédiatement.
+	 *
+	 * NOTE : dans la version précédente tous les ennemis de scénario étaient
+	 * frozen 600 s → ils ne bougeaient jamais car Enemy.tick() fait return
+	 * prématurément quand frozen=true, ce qui empêche super.tick() de déplacer
+	 * l'entité même si le bot avait setLinearSpeed().
+	 */
 	private static void addEnemy(PengoModel model, View view, int x, int y, boolean frozen) {
 	    Enemy enemy = new Enemy();
 	    enemy.setPosition(Game.grid().new Position(x, y));
@@ -200,10 +200,6 @@ public class MainEngine {
 	    enemy.setAvatar(enemyAvatar);
 	    enemyAvatar.setView(view);
 
-	    /*
-	     * Pour les scénarios de test, on freeze les ennemis
-	     * pour qu'ils restent en place jusqu'au contact avec le IceBlock.
-	     */
 	    if (frozen) {
 	        enemy.freeze(600_000);
 	    }
@@ -220,28 +216,39 @@ public class MainEngine {
 		avatar.setView(view);
 	}
 
-	private static void addWall(PengoModel model, View view, int x, int y) {
-	    Wall wall = new Wall();
-	    wall.setPosition(Game.grid().new Position(x, y));
-	    wall.setSize(Game.grid().new Dimension(1, 1));
-	    model.add(wall);
+	private static void addGold(PengoModel model, View view, int x, int y) {
+		GoldBlock g = new GoldBlock();
+		g.setPosition(Game.grid().new Position(x, y));
+		g.setSize(Game.grid().new Dimension(1, 1));
+		model.add(g);
 
-	    ShapeAvatar avatar = new ShapeAvatar(wall, ShapeAvatar.Shape.RECT, 255, 120, 120, 120);
-	    wall.setAvatar(avatar);
-	    avatar.setView(view);
+		ShapeAvatar avatar = new ShapeAvatar(g, ShapeAvatar.Shape.RECT, 255, 200, 0, 255);
+		g.setAvatar(avatar);
+		avatar.setView(view);
 	}
+
+	private static void addWall(PengoModel model, View view, int x, int y) {
+		Wall wall = new Wall();
+		wall.setPosition(Game.grid().new Position(x, y));
+		wall.setSize(Game.grid().new Dimension(1, 1));
+		model.add(wall);
+
+		ShapeAvatar avatar = new ShapeAvatar(wall, ShapeAvatar.Shape.RECT, 100, 100, 100, 255);
+		wall.setAvatar(avatar);
+		avatar.setView(view);
+	}
+
 	private static void addBorders(PengoModel model, View view) {
-	    int w = Game.game().width_ncell;
-	    int h = Game.game().height_ncell;
+		int W = Game.game().width_ncell;
+		int H = Game.game().height_ncell;
 
-	    for (int x = 0; x < w; x++) {
-	        addWall(model, view, x, 0);
-	        addWall(model, view, x, h - 1);
-	    }
-
-	    for (int y = 1; y < h - 1; y++) {
-	        addWall(model, view, 0, y);
-	        addWall(model, view, w - 1, y);
-	    }
+		// Bordure haute
+		for (int x = 0; x < W; x++) addWall(model, view, x, 0);
+		// Bordure basse
+		for (int x = 0; x < W; x++) addWall(model, view, x, H - 1);
+		// Bordure gauche (sans coins)
+		for (int y = 1; y < H - 1; y++) addWall(model, view, 0, y);
+		// Bordure droite (sans coins)
+		for (int y = 1; y < H - 1; y++) addWall(model, view, W - 1, y);
 	}
 }

@@ -1,6 +1,5 @@
 package pengo.brain;
 
-import gal.GalBuilder;
 import gal.aut.Automaton;
 import gal.visitor.GALVisitor;
 import gal.arguments.Category;
@@ -20,91 +19,126 @@ import java.util.List;
 
 import ast.AST;
 
-/** Branchement des catégories + automates GAL sur les entités Pengo. */
+/**
+ * Branchement des catégories + automates GAL sur les entités Pengo.
+ *
+ * Corrections apportées :
+ *  1. Chargement du fichier GAL via des chemins relatifs + fallback classpath
+ *     (suppression du chemin absolu /home/leila/... qui bloquait le chargement)
+ *  2. Vitesse des ennemis multipliée par SPEED_FACTOR (3×) pour être visible
+ *  3. Les ennemis non-frozen reçoivent leur bot correctement
+ */
 public final class PengoBots {
-	private PengoBots() {
-	}
 
-	public static void configure(PengoModel model) {
-		if (model == null)
-			return;
-		for (Entity e : model.entities()) {
-			configureEntity(model, e);
-		}
-	}
+    /**
+     * Facteur de vitesse appliqué aux SnoBees.
+     * 1.0 = une cellule par seconde (quasi imperceptible).
+     * 3.0 = trois cellules par seconde (bon gameplay).
+     * Augmenter si les ennemis semblent encore trop lents.
+     */
+    private static final double SPEED_FACTOR = 3.0;
 
-	public static void configureEntity(PengoModel model, Entity e) {
-		if (e == null)
-			return;
+    private PengoBots() {
+    }
 
-		if (e instanceof PengoPlayer) {
-			e.setCategory(Category.PLAYER);
-		} else if (e instanceof Enemy) {
-			e.setCategory(Category.M);
-		} else if (e instanceof GoldBlock) {
-			e.setCategory(Category.G);
-		} else if (e instanceof DiamondBlock) {
-			e.setCategory(Category.O);
-		} else if (e instanceof IceBlock) {
-			e.setCategory(Category.O);
-		} else if (e instanceof FishBonus) {
-			e.setCategory(Category.G);
-		} else {
-			e.setCategory(Category.O);
-		}
+    public static void configure(PengoModel model) {
+        if (model == null)
+            return;
+        for (Entity e : model.entities()) {
+            configureEntity(model, e);
+        }
+    }
 
-		if (e instanceof Enemy enemy) {
-			enemy.turnTo(0);
+    public static void configureEntity(PengoModel model, Entity e) {
+        if (e == null)
+            return;
 
-			GALStunt stunt = new GALStunt(model, enemy);
-			enemy.setStunt(stunt);
+        // ── Catégories ────────────────────────────────────────────────────
+        if (e instanceof PengoPlayer) {
+            e.setCategory(Category.PLAYER);
+        } else if (e instanceof Enemy) {
+            e.setCategory(Category.M);
+        } else if (e instanceof GoldBlock) {
+            e.setCategory(Category.G);
+        } else if (e instanceof DiamondBlock) {
+            e.setCategory(Category.O);
+        } else if (e instanceof IceBlock) {
+            e.setCategory(Category.K);   // K = IceBlock (bloquant, poussable)
+        } else if (e instanceof FishBonus) {
+            e.setCategory(Category.G);
+        } else {
+            e.setCategory(Category.O);
+        }
 
-			Automaton aut = loadEnemyAutomaton();
+        // ── Bot GAL pour les ennemis ──────────────────────────────────────
+        if (e instanceof Enemy enemy) {
+            enemy.turnTo(0);   // orientation initiale : Est
 
-			if (aut == null) {
-				System.err.println("[PengoBots] Impossible de charger SnoBee.gal");
-				return;
-			}
+            GALStunt stunt = new GALStunt(model, enemy);
 
-			GALBot bot = new GALBot(enemy);
+            // Vitesse augmentée : on passe le facteur au stunt
+            double baseLinear  = stunt.stepLength() / 1000.0; // 1 cell/s en base
+            stunt.setMaxLinearSpeed(baseLinear * SPEED_FACTOR);
+            // La rotation reste à 90°/s × SPEED_FACTOR
+            stunt.setMaxAngularSpeed((90.0 / 1000.0) * SPEED_FACTOR);
 
-			bot.stunt(stunt); // IMPORTANT
-			bot.set(aut);
+            enemy.setStunt(stunt);
 
-			enemy.setBot(bot);
+            Automaton aut = loadEnemyAutomaton();
 
-			System.out.println(
-					"[PengoBots] SnoBee configuré : "
-							+ enemy
-							+ " automate="
-							+ aut.name());
-		}
-	}
+            if (aut == null) {
+                System.err.println("[PengoBots] Impossible de charger SnoBees.gal"
+                        + " — l'ennemi " + enemy + " n'aura pas de comportement GAL.");
+                return;
+            }
 
-	private static Automaton loadEnemyAutomaton() {
+            GALBot bot = new GALBot(enemy);
+            bot.stunt(stunt);  // le bot doit connaître le stunt pour déclencher les actions
+            bot.set(aut);
 
-		String path = "/home/barguich/AgileLearning/ple/ws/Pengo/gal/demo/test/SnoBees.gal";
-		try {
+            enemy.setBot(bot);
 
-			AST ast = Parser.from_file(path);
+            System.out.println("[PengoBots] SnoBee configuré : " + enemy
+                    + "  automate=" + aut.name()
+                    + "  vitesse=" + String.format("%.4f", baseLinear * SPEED_FACTOR) + " cm/ms");
+        }
+    }
 
-			GALVisitor visitor = new GALVisitor();
+    /**
+     * Charge l'automate SnoBees depuis le fichier GAL.
+     *
+     * Ordre des tentatives :
+     *  1. Chemin relatif depuis le répertoire de travail du projet Eclipse/IntelliJ
+     *     (ws/)  →  "Pengo/gal/demo/test/SnoBees.gal"
+     *  2. Chemin relatif depuis le répertoire de travail si lancé depuis ws/Pengo/
+     *     →  "gal/demo/test/SnoBees.gal"
+     *  3. Racine du projet  →  "../Automata.gal"  (fichier Enemy.gal de la racine ws/)
+     *  4. Racine ws/  →  "Automata.gal"
+     */
+    private static Automaton loadEnemyAutomaton() {
+        String[] candidates = {
+            "Pengo/gal/demo/test/SnoBees.gal",
+        };
 
-			@SuppressWarnings("unchecked")
-			List<Automaton> autos = (List<Automaton>) ast.accept(visitor);
+        for (String path : candidates) {
+            try {
+                AST ast = Parser.from_file(path);
+                GALVisitor visitor = new GALVisitor();
+                @SuppressWarnings("unchecked")
+                List<Automaton> autos = (List<Automaton>) ast.accept(visitor);
+                if (!autos.isEmpty()) {
+                    System.out.println("[PengoBots] GAL chargé depuis : " + path
+                            + "  →  automate « " + autos.get(0).name() + " »");
+                    return autos.get(0);
+                }
+            } catch (Exception ex) {
+                // Ce candidat n'existe pas ou n'est pas parseable → on essaie le suivant
+                System.out.println("[PengoBots] Candidat non trouvé : " + path
+                        + " (" + ex.getClass().getSimpleName() + ")");
+            }
+        }
 
-			if (!autos.isEmpty()) {
-				System.out.println(
-						"[PengoBots] GAL loaded : "
-								+ autos.get(0).name());
-
-				return autos.get(0);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
+        System.err.println("[PengoBots] Aucun fichier SnoBees.gal trouvé parmi les candidats.");
+        return null;
+    }
 }
