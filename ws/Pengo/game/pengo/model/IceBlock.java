@@ -23,7 +23,7 @@ public class IceBlock extends Entity {
 		direction = 0;
 		broken = false;
 		hp = 3;// destruction totale sur 3 coups
-		friction = 0.999; //si on met a 1 plus de frottement 
+		friction = 0.998; //si on met a 1 plus de frottement 
 		breakingAnimation = false;
 		breakingAnimationRemaining = 0;
 		breakingFrame = 0;
@@ -115,11 +115,17 @@ public class IceBlock extends Entity {
 	}
 
 	public void startSlide(int direction) {
-	    if (sliding) {
+	    if (broken) {
 	        return;
 	    }
 
-	    if (broken) {
+	    /*
+	     * Très important :
+	     * si le bloc est déjà en train de glisser,
+	     * on ne relance PAS le slide.
+	     */
+	    if (sliding) {
+	        System.out.println("ICE ALREADY SLIDING - PUSH IGNORED");
 	        return;
 	    }
 
@@ -128,15 +134,11 @@ public class IceBlock extends Entity {
 	    this.direction = direction;
 	    this.sliding = true;
 
-	    /*
-	     * Sécurité : aucun ancien ennemi attaché.
-	     */
 	    detachEnemy();
 
-	    double speed = 12.0;
+	    double speed = 18.0;
 
 	    if (isu == null) {
-	        System.out.println("ICE ISU NULL");
 	        sliding = false;
 	        return;
 	    }
@@ -157,7 +159,6 @@ public class IceBlock extends Entity {
 
 	    System.out.println("ICE SPEED = " + linearSpeed());
 	}
-	
 	public void breakBlock() {
 		broken = true;
 
@@ -172,16 +173,20 @@ public class IceBlock extends Entity {
 	        return;
 	    }
 
-	    if (e instanceof PengoPlayer) {
+	    /*
+	     * Très important :
+	     * un IceBlock qui glisse ne doit PAS être bloqué par un Enemy.
+	     * Sinon il s'arrête au contact de l'ennemi.
+	     */
+	    if (sliding && e instanceof Enemy) {
+	        System.out.println("ICEBLOCK IGNORE ENEMY COLLISION WHILE SLIDING");
 	        return;
 	    }
 
 	    /*
-	     * Très important :
-	     * La collision IceBlock / Enemy est gérée AVANT dans PengoModel.
-	     * Ici, on ne fait rien, sinon le moteur déclenche une collision normale.
+	     * Le joueur ne bloque pas directement le IceBlock.
 	     */
-	    if (sliding && e instanceof Enemy) {
+	    if (e instanceof PengoPlayer) {
 	        return;
 	    }
 
@@ -258,14 +263,25 @@ public class IceBlock extends Entity {
 	    }
 	}
 
-	@Override
-	public void setBounding() {
-		if (center == null || size == null) {
-			return;
-		}
+	
+		@Override
+		public void setBounding() {
+		    if (center == null || size == null) {
+		        return;
+		    }
 
-		bounding = new Bounding();
-		bounding.add(new Rect(center, size, orientation_degree));
+		    bounding = new Bounding();
+
+		    /*
+		     * Hitbox légèrement réduite pour éviter les collisions parasites
+		     * avec les blocs/murs autour.
+		     */
+		    double w = size.x() * 0.82;
+		    double h = size.y() * 0.82;
+
+		    
+		
+		    bounding.add(new Rect(center, size, orientation_degree));
 	}
 	public void finishCrushAt(Grid.Position position) {
 	    /*
