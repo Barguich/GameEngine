@@ -1,16 +1,16 @@
 package collision;
 
-
 public class Box {
-	// FIELDS
+
+	// Boîte englobante définie par ses coordonnées extrêmes
 	private final double xmin, ymin, xmax, ymax;
 
-	// CONSTRUCTOR
 	public Box(double xmin, double ymin, double xmax, double ymax) {
 		if (xmin > xmax)
 			throw new IllegalArgumentException("xmin > xmax");
 		if (ymin > ymax)
 			throw new IllegalArgumentException("ymin > ymax");
+
 		this.xmin = xmin;
 		this.ymin = ymin;
 		this.xmax = xmax;
@@ -18,6 +18,7 @@ public class Box {
 	}
 
 	// GETTERS
+
 	public double xmin() {
 		return xmin;
 	}
@@ -50,26 +51,32 @@ public class Box {
 		return (ymin + ymax) / 2;
 	}
 
-	// COLLISION
+	// Vérifie si deux boîtes englobantes se chevauchent
 	public boolean overlaps(Box other) {
 
 		if (other == null) {
 			return false;
 		}
 
-		return this.xmax > other.xmin() && this.xmin < other.xmax() && this.ymax > other.ymin()
+		return this.xmax > other.xmin()
+				&& this.xmin < other.xmax()
+				&& this.ymax > other.ymin()
 				&& this.ymin < other.ymax();
 	}
 
-	// UNION
+	// Construit la plus petite boîte contenant b1 et b2
 	public static Box union(Box b1, Box b2) {
+
 		if (b1 == null)
 			return b2;
 
 		if (b2 == null)
 			return b1;
 
-		return new Box(Math.min(b1.xmin, b2.xmin), Math.min(b1.ymin, b2.ymin), Math.max(b1.xmax, b2.xmax),
+		return new Box(
+				Math.min(b1.xmin, b2.xmin),
+				Math.min(b1.ymin, b2.ymin),
+				Math.max(b1.xmax, b2.xmax),
 				Math.max(b1.ymax, b2.ymax));
 	}
 

@@ -6,17 +6,20 @@ import model.Entity;
 public class FleeBot extends Bot {
 
 	private boolean moving;
+
 	private Entity enemy;
 
 	public FleeBot(BasicStunt stunt, Entity enemy) {
 		super(stunt);
 
-		assert enemy != null;
-
 		this.enemy = enemy;
 		this.moving = false;
 	}
 
+	/**
+	 * Choisit une direction permettant de s'éloigner de l'ennemi. Le bot attend la
+	 * fin du déplacement précédent avant de prendre une nouvelle décision.
+	 */
 	@Override
 	public void think() {
 		if (moving) {
@@ -33,6 +36,7 @@ public class FleeBot extends Bot {
 
 		moving = true;
 
+		// Déplacement dans la direction opposée à l'ennemi
 		if (tx > ex) {
 			stunt.walk(180);
 		} else if (tx < ex) {
@@ -46,11 +50,18 @@ public class FleeBot extends Bot {
 		}
 	}
 
+	/**
+	 * Appelée lorsque le déplacement est terminé.
+	 */
 	@Override
 	public void done() {
 		moving = false;
 	}
 
+	/**
+	 * Réinitialise le bot après une collision afin qu'il puisse recalculer une
+	 * nouvelle direction.
+	 */
 	@Override
 	public void collision(Entity e) {
 		moving = false;

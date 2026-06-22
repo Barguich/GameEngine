@@ -8,12 +8,13 @@ import geometry.ISU;
 
 public class Model {
 
+	// Grille du monde utilisée par le modèle
 	private Grid grid;
+
+	// Liste des entités présentes dans le jeu
 	private List<Entity> entities;
 
 	public Model(Grid grid) {
-		assert grid != null;
-
 		this.grid = grid;
 		this.entities = new ArrayList<Entity>();
 	}
@@ -30,8 +31,10 @@ public class Model {
 		return entities;
 	}
 
+	// Ajoute une entité au modèle et la place dans la grille
 	public void add(Entity e) {
-		assert e != null;
+		if (e == null)
+			return;
 
 		if (!entities.contains(e)) {
 			entities.add(e);
@@ -40,8 +43,10 @@ public class Model {
 		}
 	}
 
+	// Retire une entité du modèle et de sa cellule
 	public void remove(Entity e) {
-		assert e != null;
+		if (e == null)
+			return;
 
 		if (entities.remove(e)) {
 			e.retract();
@@ -49,36 +54,44 @@ public class Model {
 		}
 	}
 
+	// Déplace une entité puis vérifie si ce déplacement crée une collision
 	public boolean move(Entity e, ISU.Vector v) {
-		assert e != null;
-		assert v != null;
-		System.out.println(
-				"MOVE ENTITY " + e + " by " + v);
+		if (e == null || v == null)
+			return false;
 
 		if (!entities.contains(e)) {
 			return false;
 		}
 
+		// Déplacement temporaire
 		e.translate(v);
 
 		List<Entity> cols = collisions(e);
 
 		if (!cols.isEmpty()) {
+
+			// En cas de collision, on annule le déplacement
 			v.scale(-1);
 			e.translate(v);
 
 			Entity other = cols.get(0);
 
+			// Les deux entités sont informées de la collision
 			e.collision(other);
 			other.collision(e);
+
 			return false;
 		}
 
 		return true;
 	}
 
+	// Retourne toutes les entités en collision avec e
 	public List<Entity> collisions(Entity e) {
 		List<Entity> result = new ArrayList<Entity>();
+
+		if (e == null)
+			return result;
 
 		for (Entity other : entities) {
 			if (other != e && e.intersects(other)) {
@@ -89,10 +102,12 @@ public class Model {
 		return result;
 	}
 
+	// Retourne les entités situées sur une position de grille
 	public List<Entity> entitiesAt(Grid.Position p) {
-		assert p != null;
-
 		List<Entity> result = new ArrayList<Entity>();
+
+		if (p == null)
+			return result;
 
 		for (Entity e : entities) {
 			if (e.position() != null && e.position().equiv(p)) {
@@ -117,19 +132,21 @@ public class Model {
 		return list.get(0);
 	}
 
+	// Mise à jour globale du modèle à chaque tick du jeu
 	public void tick(long elapsed) {
-		assert elapsed >= 0;
+		if (elapsed < 0)
+			return;
 
 		List<Entity> copy = new ArrayList<Entity>(entities);
 
-		// 1) Les Bots réfléchissent
+		// Les bots choisissent leur action
 		for (Entity e : copy) {
 			if (entities.contains(e) && e.bot() != null) {
 				e.bot().tick(elapsed);
 			}
 		}
 
-		// 2) Les entités exécutent leur déplacement
+		// Les entités appliquent ensuite leur déplacement
 		for (Entity e : copy) {
 			if (entities.contains(e)) {
 				e.tick(elapsed);
@@ -137,6 +154,7 @@ public class Model {
 		}
 	}
 
+	// Vide complètement le modèle
 	public void clear() {
 		for (Entity e : new ArrayList<Entity>(entities)) {
 			remove(e);

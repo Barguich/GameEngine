@@ -6,15 +6,19 @@ import model.Entity;
 
 public class Enemy extends Entity {
 
+	// États possibles de l'ennemi
 	private boolean frozen;
-	private long frozenRemaining;
 	private boolean dying;
+	private boolean dead;
+
+	// Timers pour les animations et effets temporaires
+	private long frozenRemaining;
 	private long dyingRemaining;
 	private long spawnAnimationRemaining;
+
+	// États liés aux interactions avec les blocs de glace
 	private boolean draggedByIce;
 	private boolean crushedByIce;
-
-	private boolean dead;
 
 	public Enemy() {
 		super("Enemy");
@@ -28,42 +32,43 @@ public class Enemy extends Entity {
 		this.draggedByIce = false;
 		this.crushedByIce = false;
 	}
+
 	public boolean crushedByIce() {
-	    return crushedByIce;
+		return crushedByIce;
 	}
 
+	// Indique si l'ennemi ne doit plus blesser le joueur
 	public boolean harmlessForPlayer() {
-	    return dead || dying || draggedByIce || crushedByIce;
+		return dead || dying || draggedByIce || crushedByIce;
 	}
 
+	// Ennemi considéré comme écrasé par un bloc de glace
 	public void markCrushedByIce() {
-	    crushedByIce = true;
-	    draggedByIce = false;
-	    frozen = false;
-	    frozenRemaining = 0;
-	    stop();
-
-	    System.out.println("ENEMY MARKED CRUSHED BY ICE");
+		crushedByIce = true;
+		draggedByIce = false;
+		frozen = false;
+		frozenRemaining = 0;
+		stop();
 	}
+
 	public boolean draggedByIce() {
-	    return draggedByIce;
+		return draggedByIce;
 	}
 
+	// L'ennemi est temporairement emporté par un bloc de glace
 	public void startDraggedByIce() {
-	    if (dead || dying || crushedByIce) {
-	        return;
-	    }
+		if (dead || dying || crushedByIce) {
+			return;
+		}
 
-	    draggedByIce = true;
-	    frozen = false;
-	    frozenRemaining = 0;
-	    stop();
-
-	    System.out.println("ENEMY START DRAGGED BY ICE");
+		draggedByIce = true;
+		frozen = false;
+		frozenRemaining = 0;
+		stop();
 	}
 
 	public void stopDraggedByIce() {
-	    draggedByIce = false;
+		draggedByIce = false;
 	}
 
 	public boolean frozen() {
@@ -73,29 +78,28 @@ public class Enemy extends Entity {
 	public boolean dead() {
 		return dead;
 	}
+
 	public boolean dying() {
-	    return dying;
+		return dying;
 	}
 
 	public long dyingRemaining() {
-	    return dyingRemaining;
+		return dyingRemaining;
 	}
+
 	public boolean spawning() {
-	    return spawnAnimationRemaining > 0;
+		return spawnAnimationRemaining > 0;
 	}
 
 	public long spawnAnimationRemaining() {
-	    return spawnAnimationRemaining;
+		return spawnAnimationRemaining;
 	}
 
+	// Gèle l'ennemi pendant une durée donnée
 	public void freeze(long duration_ms) {
-		assert duration_ms >= 0;
-
-		if (dead) {
+		if (duration_ms < 0 || dead) {
 			return;
 		}
-
-		System.out.println("ENEMY FREEZE");
 
 		frozen = true;
 		frozenRemaining = duration_ms;
@@ -103,8 +107,6 @@ public class Enemy extends Entity {
 	}
 
 	public void unfreeze() {
-		System.out.println("ENEMY UNFREEZE");
-
 		if (dead) {
 			return;
 		}
@@ -112,56 +114,64 @@ public class Enemy extends Entity {
 		frozen = false;
 		frozenRemaining = 0;
 	}
+
 	public boolean moving() {
-	    return linearSpeed() != null && linearSpeed().norm() > 0;
+		return linearSpeed() != null && linearSpeed().norm() > 0;
 	}
 
+	// Lance l'animation de mort avant de supprimer l'ennemi
 	public void kill() {
-	    if (dead || dying) {
-	        return;
-	    }
+		if (dead || dying) {
+			return;
+		}
 
-	    dying = true;
-	    dyingRemaining = 1000;
+		dying = true;
+		dyingRemaining = 1000;
 
-	    frozen = false;
-	    frozenRemaining = 0;
-	    draggedByIce = false;
+		frozen = false;
+		frozenRemaining = 0;
+		draggedByIce = false;
 
-	    stop();
-
-	    System.out.println("Enemy dying animation");
+		stop();
 	}
+
 	@Override
 	public void tick(long elapsed) {
-		assert elapsed >= 0;
-		if (spawnAnimationRemaining > 0) {
-		    spawnAnimationRemaining -= elapsed;
-
-		    if (spawnAnimationRemaining < 0) {
-		        spawnAnimationRemaining = 0;
-		    }
+		if (elapsed < 0) {
+			return;
 		}
+
+		// Animation d'apparition au début
+		if (spawnAnimationRemaining > 0) {
+			spawnAnimationRemaining -= elapsed;
+
+			if (spawnAnimationRemaining < 0) {
+				spawnAnimationRemaining = 0;
+			}
+		}
+
+		// Animation de mort avant suppression du modèle
 		if (dying) {
-		    dyingRemaining -= elapsed;
+			dyingRemaining -= elapsed;
 
-		    if (dyingRemaining <= 0) {
-		        dead = true;
-		        dying = false;
-		        dyingRemaining = 0;
+			if (dyingRemaining <= 0) {
+				dead = true;
+				dying = false;
+				dyingRemaining = 0;
 
-		        if (model != null) {
-		            model.remove(this);
-		        }
-		    }
+				if (model != null) {
+					model.remove(this);
+				}
+			}
 
-		    return;
+			return;
 		}
 
 		if (dead) {
 			return;
 		}
 
+		// Tant que l'ennemi est gelé, il ne se déplace pas
 		if (frozen) {
 			frozenRemaining -= elapsed;
 
@@ -171,60 +181,53 @@ public class Enemy extends Entity {
 
 			return;
 		}
+
+		// Si l'ennemi est emporté par un bloc, il ne décide plus seul
 		if (draggedByIce) {
-		    stop();
-		    return;
+			stop();
+			return;
 		}
 
 		super.tick(elapsed);
 	}
-	
 
 	@Override
 	public void collision(Entity e) {
-	    if (e == null) {
-	        return;
-	    }
+		if (e == null) {
+			return;
+		}
 
-	    /*
-	     * Si l'ennemi est mort, en train de mourir,
-	     * emporté ou écrasé par un IceBlock,
-	     * il ne doit pas déclencher de collision normale.
-	     */
-	    if (harmlessForPlayer()) {
-	        return;
-	    }
+		// Un ennemi inoffensif ne déclenche pas de collision normale
+		if (harmlessForPlayer()) {
+			return;
+		}
 
-	    /*
-	     * GOLD BLOCK :
-	     * Si l'ennemi touche un GoldBlock, il est gelé.
-	     */
-	    if (e instanceof GoldBlock && model instanceof PengoModel) {
-	        GoldBlock gold = (GoldBlock) e;
-	        gold.activate((PengoModel) model, this);
-	        return;
-	    }
+		// Contact avec un GoldBlock : activation du gel
+		if (e instanceof GoldBlock && model instanceof PengoModel) {
+			GoldBlock gold = (GoldBlock) e;
+			gold.activate((PengoModel) model, this);
+			return;
+		}
 
-	    /*
-	     * Si un IceBlock en glissade touche l'ennemi,
-	     * la logique est gérée dans PengoModel.moveSlidingIceBlock().
-	     */
-	    if (e instanceof IceBlock) {
-	        IceBlock ice = (IceBlock) e;
+		// Si le bloc glisse, la logique est traitée côté PengoModel
+		if (e instanceof IceBlock) {
+			IceBlock ice = (IceBlock) e;
 
-	        if (ice.sliding()) {
-	            return;
-	        }
-	    }
+			if (ice.sliding()) {
+				return;
+			}
+		}
 
-	    super.collision(e);
+		super.collision(e);
 	}
+
 	@Override
 	public void setBounding() {
 		if (center == null || size == null) {
 			return;
 		}
 
+		// Collision circulaire pour simplifier les contacts avec l'ennemi
 		bounding = new Bounding();
 
 		double radius = Math.min(size.x(), size.y()) / 2.0;

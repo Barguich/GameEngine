@@ -6,17 +6,22 @@ import geometry.ISU;
 
 public class Picture {
 
+	// Permet de convertir les coordonnées du monde en pixels
 	private Game game;
+
+	// Dimensions de l'image affichée
 	private int width_pixel;
 	private int height_pixel;
 
 	public Picture(Game game) {
-		assert game != null;
 		this.game = game;
+
+		// Conversion de la taille du monde en pixels
 		this.width_pixel = toPixelLength(game.width_cm);
 		this.height_pixel = toPixelLength(game.height_cm);
 	}
 
+	// Conversion d'une longueur exprimée en cm vers les pixels
 	public int toPixelLength(double length_cm) {
 		return (int) Math.round(length_cm * game.pixelPerCm);
 	}
@@ -29,8 +34,8 @@ public class Picture {
 		return toPixelLength(y_cm);
 	}
 
+	// Conversion d'une coordonnée du monde vers une position écran
 	public Pixel toPixel(ISU.Coord coord) {
-		assert coord != null;
 		return new Pixel(toPixelX(coord.x()), toPixelY(coord.y()));
 	}
 
@@ -46,6 +51,9 @@ public class Picture {
 		return height_pixel;
 	}
 
+	/*
+	 * Représente une position à l'écran en pixels.
+	 */
 	public class Pixel {
 
 		private int x_pixel;
@@ -75,6 +83,8 @@ public class Picture {
 			}
 
 			Pixel p = (Pixel) o;
+
+			// Deux pixels sont égaux s'ils ont les mêmes coordonnées
 			return x_pixel == p.x_pixel && y_pixel == p.y_pixel;
 		}
 	}
