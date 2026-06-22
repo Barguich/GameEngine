@@ -6,7 +6,7 @@ import gal.aut.Automaton;
 
 public class Smoke2 {
 	public static void main(String[] args) throws Exception {
-		String path = args.length > 0 ? args[0] : "ws/Pengo/gal/demo/test/test.gal";
+		String path = args.length > 0 ? args[0] : "Pengo/gal/demo/test/test.gal";
 		List<Automaton> autos = GalBuilder.loadAutomata(path);
 		System.out.println("Construit OK : " + autos.size() + " automate(s)");
 		for (Automaton a : autos) {

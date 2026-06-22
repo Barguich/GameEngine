@@ -1,6 +1,5 @@
 package engine;
 
-import model.Entity;
 import model.Ticker;
 import oop.graphics.Canvas;
 import oop.tasks.Runtime;
@@ -16,13 +15,13 @@ import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
 import pengo.model.Wall;
 import testSprite.IceBlockAvatar;
-
 import view.Painter;
 import view.ShapeAvatar;
 import view.View;
 import view.ViewPort;
-
-import pengo.brain.PengoBots;
+import model.Entity;
+import pengo.view.*;
+import view.EntityRenderHook;
 import testSprite.EnemyAvatar;
 
 public class MainEngine {
@@ -38,6 +37,26 @@ public class MainEngine {
 		ViewPort viewPort = new ViewPort(mapW, mapH, mapW, mapH);
 		View view = new View(model, viewPort);
 		view.debug().setEnabled(true);
+
+		view.addRenderHook(new EntityRenderHook() {
+			@Override
+			public int offsetX(Entity e) {
+				return model.isVibrating(e) ? jitter() : 0;
+			}
+
+			@Override
+			public int offsetY(Entity e) {
+				return model.isVibrating(e) ? jitter() : 0;
+			}
+
+			private int jitter() {
+				return (int) (Math.random() * 5) - 2;
+			}
+		});
+
+		// Overlays plein écran : HUD d'abord, menu par-dessus.
+		view.addOverlay(new PengoHUD(model, view.debug()));
+		view.addOverlay(new PengoMenuOverlay(model, view.menu()));
 
 		model.setSceneBuilder(() -> {
 			buildScene(model, view);
@@ -63,29 +82,32 @@ public class MainEngine {
 	}
 
 	private static void buildScene(PengoModel model, View view) {
-	    /*
-	     * PLAYER
-	     */
-	    PengoPlayer player = new PengoPlayer();
-	    player.setPosition(Game.grid().new Position(2, 5));
-	    player.setSize(Game.grid().new Dimension(1, 1));
-	    model.setPlayer(player);
 
-	    ShapeAvatar playerAvatar = new ShapeAvatar(
-	        player,
-	        ShapeAvatar.Shape.OVAL,
-	        255,
-	        220,
-	        220,
-	        0
-	    );
-	    player.setAvatar(playerAvatar);
-	    playerAvatar.setView(view);
+		/*
+		 * PLAYER
+		 * Il commence près du scénario principal.
+		 */
+		PengoPlayer player = new PengoPlayer();
+		player.setPosition(Game.grid().new Position(2, 5));
+		player.setSize(Game.grid().new Dimension(1, 1));
+		model.setPlayer(player);
 
-	    /*
-	     * Bordures une seule fois.
-	     */
-	    addBorders(model, view);
+
+		ShapeAvatar playerAvatar = new ShapeAvatar(
+				player,
+				ShapeAvatar.Shape.OVAL,
+				255,
+				220,
+				220,
+				0);
+		player.setAvatar(playerAvatar);
+		playerAvatar.setView(view);
+
+		/*
+		 * Bordures une seule fois.
+		 */
+		addBorders(model, view);
+
 
 	    /*
 	     * ==========================================================
@@ -202,7 +224,9 @@ public class MainEngine {
 	    addFish(model, view, 3, 6);
 
 	    view.follow(player);
+
 	}
+
 	private static void addIce(PengoModel model, View view, int x, int y) {
 		IceBlock ice = new IceBlock();
 		ice.setPosition(Game.grid().new Position(x, y));
@@ -213,23 +237,24 @@ public class MainEngine {
 		ice.setAvatar(avatar);
 		avatar.setView(view);
 	}
+
 	private static void addEnemy(PengoModel model, View view, int x, int y, boolean frozen) {
-	    Enemy enemy = new Enemy();
-	    enemy.setPosition(Game.grid().new Position(x, y));
-	    enemy.setSize(Game.grid().new Dimension(1, 1));
-	    model.add(enemy);
+		Enemy enemy = new Enemy();
+		enemy.setPosition(Game.grid().new Position(x, y));
+		enemy.setSize(Game.grid().new Dimension(1, 1));
+		model.add(enemy);
 
-	    EnemyAvatar enemyAvatar = new EnemyAvatar(enemy);
-	    enemy.setAvatar(enemyAvatar);
-	    enemyAvatar.setView(view);
+		EnemyAvatar enemyAvatar = new EnemyAvatar(enemy);
+		enemy.setAvatar(enemyAvatar);
+		enemyAvatar.setView(view);
 
-	    /*
-	     * Pour les scénarios de test, on freeze les ennemis
-	     * pour qu'ils restent en place jusqu'au contact avec le IceBlock.
-	     */
-	    if (frozen) {
-	        enemy.freeze(600_000);
-	    }
+		/*
+		 * Pour les scénarios de test, on freeze les ennemis
+		 * pour qu'ils restent en place jusqu'au contact avec le IceBlock.
+		 */
+		if (frozen) {
+			enemy.freeze(600_000);
+		}
 	}
 
 	private static void addDiamond(PengoModel model, View view, int x, int y) {
@@ -244,28 +269,29 @@ public class MainEngine {
 	}
 
 	private static void addWall(PengoModel model, View view, int x, int y) {
-	    Wall wall = new Wall();
-	    wall.setPosition(Game.grid().new Position(x, y));
-	    wall.setSize(Game.grid().new Dimension(1, 1));
-	    model.add(wall);
+		Wall wall = new Wall();
+		wall.setPosition(Game.grid().new Position(x, y));
+		wall.setSize(Game.grid().new Dimension(1, 1));
+		model.add(wall);
 
-	    ShapeAvatar avatar = new ShapeAvatar(wall, ShapeAvatar.Shape.RECT, 255, 120, 120, 120);
-	    wall.setAvatar(avatar);
-	    avatar.setView(view);
+		ShapeAvatar avatar = new ShapeAvatar(wall, ShapeAvatar.Shape.RECT, 255, 120, 120, 120);
+		wall.setAvatar(avatar);
+		avatar.setView(view);
 	}
+
 	private static void addBorders(PengoModel model, View view) {
-	    int w = Game.game().width_ncell;
-	    int h = Game.game().height_ncell;
+		int w = Game.game().width_ncell;
+		int h = Game.game().height_ncell;
 
-	    for (int x = 0; x < w; x++) {
-	        addWall(model, view, x, 0);
-	        addWall(model, view, x, h - 1);
-	    }
+		for (int x = 0; x < w; x++) {
+			addWall(model, view, x, 0);
+			addWall(model, view, x, h - 1);
+		}
 
-	    for (int y = 1; y < h - 1; y++) {
-	        addWall(model, view, 0, y);
-	        addWall(model, view, w - 1, y);
-	    }
+		for (int y = 1; y < h - 1; y++) {
+			addWall(model, view, 0, y);
+			addWall(model, view, w - 1, y);
+		}
 	}
 	private static void addGold(PengoModel model, View view, int x, int y) {
 	    GoldBlock gold = new GoldBlock();
