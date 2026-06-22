@@ -106,6 +106,12 @@ public class PengoPlayer extends Entity {
 	    }
 
 	    if (e instanceof Enemy && model instanceof PengoModel) {
+	        Enemy enemy = (Enemy) e;
+
+	        if (enemy.harmlessForPlayer()) {
+	            return;
+	        }
+
 	        ((PengoModel) model).loseLife();
 	        stop();
 	        return;
@@ -132,14 +138,29 @@ public class PengoPlayer extends Entity {
 
 	        System.out.println("PENGO TOUCHE ICEBLOCK");
 
-	        if (!block.sliding()) {
-	            block.startSlide(this.orientation());
+	        /*
+	         * Si le bloc est déjà en train de glisser,
+	         * Pengo ne doit pas le relancer.
+	         */
+	        if (block.sliding()) {
+	            stop();
+	            return;
 	        }
 
+	        /*
+	         * Le bloc démarre dans la direction où Pengo regarde.
+	         */
+	        block.startSlide(this.orientation());
+
+	        /*
+	         * Très important :
+	         * Pengo doit s'arrêter après avoir poussé le bloc.
+	         * Sinon il reste collé au bloc et relance la collision en boucle.
+	         */
+	        stop();
 
 	        return;
 	    }
-
 	    super.collision(e);
 	}
 

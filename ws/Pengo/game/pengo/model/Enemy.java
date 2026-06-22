@@ -11,6 +11,8 @@ public class Enemy extends Entity {
 	private boolean dying;
 	private long dyingRemaining;
 	private long spawnAnimationRemaining;
+	private boolean draggedByIce;
+	private boolean crushedByIce;
 
 	private boolean dead;
 
@@ -23,6 +25,45 @@ public class Enemy extends Entity {
 		this.dying = false;
 		this.dyingRemaining = 0;
 		this.spawnAnimationRemaining = 800;
+		this.draggedByIce = false;
+		this.crushedByIce = false;
+	}
+	public boolean crushedByIce() {
+	    return crushedByIce;
+	}
+
+	public boolean harmlessForPlayer() {
+	    return dead || dying || draggedByIce || crushedByIce;
+	}
+
+	public void markCrushedByIce() {
+	    crushedByIce = true;
+	    draggedByIce = false;
+	    frozen = false;
+	    frozenRemaining = 0;
+	    stop();
+
+	    System.out.println("ENEMY MARKED CRUSHED BY ICE");
+	}
+	public boolean draggedByIce() {
+	    return draggedByIce;
+	}
+
+	public void startDraggedByIce() {
+	    if (dead || dying || crushedByIce) {
+	        return;
+	    }
+
+	    draggedByIce = true;
+	    frozen = false;
+	    frozenRemaining = 0;
+	    stop();
+
+	    System.out.println("ENEMY START DRAGGED BY ICE");
+	}
+
+	public void stopDraggedByIce() {
+	    draggedByIce = false;
 	}
 
 	public boolean frozen() {
@@ -82,13 +123,15 @@ public class Enemy extends Entity {
 
 	    dying = true;
 	    dyingRemaining = 1000;
+
 	    frozen = false;
 	    frozenRemaining = 0;
+	    draggedByIce = false;
+
 	    stop();
 
 	    System.out.println("Enemy dying animation");
 	}
-
 	@Override
 	public void tick(long elapsed) {
 		assert elapsed >= 0;
@@ -128,10 +171,43 @@ public class Enemy extends Entity {
 
 			return;
 		}
+		if (draggedByIce) {
+		    stop();
+		    return;
+		}
 
 		super.tick(elapsed);
 	}
+	@Override
+	public void collision(Entity e) {
+	    if (e == null) {
+	        return;
+	    }
 
+	    /*
+	     * Si l'ennemi est mort, en train de mourir,
+	     * transporté ou écrasé par un IceBlock,
+	     * il ne doit jamais déclencher de collision normale.
+	     */
+	    if (harmlessForPlayer()) {
+	        return;
+	    }
+
+	    /*
+	     * Si un IceBlock en glissade le touche,
+	     * on ne laisse pas le moteur gérer ça normalement.
+	     * C'est PengoModel.moveSlidingIceBlock() qui gère.
+	     */
+	    if (e instanceof IceBlock) {
+	        IceBlock ice = (IceBlock) e;
+
+	        if (ice.sliding()) {
+	            return;
+	        }
+	    }
+
+	    super.collision(e);
+	}
 	@Override
 	public void setBounding() {
 		if (center == null || size == null) {

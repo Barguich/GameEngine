@@ -23,10 +23,45 @@ public class IceBlock extends Entity {
 		direction = 0;
 		broken = false;
 		hp = 3;// destruction totale sur 3 coups
-		friction = 0.98;
+		friction = 0.995; //si on met a 1 plus de frottement 
 		breakingAnimation = false;
 		breakingAnimationRemaining = 0;
 		breakingFrame = 0;
+	}
+	public Enemy draggedEnemy() {
+	    return draggedEnemy;
+	}
+
+	public boolean draggingEnemy() {
+	    return draggedEnemy != null;
+	}
+
+	public void attachEnemy(Enemy enemy) {
+	    if (enemy == null) {
+	        return;
+	    }
+
+	    if (enemy.harmlessForPlayer()) {
+	        return;
+	    }
+
+	    System.out.println("ICEBLOCK DRAG ENEMY");
+
+	    draggedEnemy = enemy;
+	    enemy.startDraggedByIce();
+	}
+	public void detachEnemy() {
+	    if (draggedEnemy != null) {
+	        draggedEnemy.stopDraggedByIce();
+	    }
+
+	    draggedEnemy = null;
+	}
+
+	public void stopSlide() {
+	    sliding = false;
+	    detachEnemy();
+	    stop();
 	}
 
 	public double friction() {
@@ -80,40 +115,49 @@ public class IceBlock extends Entity {
 	}
 
 	public void startSlide(int direction) {
-		if (sliding) {
-			return;
-		}
+	    if (sliding) {
+	        return;
+	    }
 
-		System.out.println("ICE START direction = " + direction);
+	    if (broken) {
+	        return;
+	    }
 
-		this.direction = direction;
-		this.sliding = true;
+	    System.out.println("ICE START direction = " + direction);
 
-		double speed = 12.0;
+	    this.direction = direction;
+	    this.sliding = true;
 
-		if (isu == null) {
-			System.out.println("ICE ISU NULL");
-			return;
-		}
+	    /*
+	     * On détache par sécurité tout ancien ennemi.
+	     */
+	    detachEnemy();
 
-		if (direction == 0) {
-			setLinearSpeed(isu.new Vector(speed, 0));
-		} else if (direction == 90) {
-			setLinearSpeed(isu.new Vector(0, speed));
-		} else if (direction == 180) {
-			setLinearSpeed(isu.new Vector(-speed, 0));
-		} else if (direction == 270) {
-			setLinearSpeed(isu.new Vector(0, -speed));
-		}
+	    double speed = 12.0;
 
-		System.out.println("ICE SPEED = " + linearSpeed());
+	    if (isu == null) {
+	        System.out.println("ICE ISU NULL");
+	        sliding = false;
+	        return;
+	    }
+
+	    if (direction == 0) {
+	        setLinearSpeed(isu.new Vector(speed, 0));
+	    } else if (direction == 90) {
+	        setLinearSpeed(isu.new Vector(0, speed));
+	    } else if (direction == 180) {
+	        setLinearSpeed(isu.new Vector(-speed, 0));
+	    } else if (direction == 270) {
+	        setLinearSpeed(isu.new Vector(0, -speed));
+	    } else {
+	        sliding = false;
+	        stop();
+	        return;
+	    }
+
+	    System.out.println("ICE SPEED = " + linearSpeed());
 	}
-
-	public void stopSlide() {
-		sliding = false;
-		stop();
-	}
-
+	
 	public void breakBlock() {
 		broken = true;
 
@@ -124,121 +168,94 @@ public class IceBlock extends Entity {
 
 	@Override
 	public void collision(Entity e) {
-		if (e == null) {
-			return;
-		}
+	    if (e == null) {
+	        return;
+	    }
 
-		if (e instanceof PengoPlayer) {
-			return;
+	    if (e instanceof PengoPlayer) {
+	        return;
+	    }
 
-		}
+	    /*
+	     * Très important :
+	     * La collision IceBlock / Enemy est gérée AVANT dans PengoModel.
+	     * Ici, on ne fait rien, sinon le moteur déclenche une collision normale.
+	     */
+	    if (sliding && e instanceof Enemy) {
+	        return;
+	    }
 
-		if (sliding && e instanceof Enemy && model instanceof PengoModel) {
-			PengoModel pm = (PengoModel) model;
-			Enemy enemy = (Enemy) e;
-
-			Grid.Position next = pm.nextPosition(enemy, direction);
-
-			if (pm.blocked(next)) {
-				pm.killEnemy(enemy);
-			} else {
-				enemy.setPosition(next);
-			}
-
-			return;
-		}
-		if (sliding && e instanceof Enemy) {
-			draggedEnemy = (Enemy) e;
-		}
-
-		if (e instanceof Wall || e instanceof IceBlock) {
-			stopSlide();
-			return;
-		}
+	    super.collision(e);
 	}
-
 	@Override
 	public void tick(long elapsed) {
-		if (breakingAnimation) {
-			breakingAnimationRemaining -= elapsed;
+	    if (breakingAnimation) {
+	        breakingAnimationRemaining -= elapsed;
 
-			if (breakingAnimationRemaining > 200) {
-				breakingFrame = 0;
-			} else if (breakingAnimationRemaining > 100) {
-				breakingFrame = 1;
-			} else {
-				breakingFrame = 2;
-			}
+	        if (breakingAnimationRemaining > 200) {
+	            breakingFrame = 0;
+	        } else if (breakingAnimationRemaining > 100) {
+	            breakingFrame = 1;
+	        } else {
+	            breakingFrame = 2;
+	        }
 
-			if (breakingAnimationRemaining <= 0) {
-				breakingAnimation = false;
-				breakingAnimationRemaining = 0;
+	        if (breakingAnimationRemaining <= 0) {
+	            breakingAnimation = false;
+	            breakingAnimationRemaining = 0;
 
-				if (hp <= 0) {
-					breakBlock();
-					return;
-				}
-			}
-		}
-		if (broken) {
-			return;
-		}
+	            if (hp <= 0) {
+	                breakBlock();
+	                return;
+	            }
+	        }
+	    }
 
-		if (!sliding) {
-			super.tick(elapsed);
-			return;
-		}
+	    if (broken) {
+	        return;
+	    }
 
-		if (model == null || center == null || linearSpeed() == null) {
-			return;
-		}
+	    if (!sliding) {
+	        super.tick(elapsed);
+	        return;
+	    }
 
-		if (linearSpeed().norm() == 0) {
-			stopSlide();
-			return;
-		}
+	    if (model == null || center == null || linearSpeed() == null) {
+	        return;
+	    }
 
-		double dt = elapsed / 1000.0;
+	    if (linearSpeed().norm() == 0) {
+	        stopSlide();
+	        return;
+	    }
 
-		geometry.ISU.Vector movement = center.isu().new Vector(linearSpeed().x() * dt, linearSpeed().y() * dt);
+	    double dt = elapsed / 1000.0;
 
-		translate(movement);
+	    geometry.ISU.Vector movement =
+	        center.isu().new Vector(
+	            linearSpeed().x() * dt,
+	            linearSpeed().y() * dt
+	        );
 
-		java.util.List<Entity> cols = model.collisions(this);
+	    boolean moved;
 
-		boolean blocked = false;
+	    if (model instanceof PengoModel) {
+	        moved = ((PengoModel) model).moveSlidingIceBlock(this, movement);
+	    } else {
+	        moved = model.move(this, movement);
+	    }
 
-		for (Entity other : cols) {
+	    if (!moved) {
+	        return;
+	    }
 
-			if (other instanceof Enemy) {
-				draggedEnemy = (Enemy) other;
-			}
+	    if (linearSpeed() != null) {
+	        linearSpeed().scale(friction);
 
-			if (other instanceof Wall || other instanceof IceBlock) {
-				blocked = true;
-			}
-		}
-
-		if (draggedEnemy != null && !draggedEnemy.dead()) {
-			draggedEnemy.translate(movement);
-		}
-
-		if (blocked) {
-
-			translate(center.isu().new Vector(-movement.x(), -movement.y()));
-
-			if (draggedEnemy != null) {
-				draggedEnemy.kill();
-
-				if (model instanceof PengoModel) {
-					((PengoModel) model).addScore(100);
-				}
-
-				draggedEnemy = null;
-			}
-
-			stopSlide();
-		}
+	        if (linearSpeed().norm() < 0.5) {
+	            stopSlide();
+	        }
+	    }
 	}
 
 	@Override
@@ -250,4 +267,6 @@ public class IceBlock extends Entity {
 		bounding = new Bounding();
 		bounding.add(new Rect(center, size, orientation_degree));
 	}
+	
+	
 }
