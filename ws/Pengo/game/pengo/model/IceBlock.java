@@ -2,7 +2,6 @@ package pengo.model;
 
 import collision.Bounding;
 import collision.Rect;
-import geometry.Grid;
 import model.Entity;
 
 public class IceBlock extends Entity {

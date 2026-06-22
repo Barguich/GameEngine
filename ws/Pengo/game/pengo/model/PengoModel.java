@@ -3,7 +3,6 @@ package pengo.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.Game;
 import geometry.Grid;
 import model.Entity;
 import model.Model;
