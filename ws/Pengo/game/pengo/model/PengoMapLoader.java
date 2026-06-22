@@ -11,17 +11,18 @@ import model.Entity;
 
 public class PengoMapLoader {
 
-	// Lire le fichier texte et retourner un tableau de lignes
+	// Lit le fichier texte décrivant la map
 	public static String[] readMap(String path) throws IOException {
-		assert path != null;
+		if (path == null) {
+			throw new IllegalArgumentException("Chemin de map null");
+		}
 
 		List<String> lines = new ArrayList<String>();
 
-		// Le try ferme automatiquement le fichier à la fin
+		// Fermeture automatique du fichier
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 			String line;
 
-			// Lire le fichier jusqu'à la fin
 			while ((line = br.readLine()) != null) {
 				if (!line.isEmpty()) {
 					lines.add(line);
@@ -33,10 +34,9 @@ public class PengoMapLoader {
 			throw new IllegalArgumentException("Map vide : " + path);
 		}
 
-		// La largeur de la map est la taille de la première ligne
+		// Vérifie que la map est rectangulaire
 		int width = lines.get(0).length();
 
-		// Toutes les lignes doivent avoir la même largeur
 		for (String l : lines) {
 			if (l.length() != width) {
 				throw new IllegalArgumentException("Toutes les lignes doivent avoir la même taille");
@@ -54,17 +54,18 @@ public class PengoMapLoader {
 		return map.length;
 	}
 
-	// Créer les entités correspondant aux caractères de la map
+	// Crée et place les entités à partir des caractères de la map
 	public static void load(PengoModel model, String[] map) {
+		if (model == null || map == null) {
+			return;
+		}
 
 		Grid grid = model.grid();
 
 		for (int y = 0; y < map.length; y++) {
-
 			String line = map[y];
 
 			for (int x = 0; x < line.length(); x++) {
-
 				char c = line.charAt(x);
 
 				Entity e = createEntity(c);
@@ -76,6 +77,7 @@ public class PengoMapLoader {
 				e.setSize(grid.new Dimension(1, 1));
 				e.setPosition(grid.new Position(x, y));
 
+				// Le joueur est gardé séparément dans le modèle
 				if (e instanceof PengoPlayer) {
 					model.setPlayer((PengoPlayer) e);
 				} else {
@@ -85,6 +87,7 @@ public class PengoMapLoader {
 		}
 	}
 
+	// Associe chaque symbole du fichier texte à une entité du jeu
 	private static Entity createEntity(char c) {
 		switch (c) {
 		case '#':

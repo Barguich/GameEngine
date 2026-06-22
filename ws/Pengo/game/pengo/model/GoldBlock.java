@@ -4,13 +4,18 @@ import model.Entity;
 
 public class GoldBlock extends IceBlock {
 
+    // Durée du gel appliqué aux ennemis
     private static final long FREEZE_DURATION = 5000;
+
+    // Durée du bonus de score x2
     private static final long DOUBLE_SCORE_DURATION = 5000;
 
-    
-     //Cooldown pour éviter que le GoldBlock active l'effet
-     //30 fois par seconde si l'ennemi reste collé dessus.
-    
+
+    /*
+     * Empêche l'activation répétée du GoldBlock
+     * tant que son effet est encore actif.
+     */
+
     private boolean active;
     private long activeRemaining;
 
@@ -25,8 +30,12 @@ public class GoldBlock extends IceBlock {
         return active;
     }
 
-    //Activation générale : utile si tu veux un bouton/test
-     
+
+    /*
+     * Activation globale :
+     * tous les ennemis sont gelés.
+     */
+
     public void activate(PengoModel model) {
         if (model == null) {
             return;
@@ -36,8 +45,6 @@ public class GoldBlock extends IceBlock {
             return;
         }
 
-        System.out.println("GOLD BLOCK ACTIVATED - ALL ENEMIES FREEZE");
-
         model.freezeEnemies(FREEZE_DURATION);
         model.activateDoubleScore(DOUBLE_SCORE_DURATION);
 
@@ -45,8 +52,12 @@ public class GoldBlock extends IceBlock {
         activeRemaining = FREEZE_DURATION;
     }
 
-    //Activation normale du jeu ==un ennemi touche le GoldBlock, donc seulement cet ennemi est gelé.
-   
+
+    /*
+     * Activation normale :
+     * seul l'ennemi ayant touché le GoldBlock est gelé.
+     */
+
     public void activate(PengoModel model, Enemy enemy) {
         if (model == null || enemy == null) {
             return;
@@ -56,11 +67,10 @@ public class GoldBlock extends IceBlock {
             return;
         }
 
+        // Les ennemis déjà neutralisés ne déclenchent pas l'effet
         if (enemy.dead() || enemy.dying() || enemy.draggedByIce()) {
             return;
         }
-
-        System.out.println("GOLD BLOCK ACTIVATED - ENEMY FREEZE");
 
         enemy.freeze(FREEZE_DURATION);
         model.activateDoubleScore(DOUBLE_SCORE_DURATION);
@@ -75,18 +85,17 @@ public class GoldBlock extends IceBlock {
             return;
         }
 
-       
-        //si un ennemi touche le GoldBlock,
-         //on déclenche l'effet.
-        
+   
+
+        // Un ennemi qui touche le GoldBlock déclenche son pouvoir
         if (e instanceof Enemy && model instanceof PengoModel) {
             activate((PengoModel) model, (Enemy) e);
             return;
         }
 
-        //sinon, le GoldBlock reste un bloc de glace spécial :
-        //il peut être poussé comme un IceBlock.
-        
+
+        // Pour les autres interactions, le comportement reste celui d'un IceBlock
+
         super.collision(e);
     }
 
@@ -94,14 +103,13 @@ public class GoldBlock extends IceBlock {
     public void tick(long elapsed) {
         super.tick(elapsed);
 
+        // Gestion du temps de recharge du GoldBlock
         if (active) {
             activeRemaining -= elapsed;
 
             if (activeRemaining <= 0) {
                 active = false;
                 activeRemaining = 0;
-
-                System.out.println("GOLD BLOCK READY AGAIN");
             }
         }
     }
