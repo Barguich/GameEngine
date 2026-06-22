@@ -5,21 +5,25 @@ import java.util.Set;
 
 public class Bounding {
 
+    // Ensemble des formes composant la zone de collision
     private final Set<iShape> boundings;
 
     public Bounding() {
         this.boundings = new HashSet<iShape>();
     }
 
+    // Ajoute une forme à la zone de collision
     public void add(iShape shape) {
-        assert shape != null;
-        boundings.add(shape);
+        if (shape != null) {
+            boundings.add(shape);
+        }
     }
 
     public boolean isEmpty() {
         return boundings.isEmpty();
     }
 
+    // Calcule la boîte englobante de toutes les formes
     public Box box() {
         Box result = null;
 
@@ -36,8 +40,12 @@ public class Bounding {
         return result;
     }
 
+    // Vérifie si une forme intersecte au moins une des formes du Bounding
     public boolean intersects(iShape shape) {
-        assert shape != null;
+
+        if (shape == null) {
+            return false;
+        }
 
         for (iShape s : boundings) {
             if (s.intersects(shape)) {
@@ -48,7 +56,9 @@ public class Bounding {
         return false;
     }
 
+    // Vérifie l'intersection entre deux Bounding
     public boolean intersects(Bounding other) {
+
         if (other == null) {
             return false;
         }
@@ -56,6 +66,7 @@ public class Bounding {
         Box b1 = this.box();
         Box b2 = other.box();
 
+        // Premier test rapide avec les boîtes englobantes
         if (b1 == null || b2 == null) {
             return false;
         }
@@ -64,6 +75,7 @@ public class Bounding {
             return false;
         }
 
+        // Si les boîtes se chevauchent, on teste les formes réelles
         for (iShape s1 : this.boundings) {
             for (iShape s2 : other.boundings) {
                 if (s1.intersects(s2)) {

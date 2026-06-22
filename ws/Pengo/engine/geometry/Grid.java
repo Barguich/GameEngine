@@ -11,24 +11,28 @@ import model.Entity;
 
 public class Grid {
 
-	// FIELDS
+	// Grille discrète du monde : une case contient une position et des entités
 	private final ISU isu;
 	private final Axis xAxis, yAxis;
 	private final int width_ncell, height_ncell;
 	private Cell[][] grid;
 
-	// CONSTRUCTOR
 	public Grid(Game game) {
 		this.width_ncell = Game.game().width_ncell;
 		this.height_ncell = Game.game().height_ncell;
 		this.isu = Game.isu();
+
+		// Les axes gèrent la normalisation, notamment si le monde est torique
 		this.xAxis = new Axis(Game.game().torusOnXaxis, this.width_ncell);
 		this.yAxis = new Axis(Game.game().torusOnYaxis, this.height_ncell);
+
 		init();
 	}
 
+	// Création de toutes les cellules de la grille
 	private void init() {
 		this.grid = new Cell[this.width_ncell][this.height_ncell];
+
 		for (int i = 0; i < this.width_ncell; i++) {
 			for (int j = 0; j < this.height_ncell; j++) {
 				this.grid[i][j] = new Cell(new Position(i, j));
@@ -44,12 +48,14 @@ public class Grid {
 		return height_ncell;
 	}
 
+	// Retourne la cellule correspondant à une position donnée
 	public Grid.Cell cellAt(Grid.Position p) {
 		int x = xAxis.normalize(p.x());
 		int y = yAxis.normalize(p.y());
 
 		if (Log.FINER)
-			Log.logger.log(Level.FINER, "cellAt: pos({0},{1}) -> cell[{2}][{3}]", new Object[] { p.x(), p.y(), x, y });
+			Log.logger.log(Level.FINER, "cellAt: pos({0},{1}) -> cell[{2}][{3}]",
+					new Object[] { p.x(), p.y(), x, y });
 
 		return this.grid[x][y];
 	}
@@ -60,7 +66,7 @@ public class Grid {
 		ps.println("height_ncell = " + height_ncell);
 	}
 
-	// DIMENSION
+	// Dimension exprimée en nombre de cellules
 	public class Dimension {
 		protected int x_ncell, y_ncell;
 
@@ -77,6 +83,7 @@ public class Grid {
 			return y_ncell;
 		}
 
+		// Normalise la dimension selon les règles des axes
 		public void normalize() {
 			this.x_ncell = xAxis.normalize(this.x_ncell);
 			this.y_ncell = yAxis.normalize(this.y_ncell);
@@ -88,17 +95,21 @@ public class Grid {
 				return true;
 			if (o == null || !(o instanceof Dimension))
 				return false;
+
 			Dimension d = (Dimension) o;
 			return (this.x_ncell == d.x_ncell) && (this.y_ncell == d.y_ncell);
 		}
 
+		// Égalité tenant compte de la normalisation des axes
 		public boolean equiv(Dimension d) {
 			if (d == null)
 				return false;
+
 			return (xAxis.normalize(x_ncell) == xAxis.normalize(d.x_ncell))
 					&& (yAxis.normalize(y_ncell) == yAxis.normalize(d.y_ncell));
 		}
 
+		// Conversion d'une dimension de grille vers une dimension réelle en cm
 		public ISU.Dimension toISUDimension() {
 			double cm = Game.game().cmPerCell;
 			return isu.new Dimension(x_ncell * cm, y_ncell * cm);
@@ -109,7 +120,7 @@ public class Grid {
 		}
 	}
 
-	// VECTEUR
+	// Vecteur de déplacement exprimé en cellules
 	public class Vector {
 		private int x_ncell, y_ncell;
 
@@ -140,7 +151,7 @@ public class Grid {
 		}
 	}
 
-	// POSITION
+	// Position d'une entité ou d'une cellule dans la grille
 	public class Position {
 		private int x_ncell, y_ncell;
 
@@ -167,32 +178,39 @@ public class Grid {
 				return true;
 			if (!(o instanceof Position))
 				return false;
+
 			Position p = (Position) o;
 			return (this.x_ncell == p.x_ncell) && (this.y_ncell == p.y_ncell);
 		}
 
+		// Compare deux positions en tenant compte du monde torique
 		public boolean equiv(Position p) {
 			if (p == null)
 				return false;
+
 			return (xAxis.normalize(x_ncell) == xAxis.normalize(p.x_ncell))
 					&& (yAxis.normalize(y_ncell) == yAxis.normalize(p.y_ncell));
 		}
 
+		// Déplace la position en normalisant le résultat
 		public void translate(Vector v) {
-			assert v != null;
+			if (v == null)
+				return;
+
 			x_ncell = xAxis.normalize(x_ncell + v.x());
 			y_ncell = yAxis.normalize(y_ncell + v.y());
+
 			if (Log.FINER)
 				Log.logger.log(Level.FINER,
 						"translate: +({0},{1}) -> ({2},{3})",
 						new Object[] { v.x(), v.y(), x_ncell, y_ncell });
-
 		}
 
 		public void moveNorth(int n_ncell) {
 			y_ncell = yAxis.normalize(y_ncell - n_ncell);
 		}
 
+		// Rotation d'une position autour d'une autre position
 		public void rotateAround(Grid.Position position, int angle_degree) {
 			int dx = x_ncell - position.x();
 			int dy = y_ncell - position.y();
@@ -205,23 +223,28 @@ public class Grid {
 			y_ncell = yAxis.normalize(newY);
 		}
 
+		// Distance entre deux positions en tenant compte des axes
 		public double distanceTo(Position p) {
 			double dx = xAxis.distance(x_ncell, p.x_ncell);
 			double dy = yAxis.distance(y_ncell, p.y_ncell);
 			return Math.sqrt(dx * dx + dy * dy);
 		}
 
+		// Conversion vers le repère continu en cm
 		public ISU.Coord toISUCoord() {
-			return isu.new Coord(this.x_ncell * Game.game().cmPerCell, this.y_ncell * Game.game().cmPerCell);
+			return isu.new Coord(this.x_ncell * Game.game().cmPerCell,
+					this.y_ncell * Game.game().cmPerCell);
 		}
 
+		// Conversion vers le centre de la cellule en cm
 		public ISU.Coord toISUCoordCentered() {
 			return isu.new Coord((this.x_ncell + .5) * Game.game().cmPerCell,
 					(this.y_ncell + .5) * Game.game().cmPerCell);
 		}
+
 		@Override
 		public String toString() {
-		    return "(" + x_ncell + "," + y_ncell + ")";
+			return "(" + x_ncell + "," + y_ncell + ")";
 		}
 
 		public void show(PrintStream ps) {
@@ -233,7 +256,7 @@ public class Grid {
 		}
 	}
 
-	// CELL
+	// Case de la grille contenant les entités présentes à cette position
 	public class Cell {
 		private Grid.Dimension size;
 		private Grid.Position position;
