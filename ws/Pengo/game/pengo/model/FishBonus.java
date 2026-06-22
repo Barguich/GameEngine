@@ -41,11 +41,14 @@ public class FishBonus extends Entity {
 
 		player.activateSpeedBoost(10000);
 
-		System.out.println("FISH BONUS : SPEED x2");
 
-		if (model != null) {
-			model.remove(this);
-		}
+        if (player != null) {
+            player.activateSpeedBoost(8000); // 8 secondes
+        }
 
-	}
+        if (model != null) {
+            model.remove(this);
+        }
+    }
+
 }

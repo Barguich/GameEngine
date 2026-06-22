@@ -4,7 +4,6 @@ import oop.graphics.Graphics;
 import model.Entity;
 import oop.graphics.Color;
 import pengo.model.IceBlock;
-import oop.graphics.Color;
 
 public class ShapeAvatar extends Avatar {
 

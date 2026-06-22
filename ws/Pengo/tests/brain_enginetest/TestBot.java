@@ -148,17 +148,9 @@ public class TestBot {
         PengoModel model = newModel(10, 10);
         Grid grid = model.grid();
 
-        PengoPlayer player = new PengoPlayer();
-        player.setPosition(grid.new Position(1, 1));
-        player.setSize(grid.new Dimension(1, 1));
-        model.setPlayer(player);
-
         IceBlock block = new IceBlock();
         block.setPosition(grid.new Position(5, 5));
         block.setSize(grid.new Dimension(1, 1));
-
-        BasicStunt blockStunt = new BasicStunt(model, block);
-        block.setStunt(blockStunt);
         model.add(block);
 
         Enemy enemy = new Enemy();
@@ -166,8 +158,13 @@ public class TestBot {
         enemy.setSize(grid.new Dimension(1, 1));
         model.add(enemy);
 
+        Wall wall = new Wall();
+        wall.setPosition(grid.new Position(7, 5));
+        wall.setSize(grid.new Dimension(1, 1));
+        model.add(wall);
+
         block.startSlide(0);
-        model.tick(1000);
+        block.collision(enemy);
 
         assertTrue(enemy.dead());
         assertFalse(model.entities().contains(enemy));

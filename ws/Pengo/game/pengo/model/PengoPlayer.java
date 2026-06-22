@@ -12,6 +12,7 @@ public class PengoPlayer extends Entity {
 	private boolean speedBoost;
 	private long speedBoostRemaining;
 
+
 	public PengoPlayer() {
 		super("PengoPlayer");
 		this.lives = 3;
@@ -85,42 +86,82 @@ public class PengoPlayer extends Entity {
 		double radius = Math.min(size.x(), size.y()) / 2.0;
 		bounding.add(new Circle(center, radius));
 	}
-
 	@Override
 	public void collision(Entity e) {
-		super.collision(e);
+	    if (e == null) {
+	        return;
+	    }
 
-		if (e instanceof Wall && model instanceof PengoModel) {
-			((PengoModel) model).startWallVibration(e, 1500);
-		}
+	    if (model instanceof PengoModel pm) {
+	        if (pm.lost() || pm.won()) {
+	            stop();
+	            return;
+	        }
+	    }
 
-		if (e instanceof Enemy && model instanceof PengoModel) {
-			((PengoModel) model).loseLife();
-		}
+	    if (e instanceof Wall && model instanceof PengoModel) {
+	        ((PengoModel) model).startWallVibration(e, 1500);
+	        stop();
+	        return;
+	    }
 
-		if (e instanceof FishBonus) {
-			((FishBonus) e).consume(this);
-		}
+	    if (e instanceof Enemy && model instanceof PengoModel) {
+	        Enemy enemy = (Enemy) e;
 
-		if (e instanceof DiamondBlock) {
-			DiamondBlock diamond = (DiamondBlock) e;
+	        if (enemy.harmlessForPlayer()) {
+	            return;
+	        }
 
-			if (!diamond.sliding()) {
-				diamond.startSlide(this.orientation());
-			}
+	        ((PengoModel) model).loseLife();
+	        stop();
+	        return;
+	    }
 
-			return;
-		}
+	    if (e instanceof FishBonus) {
+	        ((FishBonus) e).consume(this);
+	        return;
+	    }
 
-		if (e instanceof IceBlock) {
-			IceBlock block = (IceBlock) e;
+	    if (e instanceof DiamondBlock) {
+	        DiamondBlock diamond = (DiamondBlock) e;
 
-			System.out.println("PENGO TOUCHE ICEBLOCK");
+	        if (!diamond.sliding()) {
+	            diamond.startSlide(this.orientation());
+	        }
 
-			if (!block.sliding()) {
-				block.startSlide(this.orientation());
-			}
-		}
+	        stop();
+	        return;
+	    }
+
+	    if (e instanceof IceBlock) {
+	        IceBlock block = (IceBlock) e;
+
+	        System.out.println("PENGO TOUCHE ICEBLOCK");
+
+	        /*
+	         * Si le bloc est déjà en train de glisser,
+	         * Pengo ne doit pas le relancer.
+	         */
+	        if (block.sliding()) {
+	            stop();
+	            return;
+	        }
+
+	        /*
+	         * Le bloc démarre dans la direction où Pengo regarde.
+	         */
+	        block.startSlide(this.orientation());
+
+	        /*
+	         * Très important :
+	         * Pengo doit s'arrêter après avoir poussé le bloc.
+	         * Sinon il reste collé au bloc et relance la collision en boucle.
+	         */
+	        stop();
+
+	        return;
+	    }
+	    super.collision(e);
 	}
 
 	public double speedMultiplier() {
@@ -130,4 +171,11 @@ public class PengoPlayer extends Entity {
 
 		return 1.0;
 	}
+
+    public void attack() {
+        if (model instanceof PengoModel) {
+            ((PengoModel) model).damageBlockInFront(this);
+        }
+    }
+
 }

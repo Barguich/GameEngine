@@ -1,12 +1,12 @@
 package engine;
 
-import geometry.ISU;
 import model.Entity;
 import model.Ticker;
 import oop.graphics.Canvas;
-import oop.graphics.VirtualKeyCodes;
 import oop.tasks.Runtime;
 import oop.tasks.Task;
+import pengo.brain.PengoBots;
+import pengo.controller.PengoController;
 import pengo.model.DiamondBlock;
 import pengo.model.Enemy;
 import pengo.model.FishBonus;
@@ -14,14 +14,18 @@ import pengo.model.GoldBlock;
 import pengo.model.IceBlock;
 import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
+import pengo.model.Wall;
+import testSprite.IceBlockAvatar;
+
 import view.Painter;
 import view.ShapeAvatar;
 import view.View;
 import view.ViewPort;
 
-public class MainEngine {
+import pengo.brain.PengoBots;
+import testSprite.EnemyAvatar;
 
-	private static final double SPEED_CM_S = 10.0;
+public class MainEngine {
 
 	public static void main(String[] args) {
 
@@ -35,69 +39,13 @@ public class MainEngine {
 		View view = new View(model, viewPort);
 		view.debug().setEnabled(true);
 
-		// Player
-		PengoPlayer player = new PengoPlayer();
-		player.setPosition(Game.grid().new Position(2, 5));
-		player.setSize(Game.grid().new Dimension(1, 1));
-		model.setPlayer(player);
+		model.setSceneBuilder(() -> {
+			buildScene(model, view);
+			PengoBots.configure(model);
+		});
 
-		ShapeAvatar playerAvatar = new ShapeAvatar(player, ShapeAvatar.Shape.OVAL, 255, 220, 220, 0);
-		player.setAvatar(playerAvatar);
-		playerAvatar.setView(view);
-
-		// IceBlocks
-		addIce(model, view, 5, 5);
-		addIce(model, view, 6, 7);
-
-		// GoldBlock
-		GoldBlock gold = new GoldBlock();
-		gold.setPosition(Game.grid().new Position(10, 5));
-		gold.setSize(Game.grid().new Dimension(1, 1));
-		model.add(gold);
-
-		ShapeAvatar goldAvatar = new ShapeAvatar(gold, ShapeAvatar.Shape.RECT, 255, 255, 215, 0);
-		gold.setAvatar(goldAvatar);
-		goldAvatar.setView(view);
-
-		// DiamondBlocks séparés au départ
-		addDiamond(model, view, 13, 4);
-		addDiamond(model, view, 15, 4);
-		addDiamond(model, view, 17, 4);
-
-		// FishBonus
-		FishBonus fish = new FishBonus();
-		fish.setPosition(Game.grid().new Position(3, 8));
-		fish.setSize(Game.grid().new Dimension(1, 1));
-		model.add(fish);
-
-		ShapeAvatar fishAvatar = new ShapeAvatar(fish, ShapeAvatar.Shape.OVAL, 255, 0, 180, 255);
-		fish.setAvatar(fishAvatar);
-		fishAvatar.setView(view);
-
-		// Enemies
-		Enemy e1 = new Enemy();
-		e1.setPosition(Game.grid().new Position(8, 5));
-		e1.setSize(Game.grid().new Dimension(1, 1));
-		model.add(e1);
-
-		ShapeAvatar e1Avatar = new ShapeAvatar(e1, ShapeAvatar.Shape.OVAL, 255, 255, 0, 0);
-		e1.setAvatar(e1Avatar);
-		e1Avatar.setView(view);
-
-		Enemy e2 = new Enemy();
-		e2.setPosition(Game.grid().new Position(11, 8));
-		e2.setSize(Game.grid().new Dimension(1, 1));
-		model.add(e2);
-
-		ShapeAvatar e2Avatar = new ShapeAvatar(e2, ShapeAvatar.Shape.OVAL, 255, 255, 80, 80);
-		e2.setAvatar(e2Avatar);
-		e2Avatar.setView(view);
-
-		// Petit mur pour tester arrêt des blocs
-		addWall(model, view, 9, 5);
-		addWall(model, view, 18, 4);
-
-		view.follow(player);
+		buildScene(model, view);
+		PengoBots.configure(model);
 
 		int winW = (int) (mapW * game.pixelPerCm);
 		int winH = (int) (mapH * game.pixelPerCm);
@@ -110,80 +58,155 @@ public class MainEngine {
 			new Painter(canvas).run();
 			new Ticker(model, view).run();
 
-			canvas.set(new Canvas.KeyListener() {
-				@Override
-				public void pressed(Canvas canvas, int keyCode, char keyChar) {
-					ISU isu = Game.isu();
-					double s = SPEED_CM_S * player.speedMultiplier();
-
-					switch (keyCode) {
-						case VirtualKeyCodes.VK_UP:
-						case VirtualKeyCodes.VK_Z:
-							player.setLinearSpeed(isu.new Vector(0, -s));
-							player.turnTo(270);
-							break;
-
-						case VirtualKeyCodes.VK_DOWN:
-						case VirtualKeyCodes.VK_S:
-							player.setLinearSpeed(isu.new Vector(0, s));
-							player.turnTo(90);
-							break;
-
-						case VirtualKeyCodes.VK_LEFT:
-						case VirtualKeyCodes.VK_Q:
-							player.setLinearSpeed(isu.new Vector(-s, 0));
-							player.turnTo(180);
-							break;
-
-						case VirtualKeyCodes.VK_RIGHT:
-						case VirtualKeyCodes.VK_D:
-							player.setLinearSpeed(isu.new Vector(s, 0));
-							player.turnTo(0);
-							break;
-
-						default:
-							break;
-					}
-				}
-
-				@Override
-				public void released(Canvas canvas, int keyCode, char keyChar) {
-					switch (keyCode) {
-						case VirtualKeyCodes.VK_UP:
-						case VirtualKeyCodes.VK_DOWN:
-						case VirtualKeyCodes.VK_LEFT:
-						case VirtualKeyCodes.VK_RIGHT:
-						case VirtualKeyCodes.VK_Z:
-						case VirtualKeyCodes.VK_S:
-						case VirtualKeyCodes.VK_Q:
-						case VirtualKeyCodes.VK_D:
-							player.stop();
-							break;
-						case VirtualKeyCodes.VK_SPACE:
-							damageBlockInFront(player, model);
-							break;
-
-						default:
-							break;
-					}
-				}
-
-				@Override
-				public void typed(Canvas canvas, char keyChar) {
-				}
-			});
+			canvas.set(new PengoController(model, view));
 		});
 	}
 
+	private static void buildScene(PengoModel model, View view) {
+	    /*
+	     * PLAYER
+	     * Il commence près du scénario principal.
+	     */
+	    PengoPlayer player = new PengoPlayer();
+	    player.setPosition(Game.grid().new Position(2, 5));
+	    player.setSize(Game.grid().new Dimension(1, 1));
+	    model.setPlayer(player);
+
+	    ShapeAvatar playerAvatar = new ShapeAvatar(
+	        player,
+	        ShapeAvatar.Shape.OVAL,
+	        255,
+	        220,
+	        220,
+	        0
+	    );
+	    player.setAvatar(playerAvatar);
+	    playerAvatar.setView(view);
+
+	    /*
+	     * Bordures une seule fois.
+	     */
+	    addBorders(model, view);
+
+	    /*
+	     * ==========================================================
+	     * SCENARIO 1 : Slide simple
+	     *
+	     * IceBlock en (4,2)
+	     * Wall en (12,2)
+	     *
+	     * Objectif :
+	     * le bloc glisse vers la droite et s'arrête contre le mur.
+	     * ==========================================================
+	     */
+	    addIce(model, view, 4, 2);
+	    addWall(model, view, 12, 2);
+
+
+	    /*
+	     * ==========================================================
+	     * SCENARIO 2 : IceBlock emporte Enemy puis l'écrase
+	     *
+	     * IceBlock en (4,5)
+	     * Enemy en (8,5)
+	     * Wall en (13,5)
+	     *
+	     * Objectif :
+	     * le bloc glisse, touche l'ennemi, l'emporte,
+	     * puis l'écrase contre le mur.
+	     * ==========================================================
+	     */
+	    addIce(model, view, 4, 5);
+	    addEnemy(model, view, 8, 5, true);
+	    addWall(model, view, 13, 5);
+
+
+	    /*
+	     * ==========================================================
+	     * SCENARIO 3 : Enemy collé à l'obstacle
+	     *
+	     * IceBlock en (4,8)
+	     * Enemy en (8,8)
+	     * Wall en (9,8)
+	     *
+	     * Objectif :
+	     * le bloc glisse, touche l'ennemi,
+	     * et l'ennemi est écrasé presque immédiatement.
+	     * ==========================================================
+	     */
+	    addIce(model, view, 4, 8);
+	    addEnemy(model, view, 8, 8, true);
+	    addWall(model, view, 9, 8);
+
+
+	    /*
+	     * ==========================================================
+	     * SCENARIO 4 : IceBlock contre IceBlock
+	     *
+	     * IceBlock mobile en (4,10)
+	     * IceBlock obstacle en (9,10)
+	     *
+	     * Objectif :
+	     * le premier bloc glisse et s'arrête contre l'autre bloc.
+	     * ==========================================================
+	     */
+	    addIce(model, view, 4, 10);
+	    addIce(model, view, 9, 10);
+
+
+	    /*
+	     * ==========================================================
+	     * SCENARIO 5 : Vertical vers le bas
+	     *
+	     * IceBlock en (16,3)
+	     * Enemy en (16,6)
+	     * Wall en (16,10)
+	     *
+	     * Objectif :
+	     * tu pousses le bloc vers le bas.
+	     * Il emporte l'ennemi et l'écrase contre le mur.
+	     * ==========================================================
+	     */
+	    addIce(model, view, 16, 3);
+	    addEnemy(model, view, 16, 6, true);
+	    addWall(model, view, 16, 10);
+
+
+	    /*
+	     * Enemy normal en plus, pour éviter que la partie se termine
+	     * dès que tu écrases le premier ennemi.
+	     */
+	    addEnemy(model, view, 17, 9, false);
+
+	    view.follow(player);
+	}
 	private static void addIce(PengoModel model, View view, int x, int y) {
 		IceBlock ice = new IceBlock();
 		ice.setPosition(Game.grid().new Position(x, y));
 		ice.setSize(Game.grid().new Dimension(1, 1));
 		model.add(ice);
 
-		ShapeAvatar avatar = new ShapeAvatar(ice, ShapeAvatar.Shape.RECT, 255, 120, 180, 255);
+		IceBlockAvatar avatar = new IceBlockAvatar(ice);
 		ice.setAvatar(avatar);
 		avatar.setView(view);
+	}
+	private static void addEnemy(PengoModel model, View view, int x, int y, boolean frozen) {
+	    Enemy enemy = new Enemy();
+	    enemy.setPosition(Game.grid().new Position(x, y));
+	    enemy.setSize(Game.grid().new Dimension(1, 1));
+	    model.add(enemy);
+
+	    EnemyAvatar enemyAvatar = new EnemyAvatar(enemy);
+	    enemy.setAvatar(enemyAvatar);
+	    enemyAvatar.setView(view);
+
+	    /*
+	     * Pour les scénarios de test, on freeze les ennemis
+	     * pour qu'ils restent en place jusqu'au contact avec le IceBlock.
+	     */
+	    if (frozen) {
+	        enemy.freeze(600_000);
+	    }
 	}
 
 	private static void addDiamond(PengoModel model, View view, int x, int y) {
@@ -197,46 +220,28 @@ public class MainEngine {
 		avatar.setView(view);
 	}
 
-	private static void damageBlockInFront(PengoPlayer player, PengoModel model) {
-		if (player == null || player.position() == null) {
-			return;
-		}
-
-		int x = player.position().x();
-		int y = player.position().y();
-
-		switch (player.orientation()) {
-			case 0:
-				x++;
-				break;
-			case 90:
-				y++;
-				break;
-			case 180:
-				x--;
-				break;
-			case 270:
-				y--;
-				break;
-			default:
-				return;
-		}
-
-		Entity e = model.firstAt(Game.grid().new Position(x, y));
-
-		if (e instanceof IceBlock && !(e instanceof DiamondBlock)) {
-			((IceBlock) e).damage();
-		}
-	}
-
 	private static void addWall(PengoModel model, View view, int x, int y) {
-		Entity wall = new Entity("Wall");
-		wall.setPosition(Game.grid().new Position(x, y));
-		wall.setSize(Game.grid().new Dimension(1, 1));
-		model.add(wall);
+	    Wall wall = new Wall();
+	    wall.setPosition(Game.grid().new Position(x, y));
+	    wall.setSize(Game.grid().new Dimension(1, 1));
+	    model.add(wall);
 
-		ShapeAvatar avatar = new ShapeAvatar(wall, ShapeAvatar.Shape.RECT, 255, 120, 120, 120);
-		wall.setAvatar(avatar);
-		avatar.setView(view);
+	    ShapeAvatar avatar = new ShapeAvatar(wall, ShapeAvatar.Shape.RECT, 255, 120, 120, 120);
+	    wall.setAvatar(avatar);
+	    avatar.setView(view);
+	}
+	private static void addBorders(PengoModel model, View view) {
+	    int w = Game.game().width_ncell;
+	    int h = Game.game().height_ncell;
+
+	    for (int x = 0; x < w; x++) {
+	        addWall(model, view, x, 0);
+	        addWall(model, view, x, h - 1);
+	    }
+
+	    for (int y = 1; y < h - 1; y++) {
+	        addWall(model, view, 0, y);
+	        addWall(model, view, w - 1, y);
+	    }
 	}
 }
