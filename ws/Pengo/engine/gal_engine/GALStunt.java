@@ -24,7 +24,7 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		this.entity = e;
 		step_cm = entity.step().x();
 
-		double DEBUG_SPEED_FACTOR = 12.0;
+		double DEBUG_SPEED_FACTOR = 1.0;
 
 		max_cmPer_ms = (Game.game().cmPerCell / 1000.0) * DEBUG_SPEED_FACTOR;
 		max_degPer_ms = (90.0 / 1000.0) * DEBUG_SPEED_FACTOR;

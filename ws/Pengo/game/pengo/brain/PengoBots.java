@@ -2,10 +2,12 @@ package pengo.brain;
 
 import gal.GalBuilder;
 import gal.aut.Automaton;
+import gal.visitor.GALVisitor;
 import gal.arguments.Category;
 import gal_engine.GALBot;
 import gal_engine.GALStunt;
 import model.Entity;
+import parser.Parser;
 import pengo.model.DiamondBlock;
 import pengo.model.Enemy;
 import pengo.model.FishBonus;
@@ -15,6 +17,8 @@ import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
 
 import java.util.List;
+
+import ast.AST;
 
 /** Branchement des catégories + automates GAL sur les entités Pengo. */
 public final class PengoBots {
@@ -49,38 +53,56 @@ public final class PengoBots {
 			e.setCategory(Category.O);
 		}
 
-		if (e instanceof Enemy) {
-			e.setStunt(new GALStunt(model, e));
+		if (e instanceof Enemy enemy) {
+			enemy.turnTo(0);
+
+			GALStunt stunt = new GALStunt(model, enemy);
+			enemy.setStunt(stunt);
 
 			Automaton aut = loadEnemyAutomaton();
 
 			if (aut == null) {
-				System.out.println("WARNING: aucun automate GAL trouvé pour Enemy");
+				System.err.println("[PengoBots] Impossible de charger SnoBee.gal");
 				return;
 			}
 
-			GALBot bot = new GALBot(e);
+			GALBot bot = new GALBot(enemy);
+
+			bot.stunt(stunt); // IMPORTANT
 			bot.set(aut);
-			e.setBot(bot);
-			e.turnTo(0);
+
+			enemy.setBot(bot);
+
+			System.out.println(
+					"[PengoBots] SnoBee configuré : "
+							+ enemy
+							+ " automate="
+							+ aut.name());
 		}
 	}
 
 	private static Automaton loadEnemyAutomaton() {
-		String[] paths = { "Pengo/gal/demo/test/SnoBees.gal" };
 
-		for (String p : paths) {
-			try {
-				List<Automaton> autos = GalBuilder.loadAutomata(p);
+		String path = "/home/barguich/AgileLearning/ple/ws/Pengo/gal/demo/test/SnoBees.gal";
+		try {
 
-				if (!autos.isEmpty()) {
-					System.out.println("GAL loaded: " + p);
-					return autos.get(0);
-				}
+			AST ast = Parser.from_file(path);
 
-			} catch (Throwable t) {
-				t.printStackTrace();
+			GALVisitor visitor = new GALVisitor();
+
+			@SuppressWarnings("unchecked")
+			List<Automaton> autos = (List<Automaton>) ast.accept(visitor);
+
+			if (!autos.isEmpty()) {
+				System.out.println(
+						"[PengoBots] GAL loaded : "
+								+ autos.get(0).name());
+
+				return autos.get(0);
 			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		return null;
