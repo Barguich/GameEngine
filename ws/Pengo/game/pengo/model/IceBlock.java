@@ -115,11 +115,17 @@ public class IceBlock extends Entity {
 	}
 
 	public void startSlide(int direction) {
-	    if (sliding) {
+	    if (broken) {
 	        return;
 	    }
 
-	    if (broken) {
+	    /*
+	     * Très important :
+	     * si le bloc est déjà en train de glisser,
+	     * on ne relance PAS le slide.
+	     */
+	    if (sliding) {
+	        System.out.println("ICE ALREADY SLIDING - PUSH IGNORED");
 	        return;
 	    }
 
@@ -128,15 +134,11 @@ public class IceBlock extends Entity {
 	    this.direction = direction;
 	    this.sliding = true;
 
-	    /*
-	     * Sécurité : aucun ancien ennemi attaché.
-	     */
 	    detachEnemy();
 
 	    double speed = 12.0;
 
 	    if (isu == null) {
-	        System.out.println("ICE ISU NULL");
 	        sliding = false;
 	        return;
 	    }
@@ -157,7 +159,6 @@ public class IceBlock extends Entity {
 
 	    System.out.println("ICE SPEED = " + linearSpeed());
 	}
-	
 	public void breakBlock() {
 		broken = true;
 

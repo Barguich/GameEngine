@@ -132,12 +132,7 @@ public class PengoPlayer extends Entity {
 
 	    bounding = new Bounding();
 
-	    /*
-	     * Hitbox un peu plus petite que la case.
-	     * Ça évite les collisions parasites quand Pengo est proche d'un bloc.
-	     */
 	    double radius = Math.min(size.x(), size.y()) * 0.35;
-
 	    bounding.add(new Circle(center, radius));
 	}
 	@Override
@@ -184,8 +179,13 @@ public class PengoPlayer extends Entity {
 	     * On ne fait PAS block.startSlide() ici.
 	     */
 	    if (e instanceof IceBlock) {
-	        System.out.println("PENGO COLLISION ICEBLOCK - CANCEL ONLY");
-	        cancelGridMoveAndSnapBack();
+	        System.out.println("PENGO COLLISION ICEBLOCK - SECURITY STOP");
+
+	        /*
+	         * Collision parasite : on ne pousse pas ici.
+	         * On remet seulement Pengo proprement sur sa case.
+	         */
+	        stopCleanlyOnCurrentCell();
 	        return;
 	    }
 
@@ -260,15 +260,21 @@ public class PengoPlayer extends Entity {
 	    if (front instanceof IceBlock) {
 	        IceBlock block = (IceBlock) front;
 
-	        System.out.println("PENGO PUSH ICEBLOCK");
-
-	        if (!block.sliding()) {
-	            block.startSlide(direction);
+	        /*
+	         * Si le bloc glisse déjà, Pengo ne doit pas le relancer.
+	         */
+	        if (block.sliding()) {
+	            System.out.println("PENGO TRIES TO PUSH BUT ICE ALREADY SLIDING");
+	            cancelGridMove();
+	            return;
 	        }
 
+	        System.out.println("PENGO PUSH ICEBLOCK");
+
+	        block.startSlide(direction);
+
 	        /*
-	         * Très important :
-	         * Pengo ne bouge pas dans la case du bloc.
+	         * Pengo reste devant le bloc.
 	         */
 	        cancelGridMove();
 	        return;
@@ -346,6 +352,26 @@ public class PengoPlayer extends Entity {
         originCell = null;
         targetCell = null;
         pendingFishBonus = null;
+        stop();
+    }
+    private void stopCleanlyOnCurrentCell() {
+        if (model instanceof PengoModel && position() != null) {
+            PengoModel pm = (PengoModel) model;
+
+            Grid.Position current = pm.grid().new Position(
+                position().x(),
+                position().y()
+            );
+
+            setPosition(current);
+            setBounding();
+        }
+
+        movingOneCell = false;
+        originCell = null;
+        targetCell = null;
+        pendingFishBonus = null;
+
         stop();
     }
 

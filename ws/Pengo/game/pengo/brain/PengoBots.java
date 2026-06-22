@@ -36,7 +36,7 @@ public final class PengoBots {
      * 3.0 = trois cellules par seconde (bon gameplay).
      * Augmenter si les ennemis semblent encore trop lents.
      */
-    private static final double SPEED_FACTOR = 1024.0;
+	private static final double SPEED_FACTOR = 3.0;
 
     private PengoBots() {
     }
@@ -72,14 +72,24 @@ public final class PengoBots {
 
         // ── Bot GAL pour les ennemis ──────────────────────────────────────
         if (e instanceof Enemy enemy) {
-            enemy.turnTo(0);   // orientation initiale : Est
+
+            /*
+             * Très important :
+             * Les ennemis frozen, dragged, crushed ou dying ne doivent PAS recevoir de bot GAL.
+             * Sinon le bot essaie de faire Move/Turn pendant que le IceBlock le déplace.
+             */
+            if (!enemy.canRunBot()) {
+                System.out.println("[PengoBots] Bot non configuré pour ennemi inactif : " + enemy);
+                return;
+            }
+
+            enemy.turnTo(0);
 
             GALStunt stunt = new GALStunt(model, enemy);
 
-            // Vitesse augmentée : on passe le facteur au stunt
-            double baseLinear  = stunt.stepLength() / 1000.0; // 1 cell/s en base
+            double baseLinear = stunt.stepLength() / 1000.0;
+
             stunt.setMaxLinearSpeed(baseLinear * SPEED_FACTOR);
-            // La rotation reste à 90°/s × SPEED_FACTOR
             stunt.setMaxAngularSpeed((90.0 / 1000.0) * SPEED_FACTOR);
 
             enemy.setStunt(stunt);
@@ -93,14 +103,14 @@ public final class PengoBots {
             }
 
             GALBot bot = new GALBot(enemy);
-            bot.stunt(stunt);  // le bot doit connaître le stunt pour déclencher les actions
+            bot.stunt(stunt);
             bot.set(aut);
 
             enemy.setBot(bot);
 
             System.out.println("[PengoBots] SnoBee configuré : " + enemy
-                    + "  automate=" + aut.name()
-                    + "  vitesse=" + String.format("%.4f", baseLinear * SPEED_FACTOR) + " cm/ms");
+                    + " automate=" + aut.name()
+                    + " vitesse=" + String.format("%.4f", baseLinear * SPEED_FACTOR) + " cm/ms");
         }
     }
 

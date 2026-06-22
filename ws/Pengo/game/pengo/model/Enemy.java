@@ -55,9 +55,17 @@ public class Enemy extends Entity {
 	    }
 
 	    draggedByIce = true;
+
 	    frozen = false;
 	    frozenRemaining = 0;
+
 	    stop();
+
+	    /*
+	     * Important :
+	     * le bot ne doit plus contrôler cet ennemi pendant qu'il est transporté.
+	     */
+	    setBot(null);
 
 	    System.out.println("ENEMY START DRAGGED BY ICE");
 	}
@@ -229,5 +237,12 @@ public class Enemy extends Entity {
 
 		double radius = Math.min(size.x(), size.y()) / 2.0;
 		bounding.add(new Circle(center, radius));
+	}
+	public boolean canRunBot() {
+	    return !dead
+	        && !dying
+	        && !frozen
+	        && !draggedByIce
+	        && !crushedByIce;
 	}
 }

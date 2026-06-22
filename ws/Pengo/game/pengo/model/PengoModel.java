@@ -540,8 +540,7 @@ public class PengoModel extends Model {
         }
 
         /*
-         * CAS 1 :
-         * Le IceBlock transporte déjà un ennemi.
+         * CAS 1 : le IceBlock transporte déjà un ennemi.
          */
         if (ice.draggingEnemy()) {
             Enemy enemy = ice.draggedEnemy();
@@ -559,116 +558,48 @@ public class PengoModel extends Model {
                 return true;
             }
 
-            /*
-             * Position sûre de l'ennemi AVANT tout move().
-             * Si move(enemy, movement) échoue, on placera le IceBlock ici.
-             */
-            Grid.Position safeEnemyPosition = copyPosition(enemy.position());
-
-            /*
-             * Si la case devant l'ennemi contient déjà un vrai obstacle,
-             * l'ennemi est écrasé directement.
-             */
-            Grid.Position enemyNextCell = nextPosition(enemy, ice.direction());
-            Entity obstacle = firstSolidAt(enemyNextCell, ice, enemy);
-
-            if (obstacle != null) {
-                System.out.println(
-                    "ENEMY CRUSHED AGAINST "
-                    + obstacle.getClass().getSimpleName()
-                );
-
-                crushEnemyByIce(ice, enemy, safeEnemyPosition);
-                return true;
-            }
-
-            /*
-             * Sinon, l'ennemi avance devant le bloc.
-             */
-            boolean enemyMoved = move(enemy, movement);
-
-            if (!enemyMoved) {
-                /*
-                 * Très important :
-                 * On utilise safeEnemyPosition, pas enemy.position()
-                 * après l'échec du move().
-                 */
-                System.out.println("ENEMY BLOCKED - CRUSH FALLBACK");
-
-                crushEnemyByIce(ice, enemy, safeEnemyPosition);
-                return true;
-            }
-
-            /*
-             * L'ennemi a avancé, donc le bloc avance derrière lui.
-             */
-            boolean iceMoved = move(ice, movement);
-
-            if (!iceMoved) {
-                ice.stopSlide();
-                return false;
-            }
-
-            return true;
+            return moveIceWithDraggedEnemy(ice, enemy, movement);
         }
 
         /*
-         * CAS 2 :
-         * Le IceBlock ne transporte personne.
-         * On vérifie s'il atteint un ennemi pendant ce mouvement.
+         * CAS 2 : le IceBlock arrive sur un ennemi.
+         * On regarde seulement la case directement devant le bloc.
          */
-        Enemy touchedEnemy = enemyReachedDuringThisMovement(ice, movement);
+        Enemy touchedEnemy = enemyDirectlyInFront(ice);
 
         if (touchedEnemy != null) {
             System.out.println("ICEBLOCK TOUCHES ENEMY");
 
             ice.attachEnemy(touchedEnemy);
+            touchedEnemy.setBot(null);
+            touchedEnemy.stop();
 
-            /*
-             * Position sûre de l'ennemi avant le premier move().
-             */
-            Grid.Position safeEnemyPosition = copyPosition(touchedEnemy.position());
-
-            Grid.Position enemyNextCell = nextPosition(touchedEnemy, ice.direction());
-            Entity obstacle = firstSolidAt(enemyNextCell, ice, touchedEnemy);
-
-            if (obstacle != null) {
-                System.out.println(
-                    "ENEMY IMMEDIATELY CRUSHED AGAINST "
-                    + obstacle.getClass().getSimpleName()
-                );
-
-                crushEnemyByIce(ice, touchedEnemy, safeEnemyPosition);
-                return true;
-            }
-
-            boolean enemyMoved = move(touchedEnemy, movement);
-
-            if (!enemyMoved) {
-                System.out.println("ENEMY CANNOT MOVE - CRUSH FALLBACK");
-
-                crushEnemyByIce(ice, touchedEnemy, safeEnemyPosition);
-                return true;
-            }
-
-            boolean iceMoved = move(ice, movement);
-
-            if (!iceMoved) {
-                ice.stopSlide();
-                return false;
-            }
-
-            return true;
+            return moveIceWithDraggedEnemy(ice, touchedEnemy, movement);
         }
 
         /*
-         * CAS 3 :
-         * Aucun ennemi touché.
-         * Le bloc glisse normalement.
+         * CAS 3 : aucun ennemi devant, le bloc glisse normalement.
          */
         boolean moved = move(ice, movement);
 
         if (!moved) {
+            /*
+             * Sécurité :
+             * si move(ice) a été refusé parce qu'un ennemi est devant,
+             * on l'attache au lieu d'arrêter le bloc.
+             */
+            Enemy enemy = enemyDirectlyInFront(ice);
+
+            if (enemy != null) {
+                System.out.println("ICE MOVE REFUSED BY ENEMY - ATTACH NOW");
+
+                ice.attachEnemy(enemy);
+                enemy.setBot(null);
+                enemy.stop();
+
+                return moveIceWithDraggedEnemy(ice, enemy, movement);
+            }
+
             ice.stopSlide();
             return false;
         }
@@ -750,38 +681,7 @@ public class PengoModel extends Model {
                 return false;
         }
     }
-    private Enemy enemyReachedDuringThisMovement(IceBlock ice, geometry.ISU.Vector movement) {
-        if (ice == null || movement == null) {
-            return null;
-        }
-
-        for (Entity e : new ArrayList<Entity>(entities())) {
-            if (!(e instanceof Enemy)) {
-                continue;
-            }
-
-            Enemy enemy = (Enemy) e;
-
-            if (enemy.dead() || enemy.dying() || enemy.draggedByIce()) {
-                continue;
-            }
-
-            if (!entityIsInDirection(ice, enemy, ice.direction())) {
-                continue;
-            }
-
-            double distance = ice.distanceCenterToCenter(enemy);
-            double movementLength = Math.abs(movement.x()) + Math.abs(movement.y());
-            double contactDistance = ice.step().x();
-            double epsilon = 0.05;
-
-            if (distance <= contactDistance + movementLength + epsilon) {
-                return enemy;
-            }
-        }
-
-        return null;
-    }
+  
     private void crushEnemyByIce(IceBlock ice, Enemy enemy, Grid.Position finalIcePosition) {
         if (ice == null || enemy == null) {
             return;
@@ -828,5 +728,123 @@ public class PengoModel extends Model {
 
         return grid().new Position(p.x(), p.y());
     }
+    private Enemy enemyDirectlyInFront(IceBlock ice) {
+        if (ice == null || ice.position() == null) {
+            return null;
+        }
+
+        Grid.Position front = nextPosition(ice, ice.direction());
+
+        for (Entity e : new ArrayList<Entity>(entities())) {
+            if (!(e instanceof Enemy)) {
+                continue;
+            }
+
+            Enemy enemy = (Enemy) e;
+
+            if (enemy.dead() || enemy.dying() || enemy.draggedByIce()) {
+                continue;
+            }
+
+            if (enemy.position() == null) {
+                continue;
+            }
+
+            if (enemy.position().x() == front.x()
+                    && enemy.position().y() == front.y()) {
+                return enemy;
+            }
+        }
+
+        return null;
+    }
+    private boolean moveIceWithDraggedEnemy(IceBlock ice, Enemy enemy, geometry.ISU.Vector movement) {
+        if (ice == null || enemy == null || movement == null) {
+            return false;
+        }
+
+        resolvingIceEnemyCollision = true;
+
+        try {
+            /*
+             * L'ennemi doit être exactement une case devant le IceBlock.
+             */
+            placeEnemyInFrontOfIce(ice, enemy);
+
+            /*
+             * Si la case devant l'ennemi contient un obstacle,
+             * l'ennemi est écrasé.
+             */
+            Grid.Position enemyNextCell = nextPosition(enemy, ice.direction());
+            Entity obstacle = firstSolidAt(enemyNextCell, ice, enemy);
+
+            if (obstacle != null) {
+                System.out.println(
+                    "ENEMY CRUSHED AGAINST "
+                    + obstacle.getClass().getSimpleName()
+                );
+
+                crushEnemyByIce(ice, enemy, copyPosition(enemy.position()));
+                return true;
+            }
+
+            /*
+             * Très important :
+             * on retire temporairement l'ennemi du modèle.
+             * Sinon move(ice, movement) le voit comme obstacle
+             * et refuse le déplacement.
+             */
+            Grid.Position oldEnemyPosition = copyPosition(enemy.position());
+
+          
+
+            boolean iceMoved = move(ice, movement);
+
+            /*
+             * On remet l'ennemi dans le modèle après le mouvement.
+             */
+            if (!entities().contains(enemy)) {
+                add(enemy);
+            }
+
+            if (!iceMoved) {
+                if (oldEnemyPosition != null) {
+                    enemy.setPosition(oldEnemyPosition);
+                    enemy.setBounding();
+                }
+
+                enemy.stop();
+                ice.stopSlide();
+                return false;
+            }
+
+            /*
+             * Après le déplacement du IceBlock,
+             * l'ennemi est replacé devant lui.
+             */
+            placeEnemyInFrontOfIce(ice, enemy);
+
+            return true;
+
+        } finally {
+            resolvingIceEnemyCollision = false;
+        }
+    }
+    private void placeEnemyInFrontOfIce(IceBlock ice, Enemy enemy) {
+        if (ice == null || enemy == null) {
+            return;
+        }
+
+        if (ice.position() == null) {
+            return;
+        }
+
+        Grid.Position front = nextPosition(ice, ice.direction());
+
+        enemy.setPosition(front);
+        enemy.setBounding();
+        enemy.stop();
+    }
+    
 }
    
