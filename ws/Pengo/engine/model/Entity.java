@@ -463,5 +463,9 @@ public class Entity {
 			stop();
 		}
 	}
+
+	public String name() {
+		return name;
+	}
 	
 }
