@@ -127,6 +127,16 @@ public class Direction {
             return -90;
         if (this == SE)
             return -45;
+        if (this == F)
+            return 0;
+        if (this == B)
+            return 180;
+        if (this == L)
+            return 90;
+        if (this == R)
+            return -90;
+        if (this == H)
+            return 0;
 
         throw new IllegalStateException(
                 "Relative direction " + name + " has no absolute angle");
@@ -135,7 +145,8 @@ public class Direction {
     public String name() {
         return name;
     }
-     public String toString() {
+
+    public String toString() {
         return name;
     }
 }

@@ -211,11 +211,11 @@ public class Entity {
 	}
 
 	public Box box() {
-	    if (bounding == null) {
-	        return null;
-	    }
+		if (bounding == null) {
+			return null;
+		}
 
-	    return bounding.box();
+		return bounding.box();
 	}
 
 	public Category category() {
@@ -310,15 +310,15 @@ public class Entity {
 	}
 
 	public void setBounding() {
-	    if (center == null || size == null) {
-	        return;
-	    }
+		if (center == null || size == null) {
+			return;
+		}
 
-	    this.bounding = new Bounding();
+		this.bounding = new Bounding();
 
-	    if (avatar != null) {
-	        avatar.buildBounding(bounding, center, size);
-	    }
+		if (avatar != null) {
+			avatar.buildBounding(bounding, center, size);
+		}
 	}
 
 	public void collision(Entity e) {
@@ -458,10 +458,10 @@ public class Entity {
 		ISU.Vector movement = center.isu().new Vector(lSpeed.x() * dt, lSpeed.y() * dt);
 
 		boolean moved = model.move(this, movement);
-
+		
 		if (!moved) {
 			stop();
 		}
 	}
-	
+
 }

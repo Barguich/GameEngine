@@ -44,6 +44,8 @@ public class GALBot extends Bot {
 	public void tick(double elapsed) {
 		if (automaton == null)
 			return;
+		System.out.println(
+				"orientation=" + entity.orientation());
 		automaton.step(entity);
 	}
 

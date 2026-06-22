@@ -52,6 +52,8 @@ public class Model {
 	public boolean move(Entity e, ISU.Vector v) {
 		assert e != null;
 		assert v != null;
+		System.out.println(
+				"MOVE ENTITY " + e + " by " + v);
 
 		if (!entities.contains(e)) {
 			return false;

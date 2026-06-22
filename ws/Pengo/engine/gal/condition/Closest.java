@@ -11,20 +11,30 @@ public class Closest implements iGALCondition {
 	// FIELDS
 	private final Category category;
 	private final Direction direction; // null = pas de test de cadran
+	private final int maxRadius;
 
 	// CONSTANTS
 	private static final double COS_45 = Math.sqrt(2) / 2.0;
 
 	// CONSTRUCTORS
 	public Closest(Category category) {
-		this(category, null);
+		this(category, null, 0);
 	}
 
 	public Closest(Category category, Direction direction) {
+		this(category, direction, 0);
+	}
+
+	public Closest(Category category, int maxRadius) {
+		this(category, null, maxRadius);
+	}
+
+	public Closest(Category category, Direction direction, int maxRadius) {
 		if (category == null)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Closest: category cannot be null");
 		this.category = category;
 		this.direction = direction;
+		this.maxRadius = maxRadius;
 	}
 
 	// EVAL
@@ -45,6 +55,11 @@ public class Closest implements iGALCondition {
 
 	// === RECHERCHE ===
 	private Entity findClosest(Entity self) {
+		double limitCm = Double.MAX_VALUE;
+		if (maxRadius > 0 && self.step() != null) {
+			limitCm = maxRadius * self.step().x();
+		}
+
 		Entity best = null;
 		double bestDist = Double.MAX_VALUE;
 		for (Entity o : self.model().entities()) {
@@ -55,6 +70,8 @@ public class Closest implements iGALCondition {
 			if (o.center() == null)
 				continue;
 			double d = self.center().distanceTo(o.center());
+			if (d > limitCm)
+				continue;
 			if (d < bestDist) {
 				bestDist = d;
 				best = o;
