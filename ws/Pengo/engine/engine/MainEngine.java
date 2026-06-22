@@ -65,7 +65,7 @@ public class MainEngine {
 
 		buildScene(model, view);
 		// PengoBots.configure(model);
-		PengoBots.configure(model);
+		
 
 		int winW = (int) (mapW * game.pixelPerCm);
 		int winH = (int) (mapH * game.pixelPerCm);
@@ -203,7 +203,7 @@ public class MainEngine {
 	     * quand l'ennemi touche le GoldBlock, il freeze.
 	     * ==========================================================
 	     */
-	    addGold(model, view, 10, 6);
+	    addIce(model, view, 10, 6);
 	    addEnemy(model, view, 9, 6, false);
 
 	    /*
