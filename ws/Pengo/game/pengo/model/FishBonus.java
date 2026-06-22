@@ -45,7 +45,11 @@ public class FishBonus extends Entity {
 
         consumed = true;
 
+
+
         // Bonus de vitesse pendant 8 secondes
+
+
         player.activateSpeedBoost(8000);
 
         // Le bonus disparaît après utilisation
