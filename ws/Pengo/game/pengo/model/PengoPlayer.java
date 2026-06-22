@@ -6,106 +6,176 @@ import model.Entity;
 
 public class PengoPlayer extends Entity {
 
-    private int lives;
-    private int score;
+	private int lives;
+	private int score;
 
-    private boolean speedBoost;
-    private long speedBoostRemaining;
+	private boolean speedBoost;
+	private long speedBoostRemaining;
 
-    public PengoPlayer() {
-        super("PengoPlayer");
-        this.lives = 3;
-        this.score = 0;
-        this.speedBoost = false;
-        this.speedBoostRemaining = 0;
-    }
 
-    public int lives() {
-        return lives;
-    }
+	public PengoPlayer() {
+		super("PengoPlayer");
+		this.lives = 3;
+		this.score = 0;
+		this.speedBoost = false;
+		this.speedBoostRemaining = 0;
+	}
 
-    public int score() {
-        return score;
-    }
+	public int lives() {
+		return lives;
+	}
 
-    public boolean speedBoosted() {
-        return speedBoost;
-    }
+	public int score() {
+		return score;
+	}
 
-    public void addScore(int points) {
-        assert points >= 0;
-        score += points;
-    }
+	public boolean speedBoosted() {
+		return speedBoost;
+	}
 
-    public void loseLife() {
-        lives--;
+	public void addScore(int points) {
+		assert points >= 0;
+		score += points;
+	}
 
-        if (lives < 0) {
-            lives = 0;
+	public void loseLife() {
+		lives--;
+
+		if (lives < 0) {
+			lives = 0;
+		}
+	}
+
+	public boolean dead() {
+		return lives == 0;
+	}
+
+	public void activateSpeedBoost(long duration_ms) {
+		assert duration_ms >= 0;
+
+		speedBoost = true;
+		speedBoostRemaining = duration_ms;
+
+		System.out.println("SPEED BOOST ACTIVATED");
+	}
+
+	@Override
+	public void tick(long elapsed) {
+		super.tick(elapsed);
+
+		if (speedBoost) {
+			speedBoostRemaining -= elapsed;
+
+			if (speedBoostRemaining <= 0) {
+				speedBoost = false;
+				speedBoostRemaining = 0;
+
+				System.out.println("SPEED BOOST FINISHED");
+			}
+		}
+	}
+
+	@Override
+	public void setBounding() {
+		if (center == null || size == null) {
+			return;
+		}
+
+		bounding = new Bounding();
+
+		double radius = Math.min(size.x(), size.y()) / 2.0;
+		bounding.add(new Circle(center, radius));
+	}
+	@Override
+	public void collision(Entity e) {
+	    if (e == null) {
+	        return;
+	    }
+
+	    if (model instanceof PengoModel pm) {
+	        if (pm.lost() || pm.won()) {
+	            stop();
+	            return;
+	        }
+	    }
+
+	    if (e instanceof Wall && model instanceof PengoModel) {
+	        ((PengoModel) model).startWallVibration(e, 1500);
+	        stop();
+	        return;
+	    }
+
+	    if (e instanceof Enemy && model instanceof PengoModel) {
+	        Enemy enemy = (Enemy) e;
+
+	        if (enemy.harmlessForPlayer()) {
+	            return;
+	        }
+
+	        ((PengoModel) model).loseLife();
+	        stop();
+	        return;
+	    }
+
+	    if (e instanceof FishBonus) {
+	        ((FishBonus) e).consume(this);
+	        return;
+	    }
+
+	    if (e instanceof DiamondBlock) {
+	        DiamondBlock diamond = (DiamondBlock) e;
+
+	        if (!diamond.sliding()) {
+	            diamond.startSlide(this.orientation());
+	        }
+
+	        stop();
+	        return;
+	    }
+
+	    if (e instanceof IceBlock) {
+	        IceBlock block = (IceBlock) e;
+
+	        System.out.println("PENGO TOUCHE ICEBLOCK");
+
+	        /*
+	         * Si le bloc est déjà en train de glisser,
+	         * Pengo ne doit pas le relancer.
+	         */
+	        if (block.sliding()) {
+	            stop();
+	            return;
+	        }
+
+	        /*
+	         * Le bloc démarre dans la direction où Pengo regarde.
+	         */
+	        block.startSlide(this.orientation());
+
+	        /*
+	         * Très important :
+	         * Pengo doit s'arrêter après avoir poussé le bloc.
+	         * Sinon il reste collé au bloc et relance la collision en boucle.
+	         */
+	        stop();
+
+	        return;
+	    }
+	    super.collision(e);
+	}
+
+	public double speedMultiplier() {
+		if (speedBoost) {
+			return 2.0;
+		}
+
+		return 1.0;
+	}
+
+    public void attack() {
+        if (model instanceof PengoModel) {
+            ((PengoModel) model).damageBlockInFront(this);
         }
     }
 
-    public boolean dead() {
-        return lives == 0;
-    }
-
-    public void activateSpeedBoost(long duration_ms) {
-        assert duration_ms >= 0;
-
-        speedBoost = true;
-        speedBoostRemaining = duration_ms;
-    }
-
-    @Override
-    public void tick(long elapsed) {
-        super.tick(elapsed);
-
-        if (speedBoost) {
-            speedBoostRemaining -= elapsed;
-
-            if (speedBoostRemaining <= 0) {
-                speedBoost = false;
-                speedBoostRemaining = 0;
-            }
-        }
-    }
-
-    @Override
-    public void setBounding() {
-        if (center == null || size == null) {
-            return;
-        }
-
-        bounding = new Bounding();
-
-        double radius = Math.min(size.x(), size.y()) / 2.0;
-        bounding.add(new Circle(center, radius));
-    }
-
-    @Override
-    public void collision(Entity e) {
-        super.collision(e);
-
-        if (e instanceof Wall && model instanceof PengoModel) {
-            ((PengoModel) model).startWallVibration(e, 1500);
-        }
-
-        if (e instanceof Enemy && model instanceof PengoModel) {
-            ((PengoModel) model).loseLife();
-        }
-
-        if (e instanceof FishBonus) {
-            ((FishBonus) e).consume(this);
-        }
-
-        if (e instanceof IceBlock) {
-            System.out.println("PENGO TOUCHE ICEBLOCK");
-
-            IceBlock block = (IceBlock) e;
-
-            if (!block.sliding()) {
-                block.startSlide(this.orientation());
-            }
-        }
-    }
 }

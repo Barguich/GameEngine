@@ -1,4 +1,4 @@
-package gal.aut;
+package gal.action;
 
 import model.Entity;
 

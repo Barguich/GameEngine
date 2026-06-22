@@ -55,14 +55,21 @@ public class GALBot extends Bot {
 	 */
 	@Override
 	public void collision(Entity impactor, double elapsed_ms) {
-		automaton.step(entity);
+	    if (automaton == null) {
+	        return;
+	    }
+	    automaton.step(entity);
 	}
 
 	/**
 	 * @apiNote notifies the Bot that the action of its Stunt is completed.
 	 */
+	@Override
 	public void completed() {
-		automaton.step(entity);
+	    if (automaton == null) {
+	        return;
+	    }
+	    automaton.step(entity);
 	}
 
 }

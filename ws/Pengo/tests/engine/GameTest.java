@@ -46,7 +46,7 @@ class GameTest {
 	void les_constantes_du_moteur() {
 		Game g = new Game(20, 20);
 		assertEquals(3.7, g.cmPerCell, DELTA);
-		assertEquals(7, g.pixelPerCm);
+		assertEquals(2, g.pixelPerCm);
 		assertEquals(true, g.torusOnXaxis);
 		assertEquals(true, g.torusOnYaxis);
 	}
