@@ -24,16 +24,6 @@ import view.ViewPort;
 
 import testSprite.EnemyAvatar;
 
-/**
- * Point d'entrée principal.
- *
- * Modifications par rapport à la version d'origine :
- *  - Les ennemis des scénarios de test ne sont plus freezés (frozen=false) :
- *    ils peuvent maintenant être contrôlés par leur automate GAL dès le départ.
- *    (Le freeze de 600 s empêchait Enemy.tick() d'appeler super.tick(),
- *     donc les ennemis ne bougeaient jamais même quand le bot donnait un ordre.)
- *  - Un ennemi libre (17,9) est gardé en plus pour tester la patrouille.
- */
 public class MainEngine {
 
 	public static void main(String[] args) {
@@ -181,15 +171,6 @@ public class MainEngine {
 		avatar.setView(view);
 	}
 
-	/**
-	 * @param frozen si true : l'ennemi reste immobile (pour scénarios de test pur).
-	 *               si false : le bot GAL est actif immédiatement.
-	 *
-	 * NOTE : dans la version précédente tous les ennemis de scénario étaient
-	 * frozen 600 s → ils ne bougeaient jamais car Enemy.tick() fait return
-	 * prématurément quand frozen=true, ce qui empêche super.tick() de déplacer
-	 * l'entité même si le bot avait setLinearSpeed().
-	 */
 	private static void addEnemy(PengoModel model, View view, int x, int y, boolean frozen) {
 	    Enemy enemy = new Enemy();
 	    enemy.setPosition(Game.grid().new Position(x, y));

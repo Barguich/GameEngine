@@ -104,17 +104,6 @@ public final class PengoBots {
         }
     }
 
-    /**
-     * Charge l'automate SnoBees depuis le fichier GAL.
-     *
-     * Ordre des tentatives :
-     *  1. Chemin relatif depuis le répertoire de travail du projet Eclipse/IntelliJ
-     *     (ws/)  →  "Pengo/gal/demo/test/SnoBees.gal"
-     *  2. Chemin relatif depuis le répertoire de travail si lancé depuis ws/Pengo/
-     *     →  "gal/demo/test/SnoBees.gal"
-     *  3. Racine du projet  →  "../Automata.gal"  (fichier Enemy.gal de la racine ws/)
-     *  4. Racine ws/  →  "Automata.gal"
-     */
     private static Automaton loadEnemyAutomaton() {
         String[] candidates = {
             "Pengo/gal/demo/test/SnoBees.gal",
