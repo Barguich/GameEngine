@@ -42,9 +42,8 @@ public class FishBonus extends Entity {
 
         System.out.println("FISH BONUS CONSUMED");
 
-        /*
-         * Speed boost pendant 8 secondes.
-         */
+        //Speed boost pendant 8 secondes.
+       
         player.activateSpeedBoost(8000);
 
         if (model != null) {

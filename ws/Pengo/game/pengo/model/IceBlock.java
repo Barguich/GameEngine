@@ -1,5 +1,8 @@
 package pengo.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import collision.Bounding;
 import collision.Rect;
 import geometry.Grid;
@@ -15,7 +18,7 @@ public class IceBlock extends Entity {
 	private boolean breakingAnimation;
 	private long breakingAnimationRemaining;
 	private int breakingFrame;
-	private Enemy draggedEnemy;
+	private List<Enemy> draggedEnemies; //liste des ennemies a emporter lors de sliding
 
 	public IceBlock() {
 		super("IceBlock");
@@ -23,40 +26,73 @@ public class IceBlock extends Entity {
 		direction = 0;
 		broken = false;
 		hp = 3;// destruction totale sur 3 coups
-		friction = 0.998; //si on met a 1 plus de frottement 
+		friction = 0.9992; //si on met a 1 plus de frottement 
 		breakingAnimation = false;
 		breakingAnimationRemaining = 0;
 		breakingFrame = 0;
+		draggedEnemies = new ArrayList<Enemy>();
+		
 	}
-	public Enemy draggedEnemy() {
-	    return draggedEnemy;
-	}
+		public List<Enemy> draggedEnemies() {
+		    return draggedEnemies;
+		}
 
-	public boolean draggingEnemy() {
-	    return draggedEnemy != null;
-	}
+		public Enemy draggedEnemy() {
+		    if (draggedEnemies.isEmpty()) {
+		        return null;
+		    }
+//le premier de la liste est l'ennemi le plus devant.
+		     
+		    return draggedEnemies.get(0);
+		}
 
-	public void attachEnemy(Enemy enemy) {
-	    if (enemy == null) {
-	        return;
-	    }
+		public boolean draggingEnemy() {
+		    return !draggedEnemies.isEmpty();
+		}
 
-	    if (enemy.harmlessForPlayer()) {
-	        return;
-	    }
+		public boolean isDraggingEnemy(Enemy enemy) {
+		    return enemy != null && draggedEnemies.contains(enemy);
+		}
 
-	    System.out.println("ICEBLOCK DRAG ENEMY");
+		public void attachEnemy(Enemy enemy) {
+		    attachEnemyFront(enemy);
+		}
 
-	    draggedEnemy = enemy;
-	    enemy.startDraggedByIce();
-	}
-	public void detachEnemy() {
-	    if (draggedEnemy != null) {
-	        draggedEnemy.stopDraggedByIce();
-	    }
+		public void attachEnemyFront(Enemy enemy) {
+		    if (enemy == null) {
+		        return;
+		    }
 
-	    draggedEnemy = null;
-	}
+		    if (draggedEnemies.contains(enemy)) {
+		        return;
+		    }
+
+		    if (enemy.harmlessForPlayer() && !enemy.draggedByIce()) {
+		        return;
+		    }
+
+		    System.out.println("ICEBLOCK DRAG ENEMY");
+
+		    //ajoute devant la chaîne.
+		   
+		    draggedEnemies.add(0, enemy);
+
+		    enemy.startDraggedByIce();
+		    enemy.setBot(null);
+		    enemy.stop();
+		}
+
+		public void detachEnemy() {
+		    for (Enemy enemy : new ArrayList<Enemy>(draggedEnemies)) {
+		        if (enemy != null) {
+		            enemy.stopDraggedByIce();
+		        }
+		    }
+
+		    draggedEnemies.clear();
+		}
+
+	
 
 	public void stopSlide() {
 	    sliding = false;
@@ -119,11 +155,9 @@ public class IceBlock extends Entity {
 	        return;
 	    }
 
-	    /*
-	     * Très important :
-	     * si le bloc est déjà en train de glisser,
-	     * on ne relance PAS le slide.
-	     */
+	    
+	     //si le bloc est déjà en train de glisser==on ne relance PAS le slide.
+	    
 	    if (sliding) {
 	        System.out.println("ICE ALREADY SLIDING - PUSH IGNORED");
 	        return;
@@ -136,7 +170,7 @@ public class IceBlock extends Entity {
 
 	    detachEnemy();
 
-	    double speed = 18.0;
+	    double speed = 20.0;
 
 	    if (isu == null) {
 	        sliding = false;
@@ -173,19 +207,17 @@ public class IceBlock extends Entity {
 	        return;
 	    }
 
-	    /*
-	     * Très important :
-	     * un IceBlock qui glisse ne doit PAS être bloqué par un Enemy.
-	     * Sinon il s'arrête au contact de l'ennemi.
-	     */
+	    
+	     //un IceBlock qui glisse ne doit PAS être bloqué par un Enemy.
+	     //sinon il s'arrête au contact de l'ennemi
+	    
 	    if (sliding && e instanceof Enemy) {
 	        System.out.println("ICEBLOCK IGNORE ENEMY COLLISION WHILE SLIDING");
 	        return;
 	    }
 
-	    /*
-	     * Le joueur ne bloque pas directement le IceBlock.
-	     */
+	    // joueur ne bloque pas directement le IceBlock.
+	 
 	    if (e instanceof PengoPlayer) {
 	        return;
 	    }
@@ -256,60 +288,53 @@ public class IceBlock extends Entity {
 
 	    if (linearSpeed() != null) {
 	        linearSpeed().scale(friction);
-
-	        if (linearSpeed().norm() < 0.5) {
+	        //seuil plus bas = glissabde plus smooth
+	        if (linearSpeed().norm() < 0.25) {
 	            stopSlide();
 	        }
 	    }
 	}
 
 	
-		@Override
-		public void setBounding() {
-		    if (center == null || size == null) {
-		        return;
-		    }
+	@Override
+	public void setBounding() {
+	    if (center == null || size == null) {
+	        return;
+	    }
 
-		    bounding = new Bounding();
+	    bounding = new Bounding();
 
-		    /*
-		     * Hitbox légèrement réduite pour éviter les collisions parasites
-		     * avec les blocs/murs autour.
-		     */
-		    double w = size.x() * 0.82;
-		    double h = size.y() * 0.82;
+	    //Hitbox réduite : sinon le IceBlock touche trop facilement les murs/blocs autour et se bloque.
+	    
+	    double w = size.x() * 0.78;
+	    double h = size.y() * 0.78;
 
-		    
-		
-		    bounding.add(new Rect(center, size, orientation_degree));
+	    bounding.add(new Rect(
+	        center,
+	        center.isu().new Dimension(w, h),
+	        orientation_degree
+	    ));
 	}
 	public void finishCrushAt(Grid.Position position) {
-	    /*
-	     * Le bloc n'est plus en glissade.
-	     */
+	    //Le bloc n'est plus en glissade.
+	     
 	    sliding = false;
 
-	    /*
-	     * On détache l'ennemi transporté.
-	     */
+	    
+	     //On détache l'ennemi transporté.
+	     
 	    detachEnemy();
-
-	    /*
-	     * On coupe complètement la vitesse.
-	     */
+//on coupe complètement la vitesse.
 	    stop();
 
-	    /*
-	     * On place le bloc exactement à la position finale.
-	     */
+	    //On place le bloc exactement à la position finale.
+	    
 	    if (position != null) {
 	        setPosition(position);
 	        setBounding();
 	    }
-
-	    /*
-	     * Sécurité : le bloc doit rester réutilisable après l'écrasement.
-	     */
+	    //securité : le bloc doit rester réutilisable après l'écrasement.
+	     
 	    direction = 0;
 	}
 	

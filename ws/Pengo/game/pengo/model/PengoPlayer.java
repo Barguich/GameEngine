@@ -96,10 +96,8 @@ public class PengoPlayer extends Entity {
 	public void tick(long elapsed) {
 	    super.tick(elapsed);
 
-	    /*
-	     * Déplacement case par case.
-	     * Quand Pengo atteint la case cible, on termine proprement.
-	     */
+	    //déplacement case par case.
+	   
 	    if (movingOneCell && targetCell != null && position() != null) {
 	        if (position().x() == targetCell.x()
 	                && position().y() == targetCell.y()) {
@@ -109,9 +107,8 @@ public class PengoPlayer extends Entity {
 	        }
 	    }
 
-	    /*
-	     * Gestion du FishBonus / speed boost.
-	     */
+	    //gestion du FishBonus / speed boost.
+	     
 	    if (speedBoost) {
 	        speedBoostRemaining -= elapsed;
 
@@ -173,18 +170,12 @@ public class PengoPlayer extends Entity {
 	        return;
 	    }
 
-	    /*
-	     * Collision parasite avec IceBlock :
-	     * on annule juste le mouvement.
-	     * On ne fait PAS block.startSlide() ici.
-	     */
+	  
 	    if (e instanceof IceBlock) {
 	        System.out.println("PENGO COLLISION ICEBLOCK - SECURITY STOP");
 
-	        /*
-	         * Collision parasite : on ne pousse pas ici.
-	         * On remet seulement Pengo proprement sur sa case.
-	         */
+	        //Collision parasite : on ne pousse pas ici on remet seulement Pengo proprement sur sa case.
+	        
 	        stopCleanlyOnCurrentCell();
 	        return;
 	    }
@@ -242,27 +233,19 @@ public class PengoPlayer extends Entity {
 	    Grid.Position nextCell = pm.grid().new Position(x, y);
 	    Entity front = pm.firstAt(nextCell);
 
-	    /*
-	     * WALL devant :
-	     * Pengo reste sur sa case.
-	     */
+	    //WALL devant ==Pengo reste sur sa case.
+
 	    if (front instanceof Wall) {
 	        pm.startWallVibration(front, 1500);
 	        cancelGridMove();
 	        return;
 	    }
 
-	    /*
-	     * ICEBLOCK / DIAMONDBLOCK / GOLDBLOCK devant :
-	     * Pengo reste devant le bloc.
-	     * Le bloc commence à glisser dans la direction de la flèche.
-	     */
+	  
 	    if (front instanceof IceBlock) {
 	        IceBlock block = (IceBlock) front;
 
-	        /*
-	         * Si le bloc glisse déjà, Pengo ne doit pas le relancer.
-	         */
+	        //si le bloc glisse déjà ==Pengo ne doit pas le relancer
 	        if (block.sliding()) {
 	            System.out.println("PENGO TRIES TO PUSH BUT ICE ALREADY SLIDING");
 	            cancelGridMove();
@@ -273,17 +256,12 @@ public class PengoPlayer extends Entity {
 
 	        block.startSlide(direction);
 
-	        /*
-	         * Pengo reste devant le bloc.
-	         */
+	        //pengo reste devant le bloc
 	        cancelGridMove();
 	        return;
 	    }
 
-	    /*
-	     * ENEMY devant :
-	     * Pengo perd une vie sauf si l'ennemi est harmless.
-	     */
+	    //ENEMY devant ==Pengo perd une vie sauf si l'ennemi est harmless
 	    if (front instanceof Enemy) {
 	        Enemy enemy = (Enemy) front;
 
@@ -294,20 +272,16 @@ public class PengoPlayer extends Entity {
 	        }
 	    }
 
-	    /*
-	     * FISH BONUS devant :
-	     * on le mémorise, il sera consommé quand Pengo arrive dessus.
-	     */
+	    //FISH BONUS devant == on le mémorise, il sera consommé quand Pengo arrive dessus.
+
 	    pendingFishBonus = null;
 
 	    if (front instanceof FishBonus) {
 	        pendingFishBonus = (FishBonus) front;
 	    }
 
-	    /*
-	     * Case libre ou bonus :
-	     * Pengo avance d'une case.
-	     */
+	    //case libre ou bonus == Pengo avance d'une case.
+	     
 	    originCell = pm.grid().new Position(position().x(), position().y());
 	    targetCell = nextCell;
 	    movingOneCell = true;
@@ -340,10 +314,8 @@ public class PengoPlayer extends Entity {
             setBounding();
         }
 
-        /*
-         * Si la case cible contenait un FishBonus,
-         * on le consomme seulement quand Pengo arrive vraiment dessus.
-         */
+        // if la case cible has un FishBonus on le consomme seulement quand Pengo arrive vraiment dessus.
+         
         if (pendingFishBonus != null && !pendingFishBonus.consumed()) {
             pendingFishBonus.consume(this);
         }
@@ -366,7 +338,6 @@ public class PengoPlayer extends Entity {
             setPosition(current);
             setBounding();
         }
-
         movingOneCell = false;
         originCell = null;
         targetCell = null;

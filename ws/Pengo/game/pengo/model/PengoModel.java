@@ -537,19 +537,7 @@ public class PengoModel extends Model {
         }
     }
 
-    /*
-     * ==========================================================
-     * LOGIQUE PRINCIPALE ICEBLOCK / ENEMY
-     * ==========================================================
-     *
-     * Règle :
-     * - IceBlock glisse.
-     * - S'il touche Enemy :
-     *      - si obstacle juste derrière Enemy : Enemy disparaît,
-     *        IceBlock prend sa place.
-     *      - sinon Enemy est transporté devant IceBlock.
-     * - Enemy est écrasé uniquement contre Wall / IceBlock.
-     */
+    
     public boolean moveSlidingIceBlock(IceBlock ice, geometry.ISU.Vector movement) {
         if (ice == null || movement == null) {
             return false;
@@ -557,12 +545,69 @@ public class PengoModel extends Model {
 
         /*
          * CAS 1 :
-         * Le bloc transporte déjà un ennemi.
+         * Le bloc transporte déjà un ou plusieurs ennemis.
          */
         if (ice.draggingEnemy()) {
-            Enemy enemy = ice.draggedEnemy();
+            return slideWithEnemiesInFront(ice, movement);
+        }
 
-            if (enemy == null || enemy.dead() || enemy.dying()) {
+        /*
+         * CAS 2 :
+         * Le bloc ne transporte personne.
+         * On regarde s'il va toucher un premier ennemi.
+         */
+        Enemy enemy = enemyReachedDuringThisMovement(ice, movement);
+
+        if (enemy != null) {
+            System.out.println("ICEBLOCK TOUCHES FIRST ENEMY");
+
+            ice.attachEnemyFront(enemy);
+
+            /*
+             * Si un obstacle est directement derrière cet ennemi,
+             * il est écrasé immédiatement.
+             */
+            Grid.Position enemyPos = copyPosition(enemy.position());
+            Grid.Position enemyNextCell = nextPosition(enemy, ice.direction());
+            Entity obstacle = firstSolidAt(enemyNextCell, ice, null);
+
+            if (obstacle != null) {
+                System.out.println(
+                    "ENEMY IMMEDIATELY CRUSHED AGAINST "
+                    + obstacle.getClass().getSimpleName()
+                );
+
+                crushDraggedEnemiesByIce(ice, enemyPos);
+                return true;
+            }
+
+            return slideWithEnemiesInFront(ice, movement);
+        }
+
+     
+        // Aucun ennemi, glissade normale.
+         
+        boolean moved = move(ice, movement);
+
+        if (!moved) {
+            ice.stopSlide();
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean slideWithEnemiesInFront(IceBlock ice, geometry.ISU.Vector movement) {
+        if (ice == null || movement == null) {
+            return false;
+        }
+
+        resolvingIceEnemyCollision = true;
+
+        try {
+            List<Enemy> chain = validDraggedEnemies(ice);
+
+            if (chain.isEmpty()) {
                 ice.detachEnemy();
 
                 boolean moved = move(ice, movement);
@@ -575,196 +620,188 @@ public class PengoModel extends Model {
                 return true;
             }
 
-            return slideWithEnemyInFront(ice, enemy, movement);
-        }
+            //Le premier de la liste est l'ennemi le plus devant.
+         
+            Enemy frontEnemy = chain.get(0);
 
-        /*
-         * CAS 2 :
-         * Avant de bouger le bloc, on vérifie s'il va toucher un ennemi.
-         */
-        Enemy enemy = enemyReachedDuringThisMovement(ice, movement);
+//si un deuxième ennemi est devant la chaîne,on l'ajoute aussi à la chaîne.
+           
+            Enemy nextEnemy = enemyReachedByFrontEnemy(ice, frontEnemy, movement);
 
-        if (enemy != null) {
-            System.out.println("ICEBLOCK TOUCHES ENEMY");
+            if (nextEnemy != null) {
+                System.out.println("ICEBLOCK TOUCHES ANOTHER ENEMY");
 
-            Grid.Position enemyPos = copyPosition(enemy.position());
-            Grid.Position enemyNextCell = nextPosition(enemy, ice.direction());
-            Entity obstacle = firstSolidAt(enemyNextCell, ice, enemy);
+                ice.attachEnemyFront(nextEnemy);
 
-            /*
-             * Si un obstacle est directement derrière l'ennemi,
-             * on l'écrase immédiatement.
-             */
-            if (obstacle != null) {
-                System.out.println(
-                    "ENEMY IMMEDIATELY CRUSHED AGAINST "
-                    + obstacle.getClass().getSimpleName()
-                );
-
-                crushEnemyByIce(ice, enemy, enemyPos);
-                return true;
+                chain = validDraggedEnemies(ice);
+                frontEnemy = chain.get(0);
             }
 
-            /*
-             * Sinon, le bloc l'emporte avec lui.
-             */
-            ice.attachEnemy(enemy);
-            enemy.setBot(null);
-            enemy.stop();
-
-            return slideWithEnemyInFront(ice, enemy, movement);
-        }
-
-        /*
-         * CAS 3 :
-         * Aucun ennemi, glissade normale.
-         */
-        boolean moved = move(ice, movement);
-
-        if (!moved) {
-            /*
-             * Sécurité :
-             * si le move a été refusé car un ennemi est vraiment collé devant,
-             * on essaye de l'attacher.
-             */
-            Enemy directEnemy = enemyDirectlyInFront(ice);
-
-            if (directEnemy != null) {
-                System.out.println("ICE MOVE REFUSED BY ENEMY - ATTACH NOW");
-
-                ice.attachEnemy(directEnemy);
-                directEnemy.setBot(null);
-                directEnemy.stop();
-
-                return slideWithEnemyInFront(ice, directEnemy, movement);
-            }
-
-            ice.stopSlide();
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean slideWithEnemyInFront(IceBlock ice, Enemy enemy, geometry.ISU.Vector movement) {
-        if (ice == null || enemy == null || movement == null) {
-            return false;
-        }
-
-        resolvingIceEnemyCollision = true;
-
-        try {
-            /*
-             * Position actuelle de l'ennemi.
-             * Si obstacle devant lui, le IceBlock prendra cette position.
-             */
-            Grid.Position enemyPos = copyPosition(enemy.position());
-
-            /*
-             * On regarde uniquement la case devant l'ennemi.
-             * Si obstacle devant : écrasement.
-             */
-            Grid.Position enemyNextCell = nextPosition(enemy, ice.direction());
-            Entity obstacle = firstSolidAt(enemyNextCell, ice, enemy);
+            //On vérifie l'obstacle devant l'ennemi le plus devant Si obstacle : tous les ennemis transportés disparaissent,et le IceBlock prend la place de l'ennemi le plus devant.
+            Grid.Position frontEnemyPos = copyPosition(frontEnemy.position());
+            Grid.Position frontEnemyNextCell = nextPosition(frontEnemy, ice.direction());
+            Entity obstacle = firstSolidAt(frontEnemyNextCell, ice, null);
 
             if (obstacle != null) {
                 System.out.println(
-                    "ENEMY CRUSHED AGAINST "
+                    "DRAGGED ENEMIES CRUSHED AGAINST "
                     + obstacle.getClass().getSimpleName()
                 );
 
-                crushEnemyByIce(ice, enemy, enemyPos);
+                crushDraggedEnemiesByIce(ice, frontEnemyPos);
                 return true;
             }
 
-            /*
-             * L'ennemi est draggedByIce, donc sa hitbox est vide.
-             * Il peut bouger sans bloquer le IceBlock.
-             */
-            boolean enemyMoved = move(enemy, movement);
+            //Les ennemis sont ghost pendant draggedByIce,donc ils ne bloquent pas le moteur.On les déplace tous avec le même movement que le IceBlock.
+             
+            boolean allEnemiesMoved = true;
 
-            /*
-             * Le IceBlock avance avec le même movement.
-             */
+            for (Enemy dragged : new ArrayList<Enemy>(chain)) {
+                if (dragged == null || dragged.dead() || dragged.dying()) {
+                    continue;
+                }
+
+                boolean moved = move(dragged, movement);
+
+                if (!moved) {
+                    allEnemiesMoved = false;
+                }
+
+                dragged.stop();
+            }
+
             boolean iceMoved = move(ice, movement);
 
             if (!iceMoved) {
-                /*
-                 * Si le IceBlock est bloqué alors qu'il n'y avait pas
-                 * d'obstacle devant l'ennemi, on arrête juste la glissade.
-                 */
                 ice.stopSlide();
-                enemy.stop();
+
+                for (Enemy dragged : chain) {
+                    if (dragged != null) {
+                        dragged.stop();
+                    }
+                }
+
                 return false;
             }
 
-            if (!enemyMoved) {
-                /*
-                 * Sécurité : si l'ennemi n'a pas bougé pour une raison quelconque,
-                 * on le remet une case devant le IceBlock.
-                 */
-                placeEnemyInFrontOfIce(ice, enemy);
+           
+            if (!allEnemiesMoved) {
+                placeDraggedEnemiesInFrontOfIce(ice);
             }
-
-            enemy.stop();
 
             return true;
 
         } finally {
             resolvingIceEnemyCollision = false;
         }
+        
     }
+    private List<Enemy> validDraggedEnemies(IceBlock ice) {
+        List<Enemy> result = new ArrayList<Enemy>();
 
-    private void placeEnemyInFrontOfIce(IceBlock ice, Enemy enemy) {
-        if (ice == null || enemy == null || ice.position() == null) {
-            return;
+        if (ice == null) {
+            return result;
         }
 
-        Grid.Position front = nextPosition(ice, ice.direction());
+        for (Enemy enemy : new ArrayList<Enemy>(ice.draggedEnemies())) {
+            if (enemy == null) {
+                continue;
+            }
 
-        if (front == null) {
-            return;
+            if (enemy.dead() || enemy.dying()) {
+                continue;
+            }
+
+            if (!entities().contains(enemy)) {
+                continue;
+            }
+
+            result.add(enemy);
         }
 
-        enemy.setPosition(front);
-        enemy.setBounding();
-        enemy.stop();
+        return result;
     }
+    private Enemy enemyReachedByFrontEnemy(
+            IceBlock ice,
+            Enemy frontEnemy,
+            geometry.ISU.Vector movement) {
 
-    private Enemy enemyDirectlyInFront(IceBlock ice) {
-        if (ice == null || ice.position() == null) {
+        if (ice == null || frontEnemy == null || movement == null) {
             return null;
         }
 
-        Grid.Position front = nextPosition(ice, ice.direction());
-
-        if (front == null) {
-            return null;
-        }
+        Enemy closestEnemy = null;
+        double closestDistance = Double.MAX_VALUE;
 
         for (Entity e : new ArrayList<Entity>(entities())) {
             if (!(e instanceof Enemy)) {
                 continue;
             }
 
-            Enemy enemy = (Enemy) e;
+            Enemy candidate = (Enemy) e;
 
-            if (enemy.dead() || enemy.dying() || enemy.draggedByIce()) {
+            if (candidate.dead() || candidate.dying() || candidate.draggedByIce()) {
                 continue;
             }
 
-            if (enemy.position() == null) {
+            if (!entityIsInDirection(frontEnemy, candidate, ice.direction())) {
                 continue;
             }
 
-            if (enemy.position().x() == front.x()
-                    && enemy.position().y() == front.y()) {
-                return enemy;
+            double distance = frontEnemy.distanceCenterToCenter(candidate);
+            double movementLength = Math.abs(movement.x()) + Math.abs(movement.y());
+            double contactDistance = frontEnemy.step().x();
+
+          // pour attraper l'ennemi avant que le moteur bloque.
+         
+            double epsilon = 0.35;
+
+            if (distance <= contactDistance + movementLength + epsilon) {
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestEnemy = candidate;
+                }
             }
         }
 
-        return null;
+        return closestEnemy;
     }
+    private void placeDraggedEnemiesInFrontOfIce(IceBlock ice) {
+        if (ice == null || ice.position() == null) {
+            return;
+        }
+
+        List<Enemy> enemies = ice.draggedEnemies();
+
+        if (enemies.isEmpty()) {
+            return;
+        }
+
+        /*
+         * La liste est :
+         * index 0 = ennemi le plus devant
+         * dernier index = ennemi le plus proche du IceBlock
+         *
+         * Donc on place depuis l'arrière vers l'avant.
+         */
+        Grid.Position pos = nextPosition(ice, ice.direction());
+
+        for (int i = enemies.size() - 1; i >= 0; i--) {
+            Enemy enemy = enemies.get(i);
+
+            if (enemy == null) {
+                continue;
+            }
+
+            enemy.setPosition(pos);
+            enemy.setBounding();
+            enemy.stop();
+
+            pos = nextPosition(enemy, ice.direction());
+        }
+    }
+
+  
 
     private Enemy enemyReachedDuringThisMovement(IceBlock ice, geometry.ISU.Vector movement) {
         if (ice == null || movement == null) {
@@ -838,7 +875,6 @@ public class PengoModel extends Model {
                 return false;
         }
     }
-
     private Entity firstSolidAt(Grid.Position p, Entity ignoreA, Entity ignoreB) {
         if (p == null) {
             return null;
@@ -851,6 +887,16 @@ public class PengoModel extends Model {
 
             if (e == ignoreA || e == ignoreB) {
                 continue;
+            }
+             //les ennemis transportés ne sont pas des obstacles.
+             
+            if (e instanceof Enemy) {
+                Enemy enemy = (Enemy) e;
+
+                if (enemy.draggedByIce() || enemy.crushedByIce()
+                        || enemy.dead() || enemy.dying()) {
+                    continue;
+                }
             }
 
             if (e.position() == null) {
@@ -875,32 +921,39 @@ public class PengoModel extends Model {
             return false;
         }
 
-        /*
-         * DiamondBlock et GoldBlock héritent de IceBlock,
-         * donc ils sont inclus ici.
-         */
+       //diamondBlock et GoldBlock héritent de IceBlock, donc ils sont inclus ici.
+         
         return e instanceof Wall || e instanceof IceBlock;
     }
 
-    private void crushEnemyByIce(IceBlock ice, Enemy enemy, Grid.Position finalIcePosition) {
-        if (ice == null || enemy == null) {
+    private void crushDraggedEnemiesByIce(IceBlock ice, Grid.Position finalIcePosition) {
+        if (ice == null) {
             return;
         }
 
-        System.out.println("CRUSH ENEMY BY ICE");
+        List<Enemy> crushedEnemies = new ArrayList<Enemy>(ice.draggedEnemies());
 
-        enemy.markCrushedByIce();
+        if (crushedEnemies.isEmpty()) {
+            return;
+        }
 
-        remove(enemy);
+        System.out.println("CRUSH " + crushedEnemies.size() + " ENEMY/ENEMIES BY ICE");
 
-        addScore(100);
+        for (Enemy enemy : crushedEnemies) {
+            if (enemy == null) {
+                continue;
+            }
 
-        ice.detachEnemy();
+            enemy.markCrushedByIce();
+            remove(enemy);
+            addScore(100);
+        }
+
+        //on arrête le bloc et on vide la liste des ennemis transportés.
+         
         ice.stopSlide();
-
-        /*
-         * Le IceBlock prend exactement la place de l'ennemi.
-         */
+//Le IceBlock prend la place de l'ennemi le plus devant.
+      
         if (finalIcePosition != null) {
             ice.setPosition(finalIcePosition);
             ice.setBounding();

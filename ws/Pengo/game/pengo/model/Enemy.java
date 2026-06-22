@@ -62,10 +62,8 @@ public class Enemy extends Entity {
 	    stop();
 	    setBot(null);
 
-	    /*
-	     * Recalcule la hitbox.
-	     * Comme draggedByIce = true, la hitbox devient vide.
-	     */
+	    //recalcule la hitbox :Comme draggedByIce = true, la hitbox devient vide.
+	 
 	    setBounding();
 
 	    System.out.println("ENEMY START DRAGGED BY ICE");
@@ -73,6 +71,7 @@ public class Enemy extends Entity {
 
 	public void stopDraggedByIce() {
 	    draggedByIce = false;
+	    setBounding();
 	}
 
 	public boolean frozen() {
@@ -194,19 +193,14 @@ public class Enemy extends Entity {
 	        return;
 	    }
 
-	    /*
-	     * Si l'ennemi est transporté / tué / gelé,
-	     * il ne doit plus déclencher de collision normale.
-	     */
+	    //si l'ennemi est transporté / tué / gelé il ne doit plus déclencher de collision normale.
+	     
 	    if (harmlessForPlayer()) {
 	        return;
 	    }
 
-	    /*
-	     * Très important :
-	     * si un IceBlock glissant touche l'ennemi,
-	     * l'ennemi ne doit pas bloquer le IceBlock.
-	     */
+	    //si un IceBlock glissant touche l'ennemi,l'ennemi ne doit pas bloquer le IceBlock.
+
 	    if (e instanceof IceBlock) {
 	        IceBlock ice = (IceBlock) e;
 
@@ -216,10 +210,7 @@ public class Enemy extends Entity {
 	        }
 	    }
 
-	    /*
-	     * GoldBlock avant IceBlock,
-	     * parce que GoldBlock extends IceBlock.
-	     */
+	    //GoldBlock avant IceBlock, parce que GoldBlock extends IceBlock
 	    if (e instanceof GoldBlock && model instanceof PengoModel) {
 	        GoldBlock gold = (GoldBlock) e;
 	        gold.activate((PengoModel) model, this);
@@ -236,12 +227,10 @@ public class Enemy extends Entity {
 
 	    bounding = new Bounding();
 
-	    /*
-	     * Très important :
-	     * quand l'ennemi est transporté par un IceBlock,
-	     * il ne doit plus bloquer physiquement le moteur.
-	     * Il reste visible, mais il n'a plus de hitbox.
-	     */
+	
+	     //quand l'ennemi est transporté par un IceBlock,
+	     //il ne doit plus bloquer physiquement le moteur.
+	  
 	    if (dead || dying || draggedByIce || crushedByIce) {
 	        return;
 	    }

@@ -7,10 +7,10 @@ public class GoldBlock extends IceBlock {
     private static final long FREEZE_DURATION = 5000;
     private static final long DOUBLE_SCORE_DURATION = 5000;
 
-    /*
-     * Cooldown pour éviter que le GoldBlock active l'effet
-     * 30 fois par seconde si l'ennemi reste collé dessus.
-     */
+    
+     //Cooldown pour éviter que le GoldBlock active l'effet
+     //30 fois par seconde si l'ennemi reste collé dessus.
+    
     private boolean active;
     private long activeRemaining;
 
@@ -25,10 +25,8 @@ public class GoldBlock extends IceBlock {
         return active;
     }
 
-    /*
-     * Activation générale : utile si tu veux un bouton/test
-     * qui gèle tous les ennemis.
-     */
+    //Activation générale : utile si tu veux un bouton/test
+     
     public void activate(PengoModel model) {
         if (model == null) {
             return;
@@ -47,10 +45,8 @@ public class GoldBlock extends IceBlock {
         activeRemaining = FREEZE_DURATION;
     }
 
-    /*
-     * Activation normale du jeu :
-     * un ennemi touche le GoldBlock, donc seulement cet ennemi est gelé.
-     */
+    //Activation normale du jeu ==un ennemi touche le GoldBlock, donc seulement cet ennemi est gelé.
+   
     public void activate(PengoModel model, Enemy enemy) {
         if (model == null || enemy == null) {
             return;
@@ -79,19 +75,18 @@ public class GoldBlock extends IceBlock {
             return;
         }
 
-        /*
-         * Si un ennemi touche le GoldBlock,
-         * on déclenche l'effet.
-         */
+       
+        //si un ennemi touche le GoldBlock,
+         //on déclenche l'effet.
+        
         if (e instanceof Enemy && model instanceof PengoModel) {
             activate((PengoModel) model, (Enemy) e);
             return;
         }
 
-        /*
-         * Sinon, le GoldBlock reste un bloc de glace spécial :
-         * il peut être poussé comme un IceBlock.
-         */
+        //sinon, le GoldBlock reste un bloc de glace spécial :
+        //il peut être poussé comme un IceBlock.
+        
         super.collision(e);
     }
 
