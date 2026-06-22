@@ -1,0 +1,38 @@
+SnoBee(Born){
+  * (Born)
+  | Step(8, Born) ? :(Patrol)
+  | True ? :(Born)
+
+  * (Patrol)
+  | Step(H,@) ? Turn(R) :(Patrol) 
+  | Closest(@, 5) ? :(Hunt)
+  | Step(F,V) ? Move(F) :(Patrol)
+  | Step(F,K) ? Hit(F) :(Patrol)
+  | Step(L,V) ? Turn(L) :(Patrol)
+  | Step(R,V) ? Turn(R) :(Patrol)
+  | True ? 50% Turn(L) / Turn(R) :(Patrol)
+
+  * (Hunt)
+  | not Closest(@, 8) ? :(Patrol)
+  | Closest(@,N) ? Move(N) :(Hunt)
+  | Closest(@,S) ? Move(S) :(Hunt)
+  | Closest(@,E) ? Move(E) :(Hunt)
+  | Closest(@,W) ? Move(W) :(Hunt)
+  | Step(F,V) ? Move(F) :(Hunt)
+  | Step(L,V) ? Turn(L) :(Hunt)
+  | Step(R,V) ? Turn(R) :(Hunt)
+  | True ? Turn(B) :(Hunt)
+
+  * (Rage)
+  | Closest(@,N) ? Move(N) :(Rage)
+  | Closest(@,S) ? Move(S) :(Rage)
+  | Closest(@,E) ? Move(E) :(Rage)
+  | Closest(@,W) ? Move(W) :(Rage)
+  | Step(F,K) ? Hit(F) :(Rage)
+  | Step(F,V) ? Move(F) :(Rage)
+  | Step(L,V) ? Turn(L) :(Rage)
+  | Step(R,V) ? Turn(R) :(Rage)
+  | True ? Turn(B) :(Rage)
+
+  * ()
+}

@@ -1,7 +1,9 @@
 package gal.action;
 
 import gal.arguments.Direction;
+import gal_engine.GALStunt;
 import model.Entity;
+import model.Stunt;
 
 public class Turn extends GALAction {
 
@@ -50,7 +52,17 @@ public class Turn extends GALAction {
 	public boolean exec(Entity e) {
 		if (e == null)
 			return false;
-
+ 
+		Stunt s = e.stunt();
+ 
+		if (s instanceof GALStunt) {
+			// Passe par le Stunt : respecte action_ms, refuse si déjà occupé,
+			// et la rotation est progressive (gérée par tick()).
+			boolean started = ((GALStunt) s).startTurning(angle_deg, intensity);
+			System.out.println("[Turn] exec angle=" + angle_deg + " started=" + started);
+			return started;
+		}
+ 
 		e.turn(angle_deg);
 		return true;
 	}

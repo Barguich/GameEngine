@@ -243,8 +243,7 @@ public class GalBuilder implements iVisitor {
 			}
 
 			default:
-				throw new UnsupportedOperationException(
-						"Condition GAL non encore supportée : " + fc.name);
+				throw new UnsupportedOperationException();
 		}
 	}
 
