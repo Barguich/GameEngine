@@ -1,6 +1,5 @@
 package engine;
 
-import model.Entity;
 import model.Ticker;
 import oop.graphics.Canvas;
 import oop.tasks.Runtime;
@@ -9,20 +8,15 @@ import pengo.brain.PengoBots;
 import pengo.controller.PengoController;
 import pengo.model.DiamondBlock;
 import pengo.model.Enemy;
-import pengo.model.FishBonus;
-import pengo.model.GoldBlock;
 import pengo.model.IceBlock;
 import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
 import pengo.model.Wall;
 import testSprite.IceBlockAvatar;
-
 import view.Painter;
 import view.ShapeAvatar;
 import view.View;
 import view.ViewPort;
-
-import pengo.brain.PengoBots;
 import testSprite.EnemyAvatar;
 
 public class MainEngine {
