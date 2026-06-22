@@ -14,7 +14,7 @@ import view.View;
 
 public class PengoController implements Canvas.KeyListener {
 
-	private static final double SPEED_CM_S = 10.0;
+	private static final double SPEED_CM_S = 15.0;
 
 	private static final String RESUME = "Reprendre";
 	private static final String RESTART = "Recommencer";
@@ -62,72 +62,44 @@ public class PengoController implements Canvas.KeyListener {
 		double s = SPEED_CM_S * player.speedMultiplier();
 
 		switch (keyCode) {
-			case VirtualKeyCodes.VK_UP:
-			case VirtualKeyCodes.VK_Z:
-				player.setLinearSpeed(isu.new Vector(0, -s));
-				player.turnTo(270);
-				break;
+	    case VirtualKeyCodes.VK_UP:
+	    case VirtualKeyCodes.VK_Z:
+	        player.startGridMove(270, s);
+	        break;
 
-			case VirtualKeyCodes.VK_DOWN:
-			case VirtualKeyCodes.VK_S:
-				player.setLinearSpeed(isu.new Vector(0, s));
-				player.turnTo(90);
-				break;
+	    case VirtualKeyCodes.VK_DOWN:
+	    case VirtualKeyCodes.VK_S:
+	        player.startGridMove(90, s);
+	        break;
 
-			case VirtualKeyCodes.VK_LEFT:
-			case VirtualKeyCodes.VK_Q:
-				player.setLinearSpeed(isu.new Vector(-s, 0));
-				player.turnTo(180);
-				break;
+	    case VirtualKeyCodes.VK_LEFT:
+	    case VirtualKeyCodes.VK_Q:
+	        player.startGridMove(180, s);
+	        break;
 
-			case VirtualKeyCodes.VK_RIGHT:
-			case VirtualKeyCodes.VK_D:
-				player.setLinearSpeed(isu.new Vector(s, 0));
-				player.turnTo(0);
-				break;
+	    case VirtualKeyCodes.VK_RIGHT:
+	    case VirtualKeyCodes.VK_D:
+	        player.startGridMove(0, s);
+	        break;
 
-			case VirtualKeyCodes.VK_SPACE:
-				damageBlockInFront(player);
-				break;
+	    case VirtualKeyCodes.VK_SPACE:
+	        damageBlockInFront(player);
+	        break;
 
-			case VirtualKeyCodes.VK_R:
-				model.reset();
-				refreshMenu();
-				break;
+	    case VirtualKeyCodes.VK_R:
+	        model.reset();
+	        refreshMenu();
+	        break;
 
-			default:
-				break;
-		}
+	    default:
+	        break;
+	}
 	}
 
 	@Override
 	public void released(Canvas canvas, int keyCode, char keyChar) {
 
-		if (model.menuVisible()) {
-			return;
-		}
-
-		PengoPlayer player = model.player();
-
-		if (player == null) {
-			return;
-		}
-
-		switch (keyCode) {
-			case VirtualKeyCodes.VK_UP:
-			case VirtualKeyCodes.VK_DOWN:
-			case VirtualKeyCodes.VK_LEFT:
-			case VirtualKeyCodes.VK_RIGHT:
-			case VirtualKeyCodes.VK_Z:
-			case VirtualKeyCodes.VK_S:
-			case VirtualKeyCodes.VK_Q:
-			case VirtualKeyCodes.VK_D:
-				player.stop();
-				break;
-
-			default:
-				break;
-		}
+		
 	}
 
 	@Override

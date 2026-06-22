@@ -23,7 +23,7 @@ public class IceBlock extends Entity {
 		direction = 0;
 		broken = false;
 		hp = 3;// destruction totale sur 3 coups
-		friction = 0.995; //si on met a 1 plus de frottement 
+		friction = 0.999; //si on met a 1 plus de frottement 
 		breakingAnimation = false;
 		breakingAnimationRemaining = 0;
 		breakingFrame = 0;
@@ -129,7 +129,7 @@ public class IceBlock extends Entity {
 	    this.sliding = true;
 
 	    /*
-	     * On détache par sécurité tout ancien ennemi.
+	     * Sécurité : aucun ancien ennemi attaché.
 	     */
 	    detachEnemy();
 
@@ -266,6 +266,35 @@ public class IceBlock extends Entity {
 
 		bounding = new Bounding();
 		bounding.add(new Rect(center, size, orientation_degree));
+	}
+	public void finishCrushAt(Grid.Position position) {
+	    /*
+	     * Le bloc n'est plus en glissade.
+	     */
+	    sliding = false;
+
+	    /*
+	     * On détache l'ennemi transporté.
+	     */
+	    detachEnemy();
+
+	    /*
+	     * On coupe complètement la vitesse.
+	     */
+	    stop();
+
+	    /*
+	     * On place le bloc exactement à la position finale.
+	     */
+	    if (position != null) {
+	        setPosition(position);
+	        setBounding();
+	    }
+
+	    /*
+	     * Sécurité : le bloc doit rester réutilisable après l'écrasement.
+	     */
+	    direction = 0;
 	}
 	
 	

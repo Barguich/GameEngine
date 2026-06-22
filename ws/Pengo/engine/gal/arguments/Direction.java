@@ -83,32 +83,42 @@ public class Direction {
 
 	// CONVERSION
 
-	public int toAngle() {
-		if (this == E || this == F || this == H)
-			return 0;
-		if (this == S || this == R)
-			return 90;
-		if (this == W || this == B)
-			return 180;
-		if (this == N || this == L)
-			return 270;
-		if (this == SE)
-			return 45;
-		if (this == SW)
-			return 135;
-		if (this == NW)
-			return 225;
-		if (this == NE)
-			return 315;
+    public int toAngle() {
+        if (this == E)
+            return 0;
+        if (this == NE)
+            return 45;
+        if (this == N)
+            return 90;
+        if (this == NW)
+            return 135;
+        if (this == W)
+            return 180;
+        if (this == SW)
+            return -135;
+        if (this == S)
+            return -90;
+        if (this == SE)
+            return -45;
+        if (this == F)
+            return 0;
+        if (this == B)
+            return 180;
+        if (this == L)
+            return 90;
+        if (this == R)
+            return -90;
+        if (this == H)
+            return 0;
 
 		throw new IllegalStateException("Direction " + name + " has no angle");
 	}
 
-	public String name() {
-		return name;
-	}
+    public String name() {
+        return name;
+    }
 
-	public String toString() {
-		return name;
-	}
+    public String toString() {
+        return name;
+    }
 }

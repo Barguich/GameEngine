@@ -178,6 +178,8 @@ public class Enemy extends Entity {
 
 		super.tick(elapsed);
 	}
+	
+
 	@Override
 	public void collision(Entity e) {
 	    if (e == null) {
@@ -186,17 +188,26 @@ public class Enemy extends Entity {
 
 	    /*
 	     * Si l'ennemi est mort, en train de mourir,
-	     * transporté ou écrasé par un IceBlock,
-	     * il ne doit jamais déclencher de collision normale.
+	     * emporté ou écrasé par un IceBlock,
+	     * il ne doit pas déclencher de collision normale.
 	     */
 	    if (harmlessForPlayer()) {
 	        return;
 	    }
 
 	    /*
-	     * Si un IceBlock en glissade le touche,
-	     * on ne laisse pas le moteur gérer ça normalement.
-	     * C'est PengoModel.moveSlidingIceBlock() qui gère.
+	     * GOLD BLOCK :
+	     * Si l'ennemi touche un GoldBlock, il est gelé.
+	     */
+	    if (e instanceof GoldBlock && model instanceof PengoModel) {
+	        GoldBlock gold = (GoldBlock) e;
+	        gold.activate((PengoModel) model, this);
+	        return;
+	    }
+
+	    /*
+	     * Si un IceBlock en glissade touche l'ennemi,
+	     * la logique est gérée dans PengoModel.moveSlidingIceBlock().
 	     */
 	    if (e instanceof IceBlock) {
 	        IceBlock ice = (IceBlock) e;

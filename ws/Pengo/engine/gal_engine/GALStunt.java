@@ -2,6 +2,7 @@ package gal_engine;
 
 import java.util.List;
 
+import engine.Game;
 import gal.action.iAllGALActions;
 import gal.arguments.Direction;
 import geometry.ISU;
@@ -12,23 +13,28 @@ import model.Stunt;
 
 public class GALStunt extends Stunt implements iAllGALActions {
 
-	private static final double DEFAULT_SPEED_CM_S = 10.0;
-
-	private double speed_cm_s;
+	private Entity entity;
+	private double max_cmPer_ms;
 	private double max_degPer_ms;
 	private double step_cm;
 	private double action_ms;
 
-	// CONSTRUCTOR
 	public GALStunt(Model model, Entity e) {
 		super(model, e);
-		this.speed_cm_s = DEFAULT_SPEED_CM_S;
-		this.max_degPer_ms = 90.0 / 1000.0;
-		this.step_cm = entity.step().x();
-		this.action_ms = 0;
+		this.entity = e;
+		step_cm = entity.step().x();
+
+		double DEBUG_SPEED_FACTOR = 1.0;
+
+		max_cmPer_ms = (Game.game().cmPerCell / 1000.0) * DEBUG_SPEED_FACTOR;
+		max_degPer_ms = (90.0 / 1000.0) * DEBUG_SPEED_FACTOR;
+		action_ms = 0;
 	}
 
-	// STEP
+	public double actionDuration() {
+		return action_ms;
+	}
+
 	public void setStepLength(double cm) {
 		this.step_cm = cm;
 	}
@@ -37,26 +43,19 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		return this.step_cm;
 	}
 
-	// SPEED
-	public void setMaxLinearSpeed(double cmPer_s) {
-		this.speed_cm_s = cmPer_s;
+	public void setMaxLinearSpeed(double cmPer_ms) {
+		max_cmPer_ms = cmPer_ms;
 	}
 
 	public void setMaxAngularSpeed(double degPer_ms) {
 		this.max_degPer_ms = degPer_ms;
 	}
 
-	public double actionDuration() {
-		return action_ms;
-	}
-
 	// TICK
 	public void tick(double elapsed_ms) {
 		if (action_ms <= 0)
 			return;
-
 		action_ms -= elapsed_ms;
-
 		if (action_ms <= 0) {
 			action_ms = 0;
 			entity.stop();
@@ -64,20 +63,18 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		}
 	}
 
-	// MOVE
+	// MOVE — résout F/B/L/R selon l'orientation courante de l'entité
 	public boolean startMoving(Direction direction, double intensity, double duration_ms) {
-		if (action_ms > 0)
+		if (action_ms > 0) {
+			System.out.println("MOVE REFUSED");
 			return false;
+		}
 
-		Direction absDir = toAbsolute(direction, entity.orientation());
-		if (absDir == null)
-			return false;
-
-		double speed = speed_cm_s * intensity;
-		if (speed <= 0)
-			speed = speed_cm_s;
+		double speed = (intensity > 0) ? intensity * max_cmPer_ms : max_cmPer_ms;
 
 		ISU isu = entity.center().isu();
+
+		Direction absDir = resolveAbsolute(direction);
 
 		switch (absDir.name()) {
 			case "N":
@@ -96,29 +93,22 @@ public class GALStunt extends Stunt implements iAllGALActions {
 				return false;
 		}
 
+		System.out.println(
+				"START MOVING " +
+						direction +
+						" speed=" + speed +
+						" duration=" + duration_ms);
 		action_ms = duration_ms;
 		return true;
 	}
 
-	// 0=E, 90=S, 180=W, 270=N
-	private Direction toAbsolute(Direction d, int orientation) {
-		if (d.isAbsolute())
-			return d;
-		if (d == Direction.H)
-			return null;
-		int relative;
-		if (d == Direction.F)
-			relative = 0;
-		else if (d == Direction.B)
-			relative = 180;
-		else if (d == Direction.R)
-			relative = 90;
-		else if (d == Direction.L)
-			relative = -90;
-		else
-			return null;
-		int angle = ((orientation + relative) % 360 + 360) % 360;
-		switch (angle) {
+	private Direction resolveAbsolute(Direction dir) {
+		if (dir.isAbsolute() || dir == Direction.H)
+			return dir;
+
+		int absAngle = (entity.orientation() + relativeAngle(dir) + 360) % 360;
+
+		switch (absAngle) {
 			case 0:
 				return Direction.E;
 			case 90:
@@ -128,17 +118,44 @@ public class GALStunt extends Stunt implements iAllGALActions {
 			case 270:
 				return Direction.N;
 			default:
-				return null;
+				if (absAngle < 45 || absAngle >= 315)
+					return Direction.E;
+				if (absAngle < 135)
+					return Direction.S;
+				if (absAngle < 225)
+					return Direction.W;
+				return Direction.N;
 		}
 	}
 
+	private int relativeAngle(Direction dir) {
+		if (dir == Direction.F)
+			return 0;
+		if (dir == Direction.B)
+			return 180;
+		if (dir == Direction.R)
+			return 90;
+		if (dir == Direction.L)
+			return 270;
+		return 0;
+	}
+
+	// TURN
 	public boolean startTurning(int angle_deg, double intensity) {
-		if (action_ms > 0)
+		System.out.println(
+				"TURN request orientation="
+						+ entity.orientation()
+						+ " action_ms="
+						+ action_ms);
+		if (action_ms > 0) {
+			System.out.println("TURN REFUSED");
 			return false;
-		double speed = intensity * max_degPer_ms;
-		if (speed <= 0)
-			speed = max_degPer_ms;
-		entity.setAngularSpeed(Math.signum(angle_deg) * speed);
+		}
+		double speed = (intensity > 0) ? intensity * max_degPer_ms : max_degPer_ms;
+		entity.turn(angle_deg);
+
+		System.out.println("TURN APPLIED → new orientation=" + entity.orientation());
+
 		action_ms = Math.abs(angle_deg) / speed;
 		return true;
 	}
@@ -182,19 +199,22 @@ public class GALStunt extends Stunt implements iAllGALActions {
 
 	@Override
 	public void walk(int degree) {
-		Direction dir;
 		degree = ((degree % 360) + 360) % 360;
-		if (degree == 0)
+		Direction dir;
+		if (degree == 0) {
 			dir = Direction.E;
-		else if (degree == 90)
+			entity.turnTo(0);
+		} else if (degree == 90) {
 			dir = Direction.S;
-		else if (degree == 180)
+			entity.turnTo(90);
+		} else if (degree == 180) {
 			dir = Direction.W;
-		else if (degree == 270)
+			entity.turnTo(180);
+		} else if (degree == 270) {
 			dir = Direction.N;
-		else
+			entity.turnTo(270);
+		} else
 			return;
-		entity.turnTo(degree);
 		startMoving(dir, 1.0, 1000.0);
 	}
 }
