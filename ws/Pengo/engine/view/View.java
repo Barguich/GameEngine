@@ -1,14 +1,13 @@
 package view;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import engine.Game;
 import model.Entity;
 import model.Model;
 import oop.graphics.Canvas;
 import oop.graphics.Graphics;
-import pengo.model.PengoModel;
-import oop.graphics.Font;
 
 /**
  * Couche de rendu du moteur : observe le Model et le projette à l'écran à
@@ -18,6 +17,8 @@ public class View implements Canvas.PaintListener {
 
 	private final Model model;
 	private final ViewPort viewPort;
+	private final List<Overlay> overlays = new ArrayList<>();
+	private final List<EntityRenderHook> renderHooks = new ArrayList<>();
 
 	private Entity followed;
 	private final DebugOverlay debug = new DebugOverlay();
@@ -39,6 +40,14 @@ public class View implements Canvas.PaintListener {
 
 	@Override
 	public void visible(Canvas canvas) {
+	}
+
+	public void addOverlay(Overlay o){
+		overlays.add(o);
+	}
+
+	public void addRenderHook(EntityRenderHook h){
+		renderHooks.add(h);
 	}
 
 	/**
@@ -92,10 +101,9 @@ public class View implements Canvas.PaintListener {
 			int px = viewPort.toPixelX(canvas, e.center().x());
 			int py = viewPort.toPixelY(canvas, e.center().y());
 
-			if (model instanceof PengoModel pm && pm.isVibrating(e)) {
-				int shake = (int) (Math.random() * 5) - 2;
-				px += shake;
-				py += shake;
+			for (EntityRenderHook h : renderHooks){
+				px += h.offsetX(e);
+				py += h.offsetY(e);
 			}
 
 			e.avatar().paint(g, px, py, scale);
@@ -108,28 +116,10 @@ public class View implements Canvas.PaintListener {
 
 		debug.paintPanel(canvas, g, followed);
 
-		if (model instanceof PengoModel pm) {
-			int scaleD = DebugOverlay.uiScale(canvas);
-			int x = 12 * scaleD;
-			int lineH = 22 * scaleD;
-			int top = (debug.isEnabled() ? debug.panelBottom() + 14 * scaleD : 12 * scaleD);
-			int y = top + lineH;
-			g.setFont(g.getFont("Monospaced", Font.PLAIN, 15 * scaleD));
-			g.setColor(Graphics.Colors.white);
-
-			g.drawString("Score : " + pm.score(), x, y);
-
-			if (pm.player() != null) {
-				g.drawString("Lives : " + pm.player().lives(), x, y + lineH);
-			}
-
-			g.drawString("Enemies : " + pm.enemiesRemaining(), x, y + 2 * lineH);
-
-			// Menu plein écran (pause / game over / victoire) en surimpression.
-			if (pm.menuVisible()) {
-				menu.paint(canvas, g);
-			}
+		for (Overlay o : overlays){
+			o.paint(canvas, g);
 		}
+		
 	}
 
 	public DebugOverlay debug() {
