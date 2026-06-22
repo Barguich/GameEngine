@@ -194,7 +194,7 @@ public class DebugOverlay {
 		}
 	}
 
-	static int uiScale(Canvas canvas) {
+	public static int uiScale(Canvas canvas) {
 		return Math.max(1, Math.round(canvas.getWidth() / 1920f));
 	}
 
