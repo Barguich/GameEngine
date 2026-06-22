@@ -270,23 +270,22 @@ public class MainEngine {
 		avatar.setView(view);
 	}
 
-	private static void addGold(PengoModel model, View view, int x, int y) {
-		GoldBlock g = new GoldBlock();
-		g.setPosition(Game.grid().new Position(x, y));
-		g.setSize(Game.grid().new Dimension(1, 1));
-		model.add(g);
+	// private static void addGold(PengoModel model, View view, int x, int y) {
+	// 	GoldBlock g = new GoldBlock();
+	// 	g.setPosition(Game.grid().new Position(x, y));
+	// 	g.setSize(Game.grid().new Dimension(1, 1));
+	// 	model.add(g);
 
-		ShapeAvatar avatar = new ShapeAvatar(g, ShapeAvatar.Shape.RECT, 255, 200, 0, 255);
-		g.setAvatar(avatar);
-		avatar.setView(view);
-	}
+	// 	ShapeAvatar avatar = new ShapeAvatar(g, ShapeAvatar.Shape.RECT, 255, 200, 0, 255);
+	// 	g.setAvatar(avatar);
+	// 	avatar.setView(view);
+	// }
 
 	private static void addWall(PengoModel model, View view, int x, int y) {
 		Wall wall = new Wall();
 		wall.setPosition(Game.grid().new Position(x, y));
 		wall.setSize(Game.grid().new Dimension(1, 1));
 		model.add(wall);
-		Wall wall = new Wall();
 		wall.setPosition(Game.grid().new Position(x, y));
 		wall.setSize(Game.grid().new Dimension(1, 1));
 		model.add(wall);
