@@ -1,4 +1,5 @@
-Pengo(A){
-  * (A): | True ? Move(N) :(B)
-  * (B): | True ? Move(S) :(A)
+Chaser(Hunt){
+  * (Hunt):
+    | Closest(@, F) ? Move(F)  :(Hunt)
+    | !Closest(@, F) ? Turn(L) :(Hunt)
 }

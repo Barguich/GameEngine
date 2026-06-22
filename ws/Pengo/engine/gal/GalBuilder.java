@@ -193,6 +193,7 @@ public class GalBuilder implements iVisitor {
 			case "True":
 				return new True();
 
+			case "Cell":
 			case "Step": {
 				gal.arguments.Direction dir = gal.arguments.Direction.F;
 				gal.arguments.Category cat = gal.arguments.Category.ANY;
