@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>CONTRAT</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        <style>
+/* ============================================================
+   STYLE MIXTE — Optimisé A4 (Marges Réduites)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Coloration Syntaxique Thème GitHub Dark ── */
+
+
+/* Mots-clés (if, else, return, listen, connect) */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #ff7b72 !important;
+}
+
+/* Chaînes de caractères (ex: "Salem", "127.0.0.1") [cite: 12] */
+.hljs-string {
+	color: #a5d6ff !important;
+}
+
+/* Commentaires [cite: 93] */
+.hljs-comment {
+	color: #8b949e !important;
+	font-style: italic;
+}
+
+/* Nombres (ex: ports, débits, RTT) [cite: 101, 102, 111] */
+.hljs-number,
+.hljs-literal {
+	color: #79c0ff !important;
+}
+
+/* Fonctions et méthodes (ex: socket, accept, send) [cite: 42, 43, 52] */
+.hljs-title,
+.hljs-function,
+.hljs-section {
+	color: #d2a8ff !important;
+	font-weight: 600;
+}
+
+/* Variables et paramètres */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attr {
+	color: #ffa657 !important;
+}
+
+/* Opérateurs et ponctuation */
+.hljs-operator,
+.hljs-punctuation {
+	color: #79c0ff !important;
+}
+
+:root {
+	--bg: #ffffff;
+	--text: #222831;
+	--titre-gris: #393E46;
+	--couleur-barre-gauche: #00ADB5;
+	--couleur-ligne-sous: #EEEEEE;
+
+	/* STYLE DU BLOC DE CODE */
+	--code-bg: #0d1117;
+	/* Fond exact de GitHub */
+	--code-text: #c9d1d9;
+	/* Texte principal */
+	--code-accent: #fab1a0;
+}
+
+/* ── Configuration de la page d'impression ── */
+@page {
+	size: A4;
+	margin: 15mm;
+	/* Force les marges de l'imprimante à 15mm */
+}
+
+body {
+	font-family: 'Open Sans', -apple-system, sans-serif;
+	font-weight: 300;
+	font-size: 11pt;
+	line-height: 1.6;
+	max-width: 100%;
+	/* Utilise toute la largeur disponible définie par @page */
+	margin: 0;
+	padding: 0;
+	color: var(--text);
+	background-color: var(--bg);
+}
+
+/* ── Titres ── */
+h1:first-of-type {
+	text-align: center;
+	font-family: 'Montserrat', sans-serif;
+	font-size: 2.4em;
+	margin-top: 0;
+	margin-bottom: 1.2em;
+	color: var(--titre-gris);
+}
+
+h2 {
+	font-family: 'Montserrat', sans-serif;
+	color: var(--titre-gris);
+	font-size: 1.4em;
+	margin-top: 2em;
+	padding: 6px 0 10px 15px;
+	border-left: 8px solid var(--couleur-barre-gauche) !important;
+	border-bottom: 1px solid var(--couleur-ligne-sous) !important;
+	display: block;
+	page-break-after: avoid;
+	/* Évite qu'un titre soit seul en bas de page */
+}
+
+/* ── Blocs de Code (Sombre) ── */
+pre {
+	background-color: var(--code-bg) !important;
+	color: var(--code-text) !important;
+	padding: 1.2em;
+	border-radius: 6px;
+	border-left: 4px solid var(--couleur-barre-gauche);
+	font-family: 'JetBrains Mono', monospace !important;
+	font-size: 0.85em;
+	margin: 1.2em 0;
+	overflow-x: auto;
+	page-break-inside: avoid;
+	/* Évite de couper un bloc de code sur deux pages */
+}
+
+pre code {
+	background: transparent !important;
+	color: inherit !important;
+	padding: 0 !important;
+}
+
+p code,
+li code {
+	background: #f1f2f6;
+	color: #e67e22;
+	padding: 0.1em 0.3em;
+	border-radius: 3px;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.9em;
+}
+
+/* ── Tableaux ── */
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1.5em 0;
+	page-break-inside: auto;
+}
+
+th,
+td {
+	border: 1px solid var(--couleur-ligne-sous);
+	padding: 8px 12px;
+	text-align: left;
+}
+
+th {
+	background: #f8f9fa;
+	font-family: 'Montserrat', sans-serif;
+	font-size: 0.9em;
+	border-bottom: 2px solid var(--couleur-barre-gauche);
+}
+
+/* ── Ajustements Impression ── */
+@media print {
+	body {
+		width: 100%;
+	}
+}
+
+</style>
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="contrat">CONTRAT</h1>
+<ul>
+<li>Équipe : 4</li>
+<li>Jeu : Pengo</li>
+<li>contact : <a href="mailto:Florian.Vautier@etu.univ-grenoble-alpes.fr">Florian.Vautier@etu.univ-grenoble-alpes.fr</a></li>
+<li>version du 18/06 11h30</li>
+</ul>
+<h1 id="1-point-technique-à-expliquer-durant-la-démo">1. Point technique à expliquer durant la démo</h1>
+<p>Au choix</p>
+<ul>
+<li>[o] implémentation de la condition Closest</li>
+<li>[o] implémentation du Golden Block et du Diamond Block en GAL</li>
+</ul>
+<h1 id="2-présentation-du-jeu">2. Présentation du jeu</h1>
+<p>Nous proposons une adaptation du jeu <strong>Pengo</strong>.</p>
+<p>Le joueur contrôle un pingouin dans un labyrinthe constitué de blocs de glace. Il doit éliminer les ennemis en poussant des blocs, en utilisant les murs, et en exploitant les bonus disponibles.</p>
+<p>Le joueur doit éviter les ennemis, car un contact direct avec eux lui fait perdre une vie.</p>
+<p>La partie est gagnée dans l'un des cas suivants :</p>
+<ul>
+<li>tous les ennemis sont éliminés ;</li>
+<li>trois Diamond Blocks sont alignés horizontalement ou verticalement.</li>
+</ul>
+<h2 id="22-nos-choix">2.2 Nos choix</h2>
+<h3 id="extensions">Extensions</h3>
+<ul>
+<li>Bonus Gold Block qui gèle les ennemis.</li>
+<li>Fish Bonus qui multiplie la vitesse du joueur par 2.</li>
+<li>Diamond Blocks donnant une condition de victoire spéciale.</li>
+<li>Score différent selon le mode d'élimination de l'ennemi.</li>
+<li>IA basée sur des Bots Java et des scripts GAL.</li>
+</ul>
+<h2 id="23-bonus-ajoutés">2.3 Bonus ajoutés</h2>
+<h3 id="x-gold-block">[x] Gold Block</h3>
+<p>Le Gold Block est un bloc spécial. Lorsqu'un ennemi le touche, il est gelé pendant quelques secondes sans être averti du piège.</p>
+<p>Effets :</p>
+<ul>
+<li>immobilisation temporaire de l'ennemi ;</li>
+<li>changement visuel de l'ennemi ;</li>
+<li>désactivation temporaire de son Bot ;</li>
+<li>retour automatique à l'état normal après expiration du timer.</li>
+</ul>
+<p><strong>Démo</strong></p>
+<ul>
+<li>Un ennemi touche un Gold Block.</li>
+<li>L'ennemi devient gelé.</li>
+<li>Après quelques secondes, il redevient actif.</li>
+</ul>
+<hr>
+<h3 id="x-fish-bonus">[x] Fish Bonus</h3>
+<p>Le Fish Bonus est un bonus récupéré par le joueur.</p>
+<p>Effets :</p>
+<ul>
+<li>la vitesse du joueur est multipliée par 2 ;</li>
+<li>l'effet est temporaire ;</li>
+<li>la vitesse normale est restaurée automatiquement à la fin du bonus.</li>
+</ul>
+<p><strong>Démo</strong></p>
+<ul>
+<li>Le joueur ramasse le Fish Bonus.</li>
+<li>Il se déplace plus rapidement.</li>
+<li>Après quelques secondes, il revient à sa vitesse normale.</li>
+</ul>
+<h3 id="x-diamond-blocks">[x] Diamond Blocks</h3>
+<p>Les Diamond Blocks sont trois blocs spéciaux présents dans le niveau.</p>
+<p>Effets :</p>
+<ul>
+<li>si les trois Diamond Blocks sont alignés horizontalement ou verticalement, le joueur gagne immédiatement ;</li>
+<li>cette condition de victoire donne un objectif supplémentaire au joueur.</li>
+</ul>
+<p><strong>Démo</strong></p>
+<ul>
+<li>Le joueur pousse les Diamond Blocks.</li>
+<li>Les trois blocs deviennent alignés.</li>
+<li>La partie affiche une victoire.</li>
+</ul>
+<h2 id="24--système-de-score-optionnel">2.4 [?] Système de score <em>(optionnel)</em></h2>
+<p>Le score dépend de la manière dont un ennemi est éliminé, ainsi que du nombre d'ennemis éliminés simultanément.</p>
+<h1 id="3-difficultés-techniques-et-solutions-envisagées">3. Difficultés techniques et solutions envisagées</h1>
+<h2 id="31-x-déplacement-des-blocs-de-glace">3.1 [x/?] Déplacement des blocs de glace</h2>
+<h3 id="difficulté">Difficulté</h3>
+<p>Les blocs de glace ne se déplacent pas comme le joueur. Lorsqu'un bloc est poussé, il doit continuer à glisser dans la même direction jusqu'à rencontrer un obstacle (mur ou autre bloc).</p>
+<h3 id="solution-envisagée">Solution envisagée</h3>
+<p>Créer un comportement spécifique pour les blocs en mouvement. Le bloc conserve une direction et avance à chaque tick jusqu'à ce qu'une condition d'arrêt soit détectée. Si le bloc rencontre un ennemi durant son glissement, il l'emporte avec lui (implémenté en Java).</p>
+<p>[#MP]</p>
+<ul>
+<li>vous ne décrivez pas la solution technique mais vous détaillez l'effet attendu.</li>
+<li>la solution technique
+<ul>
+<li>soit un automate GAL avec la condition Pushed? et l'action Push</li>
+<li>soit un moteur physique (restez simple) avec vitesse et transmission de la vitesse en cas de collision</li>
+</ul>
+</li>
+</ul>
+<h3 id="x-démo">[x/?] Démo</h3>
+<p>Le joueur pousse un bloc vers la droite :</p>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" checked=""type="checkbox"> Le bloc continue à glisser jusqu'à toucher un autre bloc ou le bord de la carte.</li>
+<li>[?] Si le bloc rencontre un ennemi il l'emporte avec lui</li>
+</ul>
+<h2 id="32-x-destruction--fonte-des-blocs-de-glace">3.2 [x] Destruction / fonte des blocs de glace</h2>
+<h3 id="difficulté-1">Difficulté</h3>
+<p>Le joueur et certains ennemis peuvent faire fondre ou détruire des blocs de glace. Cette action modifie la structure du labyrinthe pendant la partie.</p>
+<h3 id="solution-envisagée-1">Solution envisagée</h3>
+<p>Chaque bloc possède un état : intact, fissuré, détruit. À chaque frappe, son point de vie diminue de 1. Lorsqu'il atteint 0, il est retiré du modèle et de l'affichage. Ce comportement peut être décrit en GAL.</p>
+<h3 id="x-démo-1">[x] Démo</h3>
+<p>Le joueur détruit un bloc devant lui. Le bloc disparaît et un nouveau passage devient disponible.</p>
+<hr>
+<h2 id="33-apparition-dynamique-des-ennemis">3.3 Apparition dynamique des ennemis</h2>
+<h3 id="difficulté-2">Difficulté</h3>
+<p>Certains blocs peuvent cacher un ennemi. Pendant la partie, un bloc peut donc se transformer en ennemi actif.</p>
+<h3 id="solution-envisagée-2">Solution envisagée</h3>
+<p>Remplacer dynamiquement l'entité Bloc par une entité Ennemi via un automate GAL. L'ennemi reçoit ensuite son propre Bot, ses points de vie et son animation.</p>
+<h3 id="démo">Démo</h3>
+<p>Un bloc spécial disparaît et un ennemi apparaît à sa place.</p>
+<hr>
+<h2 id="34-x-gestion-des-bonus-temporaires-optionnel">3.4 [x] Gestion des bonus temporaires <em>(optionnel)</em></h2>
+<p>#MP: ce n'est pas cohérent de remettre ici en optionnel une partie du contrat qui n'était pas optionnelle plus haut.</p>
+<h3 id="difficulté-3">Difficulté</h3>
+<p>Les bonus ne doivent pas être permanents. Le Gold Block gèle un ennemi pendant un temps limité et le Fish Bonus augmente temporairement la vitesse du joueur.</p>
+<h3 id="solution-envisagée-3">Solution envisagée</h3>
+<p>Associer un timer à chaque effet temporaire. À chaque tick, le temps restant diminue. Lorsque le timer arrive à zéro, l'effet est annulé.</p>
+<h3 id="x-démo-2">[x] Démo</h3>
+<p>Le joueur ramasse un Fish Bonus : Sa vitesse est doublée pendant quelques secondes, puis redevient normale.</p>
+<hr>
+<h2 id="35-x-intelligence-artificielle-des-ennemis">3.5 [x] Intelligence artificielle des ennemis</h2>
+<h3 id="difficulté-4">Difficulté</h3>
+<p>Les ennemis ne doivent pas seulement avancer au hasard. Ils doivent pouvoir patrouiller, poursuivre le joueur et, optionnellement, être gelés.</p>
+<h3 id="solution-envisagée--mp--condition-closest">Solution envisagée = [#MP : condition Closest]</h3>
+<p>Utiliser plusieurs comportements de Bot :</p>
+<ul>
+<li>Bot de patrouille ;</li>
+<li>Bot de poursuite ;</li>
+<li>Bot gelé (bloqué via une fonction <code>wait</code> en GAL) ;</li>
+<li>Bot mort / inactif.</li>
+</ul>
+<p>Certains comportements sont décrits en GAL afin de pouvoir les modifier sans toucher au code Java.</p>
+<h3 id="x-démo-3">[x] Démo</h3>
+<p>Un ennemi patrouille, puis change de comportement lorsqu'il détecte le joueur.</p>
+<hr>
+<h2 id="36-gestion-des-différentes-morts-des-ennemis">3.6 Gestion des différentes morts des ennemis</h2>
+<h3 id="difficulté-5">Difficulté</h3>
+<p>Un ennemi peut mourir de plusieurs façons :</p>
+<ul>
+<li>écrasé directement par un bloc de glace ;</li>
+<li>étourdi suite à une interaction avec le mur (le joueur peut alors l'éliminer).</li>
+</ul>
+<h3 id="solution-envisagée-4">Solution envisagée</h3>
+<p>Lorsqu'une action de poussée est effectuée, le jeu vérifie :</p>
+<ul>
+<li>la trajectoire du bloc ;</li>
+<li>les ennemis situés autour du bloc ou du mur poussé ;</li>
+<li>les ennemis coincés entre deux obstacles.</li>
+</ul>
+<p>Le score est attribué selon la règle correspondante.</p>
+<h3 id="démo-1">Démo</h3>
+<ul>
+<li>Ennemi écrasé par un bloc : +100 points.</li>
+<li>Ennemi éliminé par poussée contre un mur / bloc proche : +400 points.</li>
+</ul>
+<hr>
+<h2 id="37-x-alignement-des-diamond-blocks">3.7 [x] Alignement des Diamond Blocks</h2>
+<h3 id="difficulté-6">Difficulté</h3>
+<p>Le jeu doit détecter si les trois Diamond Blocks sont alignés horizontalement ou verticalement. Cette vérification doit être effectuée après chaque déplacement d'un Diamond Block.</p>
+<h3 id="solution-envisagée-5">Solution envisagée</h3>
+<p>Après chaque déplacement d'un Diamond Block, le jeu [#MP: pas assez précis] récupère les positions des trois blocs et vérifie s'ils partagent la même ligne ou la même colonne. Cette logique peut être gérée via un automate GAL [#MP: à détailler]</p>
+<pre><code class="language-Haskell"><span class="hljs-type">DiamondBlock</span>(<span class="hljs-type">Check</span>){
+  * (<span class="hljs-type">Check</span>):
+  | <span class="hljs-type">Step</span>(<span class="hljs-type">N</span>,<span class="hljs-type">D</span>) &amp;&amp; <span class="hljs-type">Step</span>(<span class="hljs-type">S</span>,<span class="hljs-type">D</span>) ? <span class="hljs-type">Wiz</span> : ()
+  | ...
+
+  * () 
+}
+</code></pre>
+<ul>
+<li>D étant interprété comme Diamond</li>
+<li>Wiz étant interprété comme une action de victoire par alignement des diamond blocks.</li>
+</ul>
+<h3 id="x-démo-4">[x] Démo</h3>
+<p>Le joueur pousse un Diamond Block. Les trois Diamond Blocks deviennent alignés. La partie se termine par une victoire.</p>
+<hr>
+<h2 id="38-x-modification-dynamique-du-labyrinthe">3.8 [x] Modification dynamique du labyrinthe</h2>
+<h3 id="difficulté-7">Difficulté</h3>
+<p>Le labyrinthe change pendant la partie : les blocs bougent, certains sont détruits et d'autres se transforment en ennemis. Les déplacements possibles changent donc constamment.</p>
+<h3 id="solution-envisagée-6">Solution envisagée</h3>
+<p>Mettre à jour la représentation de la carte après chaque déplacement, destruction ou transformation d'un bloc.</p>
+<h3 id="x-démo-5">[x] Démo</h3>
+<p>Un bloc est détruit. Le joueur et les ennemis peuvent ensuite passer par l'ancienne position du bloc.</p>
+<hr>
+<h2 id="39--équilibrage-du-gameplay">3.9 [?] Équilibrage du gameplay</h2>
+<h3 id="difficulté-8">Difficulté</h3>
+<p>Le jeu doit rester jouable. Si les ennemis sont trop rapides ou si les bonus sont trop puissants, la partie devient déséquilibrée.</p>
+<h3 id="solution-envisagée-7">Solution envisagée</h3>
+<p>Placer les paramètres importants dans le fichier de configuration :</p>
+<ul>
+<li>vitesse du joueur ;</li>
+<li>vitesse des ennemis ;</li>
+<li>durée du Fish Bonus ;</li>
+<li>durée du gel ;</li>
+<li>nombre d'ennemis ;</li>
+<li>score gagné selon l'action.</li>
+</ul>
+<h3 id="démo-2">Démo</h3>
+<p>Modifier la durée du Fish Bonus ou la vitesse des ennemis dans le fichier de configuration, puis relancer la partie.</p>
+<hr>
+<h1 id="4--conditions-de-victoire-et-de-défaite">4. [?] Conditions de victoire et de défaite</h1>
+<h2 id="victoire">Victoire</h2>
+<p>Le joueur gagne si :</p>
+<ul>
+<li>tous les ennemis sont éliminés ;</li>
+<li>ou les trois Diamond Blocks sont alignés.</li>
+</ul>
+<h2 id="défaite">Défaite</h2>
+<p>Le joueur perd si :</p>
+<ul>
+<li>il n'a plus de vies ;</li>
+<li>un ennemi le touche alors qu'il n'a plus de protection.</li>
+</ul>
+<h1 id="3-contrat-concernant-le-moteur-de-jeu">3. Contrat concernant le moteur de jeu</h1>
+<h2 id="partie-modèle">Partie Modèle</h2>
+<h3 id="géométrie">Géométrie</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Monde torique</strong></p>
+<ul>
+<li>Explications : Pas de monde torique pour ce jeu.</li>
+<li><strong>Démo : Un essai avec le tore des blocs de glace qui sont cassables.</strong></li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>Défilement / scrolling</strong></p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Taille de la map modifiable</strong></p>
+<ul>
+<li>Explications : Les niveaux sont stockés sous forme de fichiers ASCII. Chaque symbole possède une signification particulière (mur, glace, joueur, ennemi, bonus…). Lors du chargement, un parseur parcourt le fichier caractère par caractère et crée les entités correspondantes. La taille du monde dépend donc directement de la taille du fichier lu.</li>
+<li><strong>Démo : Charger plusieurs fichiers de niveaux ayant des dimensions différentes et observer que le moteur adapte automatiquement la taille de la carte et la position des entités.</strong></li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Bords du monde</strong></p>
+<ul>
+<li>Explications :
+<ul>
+<li>Les bords du monde constituent un obstacle, mais peuvent également être interactifs.</li>
+<li>Plusieurs types d'obstacles sont prévus : vibrant, cassable, non cassable, glissable…</li>
+</ul>
+</li>
+<li><strong>Démo : Envoyer un bloc ou tenter de faire traverser le joueur à travers un bord.</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="génération-de-la-map">Génération de la map</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>Fixe</strong></p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Par configuration</strong></p>
+<ul>
+<li>Explications :
+<ul>
+<li>La carte est décrite sous forme d'une matrice avec différents coefficients pour définir un obstacle, un ennemi, la position initiale du personnage, etc.</li>
+<li>[#MP: pas cohérent avec le paragraphe «Taille de la map modifiable»]</li>
+</ul>
+</li>
+<li><strong>Démo : commune à «Taille de la map modifiable»</strong>
+<ul>
+<li>Modifier quelques coefficients pour montrer le changement.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>Aléatoire</strong></p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>Aléatoire avec mémorisation</strong></p>
+</li>
+</ul>
+<h3 id="interactions">Interactions</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>Annulation d'une action</strong></p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Interactions spécifiques</strong></p>
+<ul>
+<li>Explications : Plusieurs interactions entre entités sont gérées :
+<ul>
+<li>Si ce sont deux ennemis, il n'y a pas de problème, ils peuvent se chevaucher.</li>
+<li>Si c'est un ennemi et le joueur, il y a une collision.</li>
+<li>Lancer un bloc vers un ennemi décale les deux.</li>
+<li>Les ennemis et le joueur ne peuvent pas traverser un bloc intact. Lorsqu'un bloc est en cours de destruction, il est possible de le traverser mais avec une vitesse réduite.</li>
+</ul>
+</li>
+<li><strong>Démo : Traiter les 5 cas un par un</strong>
+<ul>
+<li>deux ennemis peuvent se chevaucher.</li>
+<li>un ennemi et le joueur entrent en collision.</li>
+<li>Lancer un bloc vers un ennemi décale les deux.</li>
+<li>Les ennemis et le joueur ne peuvent pas traverser un bloc intact.</li>
+<li>Lorsqu'un bloc est en cours de destruction, il est possible de le traverser mais avec une vitesse réduite.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="affichage-et-animation">Affichage et animation</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Barre de santé / points de vie de chaque personnage</strong></p>
+<ul>
+<li>Explications : Le joueur possède un nombre limité de vies. Les vies restantes sont affichées à l'écran.</li>
+<li><strong>Démo : Un ennemi touche le joueur, le compteur de vies diminue.</strong></li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Animation lors de la création / apparition</strong></p>
+<ul>
+<li>Explications : Certaines entités apparaissent pendant la partie, par exemple un ennemi qui sort d'un bloc de glace.</li>
+<li><strong>Démo : Un bloc se transforme en ennemi avec une animation d'apparition.</strong></li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Animation lors de la destruction / disparition</strong></p>
+<ul>
+<li>Explications : Lorsqu'un bloc est détruit ou lorsqu'un ennemi meurt, une animation de disparition est jouée. Le joueur tape sur le bloc, qui change d'état, puis disparaît en plusieurs étapes.</li>
+<li><strong>Démo</strong> : Le joueur pousse un bloc qui tue un ennemi, <strong>l'ennemi disparaît avec une animation.</strong></li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Animation en fonction de l'état du Bot</strong></p>
+<ul>
+<li>Explications : L'animation du Bot peut changer selon la situation. Si un ennemi est proche du bord au moment où le joueur interagit avec ce bord, le bot passe en mode étourdi (pendant une durée limitée) avec une animation spécifique, sans lien avec son état habituel.</li>
+<li><strong>Démo :</strong>
+<ul>
+<li>le joueur interagit avec le bord en présence d'un ennemi nearby.</li>
+<li>l'ennemi nearby est étourdi</li>
+<li>après un temps, l'ennemi nearby retrouve son état habituel.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="adaptabilité--changement-pendant-le-jeu">Adaptabilité = changement pendant le jeu</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>Changement de Stunt</strong></p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Changement d'avatar</strong></p>
+<ul>
+<li>Explications : L'image d'une entité peut changer selon son état, ce qui permet de montrer visuellement un bonus, un gel ou une destruction.</li>
+<li><strong>Démo :</strong>
+<ul>
+<li>Le joueur ramasse un Fish Bonus ; un effet visuel montre que sa vitesse est doublée.</li>
+<li>[#MP: est-ce un changement d'avatar ou juste une modification de sa variable vitesse ?]</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Changement de Bot / FSM</strong></p>
+<ul>
+<li>Explications : Les ennemis peuvent changer de comportement selon la situation : patrouille, poursuite, fuite, immobilisation. Leur agressivité augmente en fonction du nombre d'ennemis restants.</li>
+<li>[#MP: Solution technique à préciser] :
+<ul>
+<li>qui détecte que l'ennemi est proche du joueur ?</li>
+<li>faut-il changer de Bot/FSM ? Pas forcément : Si closest a un rayon de perception limitée (ce qui est généralement le cas), la transition Closest(@,d) ? Move(d) donnera le comportement attendu dès que le joueur est dans le rayon de perception de l'ennemi, sans avoir à changer de bot.</li>
+</ul>
+</li>
+<li><strong>Démo :</strong>
+<ul>
+<li>Un ennemi passe d'un comportement de patrouille à un comportement de poursuite lorsqu'il détecte le joueur.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="partie-vue">Partie Vue</h2>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Viewport centré sur le joueur</strong>
+<ul>
+<li>Explications : Dans un grand monde, la caméra suit le joueur en permanence et la vue est translatée en fonction des coordonnées du joueur et de la taille de la grille.</li>
+<li><strong>Démo : déplacement du joueur dans une map de grande taille.</strong></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>[?] elasticité
+<ul>
+<li>Explications: <em>le joueur peut se déplacer dans une zone autour du centre sans déclencher le déplacement du viewport</em></li>
+</ul>
+</li>
+</ul>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>Zoom</strong></p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>Scrolling</strong></p>
+</li>
+</ul>
+<h2 id="mode-debug">Mode debug</h2>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> Affichage du temps entre deux <em>tick</em> (min, max, moyenne)</p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> Affichage du temps entre deux <em>paint</em> (min, max, moyenne)</p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> Affichage du nombre de <em>FPS</em> (min, max, moyenne)</p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> Gestion de la charge (nombre maximum d'entités actives acceptées)</p>
+<ul>
+<li><strong>Démo : création d'un bot spawner avec l'automate (1)--EGG-&gt; (1) qui génère sans fin de nouvelles entités. Ce qui permet de voir à partir de combien d'entités le moteur tombe à &lt; 24 fps.</strong></li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> Affichage de l'action au-dessus du personnage</p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> Affichage des bounding boxes (pour tester les collisions)</p>
+</li>
+</ul>
+<h2 id="partie-contrôleur">Partie Contrôleur</h2>
+<h3 id="bot">Bot</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Bot en Java</strong></p>
+<ul>
+<li>Explications : Certains comportements simples sont programmés directement en Java.</li>
+<li>Démo : Un ennemi utilise une classe Bot Java pour se déplacer ou poursuivre le joueur.</li>
+<li>[#MP: il faudrait que ce comportement soit programmé en GAL ou au moins en FSM Java avec closest].</li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>Bot en FSM Java</strong></p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Bot en GAL + parser</strong> <em>(optionnel)</em></p>
+<ul>
+<li>Explications : Certains comportements [#MP: pas assez précis] peuvent être décrits dans un fichier GAL puis chargés par le jeu.</li>
+<li><strong>Démo : Modifier un fichier GAL pour changer le comportement d'un ennemi sans modifier directement les classes Java.</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="démo--modification-du-comportement-des-entités">Démo : modification du comportement des entités</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>En changeant de classe Bot</strong></p>
+<ul>
+<li>Explications : —</li>
+<li>Démo : —</li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>En changeant de FSM Java</strong></p>
+<ul>
+<li>Explications : —</li>
+<li>Démo : —</li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>En changeant le fichier <code>.gal</code></strong></p>
+<ul>
+<li>Explications : Le comportement d'un ennemi peut être modifié en éditant le fichier GAL associé.</li>
+<li>Démo : Modifier une transition dans le fichier GAL et relancer le jeu.</li>
+</ul>
+</li>
+</ul>
+<h2 id="partie-controlleur">Partie Controlleur</h2>
+<ul>
+<li>[o] <strong>Une action à la fois pour le joueur</strong>
+<ul>
+<li>Explications :
+<ul>
+<li>Certaines actions sont exclusives [#MP: lesquelles ?].</li>
+<li>Par exemple, le joueur ne peut pas pousser deux blocs en même temps. [#MP: ce n'est pas le sujet.]</li>
+<li>Le joueur tente une action incompatible ; seule l'action prioritaire est exécutée.
+<ul>
+<li>[#MP: pour être incompatibles il faut au moins 2 actions]</li>
+<li>[#MP: s'il y a des actions incompatibles ce n'est pas la bonne section pour en partler]</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Démo: déplacement ou frappe mais pas les deux</strong></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>
+<p>[o] <strong>actions multiples indépendantes pour le joueur</strong></p>
+<ul>
+<li>Explications: déplacement + action de frapper</li>
+<li><strong>Démo: déplacement et frappe simultanées</strong></li>
+</ul>
+</li>
+<li>
+<p>[?] gestion des actions multiples compatibles/incompatibles</p>
+</li>
+</ul>
+<h2 id="partie-bot">Partie Bot</h2>
+<h3 id="action-unique-versus-actions-multiples-simultanées">action unique versus actions multiples simultanées</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox" checked=""type="checkbox"> <strong>Une action à la fois</strong></p>
+<ul>
+<li><strong>Démo : une action à la fois pour les bots</strong></li>
+</ul>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>Actions multiples</strong></p>
+</li>
+<li class="task-list-item enabled">
+<p><input class="task-list-item-checkbox"type="checkbox"> <strong>Gestion des actions compatibles / incompatibles</strong></p>
+</li>
+</ul>
+
+            
+            
+        </body>
+        </html>
