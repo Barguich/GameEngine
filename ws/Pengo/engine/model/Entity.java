@@ -170,6 +170,12 @@ public class Entity {
 		return position;
 	}
 
+	public void snapToGrid() {
+		if (position != null) {
+			setPosition(position);
+		}
+	}
+
 	public int orientation() {
 		return orientation_degree;
 	}
@@ -458,15 +464,14 @@ public class Entity {
 		ISU.Vector movement = center.isu().new Vector(lSpeed.x() * dt, lSpeed.y() * dt);
 
 		boolean moved = model.move(this, movement);
-		
+
 		if (!moved) {
 			stop();
 		}
 	}
 
-
 	public String name() {
 		return name;
 	}
-	
+
 }

@@ -59,11 +59,11 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		if (action_ms <= 0) {
 			action_ms = 0;
 			entity.stop();
+			entity.snapToGrid();
 			entity.done();
 		}
 	}
 
-	// MOVE — résout F/B/L/R selon l'orientation courante de l'entité
 	public boolean startMoving(Direction direction, double intensity, double duration_ms) {
 		if (action_ms > 0) {
 			System.out.println("MOVE REFUSED");
@@ -179,6 +179,7 @@ public class GALStunt extends Stunt implements iAllGALActions {
 	public void collision(Entity e) {
 		action_ms = 0;
 		entity.stop();
+		entity.snapToGrid();
 	}
 
 	@Override
