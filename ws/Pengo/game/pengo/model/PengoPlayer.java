@@ -16,7 +16,7 @@ public class PengoPlayer extends Entity {
 	private Grid.Position targetCell;
 	private Grid.Position originCell;
 	private FishBonus pendingFishBonus;
-
+	private long walkAnimationClock = 0;
 
 	public PengoPlayer() {
 		super("PengoPlayer");
@@ -28,6 +28,7 @@ public class PengoPlayer extends Entity {
 		this.targetCell = null;
 		this.pendingFishBonus = null;
 	}
+
 	@Override
 	public double speedMultiplier() {
 		if (speedBoost) {
@@ -37,23 +38,27 @@ public class PengoPlayer extends Entity {
 		return 1.0;
 	}
 
-    public void attack() {
-        if (model instanceof PengoModel) {
-            ((PengoModel) model).damageBlockInFront(this);
-        }
-    }
-    public boolean movingOneCell() {
-        return movingOneCell;
-    }
+	public long walkAnimationClock() {
+		return walkAnimationClock;
+	}
 
-    public void cancelGridMove() {
-        movingOneCell = false;
-        originCell = null;
-        targetCell = null;
-        pendingFishBonus = null;
-        stop();
-    }
+	public void attack() {
+		if (model instanceof PengoModel) {
+			((PengoModel) model).damageBlockInFront(this);
+		}
+	}
 
+	public boolean movingOneCell() {
+		return movingOneCell;
+	}
+
+	public void cancelGridMove() {
+		movingOneCell = false;
+		originCell = null;
+		targetCell = null;
+		pendingFishBonus = null;
+		stop();
+	}
 
 	public int lives() {
 		return lives;
@@ -95,256 +100,261 @@ public class PengoPlayer extends Entity {
 
 	@Override
 	public void tick(long elapsed) {
-	    super.tick(elapsed);
+		super.tick(elapsed);
 
-	    //déplacement case par case.
-	   
-	    if (movingOneCell && targetCell != null && position() != null) {
-	        if (position().x() == targetCell.x()
-	                && position().y() == targetCell.y()) {
+		if (movingOneCell) {
+			walkAnimationClock += elapsed;
+		} else {
+			walkAnimationClock = 0;
+		}
 
-	            finishGridMoveOnTarget();
-	            return;
-	        }
-	    }
+		if (movingOneCell && targetCell != null && position() != null) {
+			if (position().x() == targetCell.x()
+					&& position().y() == targetCell.y()) {
 
-	    //gestion du FishBonus / speed boost.
-	     
-	    if (speedBoost) {
-	        speedBoostRemaining -= elapsed;
+				finishGridMoveOnTarget();
+				return;
+			}
+		}
 
-	        if (speedBoostRemaining <= 0) {
-	            speedBoost = false;
-	            speedBoostRemaining = 0;
+		if (speedBoost) {
+			speedBoostRemaining -= elapsed;
 
-	            System.out.println("SPEED BOOST FINISHED");
-	        }
-	    }
+			if (speedBoostRemaining <= 0) {
+				speedBoost = false;
+				speedBoostRemaining = 0;
+
+			}
+		}
 	}
 
 	@Override
 	public void setBounding() {
-	    if (center == null || size == null) {
-	        return;
-	    }
+		if (center == null || size == null) {
+			return;
+		}
 
-	    bounding = new Bounding();
+		bounding = new Bounding();
 
-	    double radius = Math.min(size.x(), size.y()) * 0.35;
-	    bounding.add(new Circle(center, radius));
+		double radius = Math.min(size.x(), size.y()) * 0.35;
+		bounding.add(new Circle(center, radius));
 	}
+
 	@Override
 	public void collision(Entity e) {
-	    if (e == null) {
-	        return;
-	    }
+		if (e == null) {
+			return;
+		}
 
-	    if (model instanceof PengoModel pm) {
-	        if (pm.lost() || pm.won()) {
-	            cancelGridMove();
-	            return;
-	        }
-	    }
+		if (model instanceof PengoModel pm) {
+			if (pm.lost() || pm.won()) {
+				cancelGridMove();
+				return;
+			}
+		}
 
-	    if (e instanceof Wall && model instanceof PengoModel) {
-	        ((PengoModel) model).startWallVibration(e, 1500);
-	        cancelGridMoveAndSnapBack();
-	        return;
-	    }
+		if (e instanceof Wall && model instanceof PengoModel) {
+			((PengoModel) model).startWallVibration(e, 1500);
+			cancelGridMoveAndSnapBack();
+			return;
+		}
 
-	    if (e instanceof Enemy && model instanceof PengoModel) {
-	        Enemy enemy = (Enemy) e;
+		if (e instanceof Enemy && model instanceof PengoModel) {
+			Enemy enemy = (Enemy) e;
 
-	        if (enemy.harmlessForPlayer()) {
-	            cancelGridMoveAndSnapBack();
-	            return;
-	        }
+			if (enemy.harmlessForPlayer()) {
+				cancelGridMoveAndSnapBack();
+				return;
+			}
 
-	        ((PengoModel) model).loseLife();
-	        cancelGridMoveAndSnapBack();
-	        return;
-	    }
+			((PengoModel) model).loseLife();
+			cancelGridMoveAndSnapBack();
+			return;
+		}
 
-	    if (e instanceof FishBonus) {
-	        pendingFishBonus = (FishBonus) e;
-	        finishGridMoveOnTarget();
-	        return;
-	    }
+		if (e instanceof FishBonus) {
+			pendingFishBonus = (FishBonus) e;
+			finishGridMoveOnTarget();
+			return;
+		}
 
-	  
-	    if (e instanceof IceBlock) {
-	        System.out.println("PENGO COLLISION ICEBLOCK - SECURITY STOP");
+		if (e instanceof IceBlock) {
+			System.out.println("PENGO COLLISION ICEBLOCK - SECURITY STOP");
 
-	        //Collision parasite : on ne pousse pas ici on remet seulement Pengo proprement sur sa case.
-	        
-	        stopCleanlyOnCurrentCell();
-	        return;
-	    }
+			// Collision parasite : on ne pousse pas ici on remet seulement Pengo proprement
+			// sur sa case.
 
-	    super.collision(e);
+			stopCleanlyOnCurrentCell();
+			return;
+		}
+
+		super.collision(e);
 	}
 
 	public void startGridMove(int direction, double speed) {
-	    if (movingOneCell) {
-	        return;
-	    }
+		if (movingOneCell) {
+			return;
+		}
 
-	    if (model instanceof PengoModel pm) {
-	        if (pm.lost() || pm.won()) {
-	            cancelGridMove();
-	            return;
-	        }
-	    }
+		if (model instanceof PengoModel pm) {
+			if (pm.lost() || pm.won()) {
+				cancelGridMove();
+				return;
+			}
+		}
 
-	    if (position() == null || isu == null) {
-	        return;
-	    }
+		if (position() == null || isu == null) {
+			return;
+		}
 
-	    turnTo(direction);
+		turnTo(direction);
 
-	    int x = position().x();
-	    int y = position().y();
+		int x = position().x();
+		int y = position().y();
 
-	    switch (direction) {
-	        case 0:
-	            x++;
-	            break;
+		switch (direction) {
+			case 0:
+				x++;
+				break;
 
-	        case 90:
-	            y++;
-	            break;
+			case 90:
+				y++;
+				break;
 
-	        case 180:
-	            x--;
-	            break;
+			case 180:
+				x--;
+				break;
 
-	        case 270:
-	            y--;
-	            break;
+			case 270:
+				y--;
+				break;
 
-	        default:
-	            return;
-	    }
+			default:
+				return;
+		}
 
-	    if (!(model instanceof PengoModel)) {
-	        return;
-	    }
+		if (!(model instanceof PengoModel)) {
+			return;
+		}
 
-	    PengoModel pm = (PengoModel) model;
-	    Grid.Position nextCell = pm.grid().new Position(x, y);
-	    Entity front = pm.firstAt(nextCell);
+		PengoModel pm = (PengoModel) model;
+		Grid.Position nextCell = pm.grid().new Position(x, y);
+		Entity front = pm.firstAt(nextCell);
 
-	    //WALL devant ==Pengo reste sur sa case.
+		// WALL devant ==Pengo reste sur sa case.
 
-	    if (front instanceof Wall) {
-	        pm.startWallVibration(front, 1500);
-	        cancelGridMove();
-	        return;
-	    }
+		if (front instanceof Wall) {
+			pm.startWallVibration(front, 1500);
+			cancelGridMove();
+			return;
+		}
 
-	  
-	    if (front instanceof IceBlock) {
-	        IceBlock block = (IceBlock) front;
+		if (front instanceof IceBlock) {
+			IceBlock block = (IceBlock) front;
 
-	        //si le bloc glisse déjà ==Pengo ne doit pas le relancer
-	        if (block.sliding()) {
-	            System.out.println("PENGO TRIES TO PUSH BUT ICE ALREADY SLIDING");
-	            cancelGridMove();
-	            return;
-	        }
+			// si le bloc glisse déjà ==Pengo ne doit pas le relancer
+			if (block.sliding()) {
+				System.out.println("PENGO TRIES TO PUSH BUT ICE ALREADY SLIDING");
+				cancelGridMove();
+				return;
+			}
 
-	        System.out.println("PENGO PUSH ICEBLOCK");
+			System.out.println("PENGO PUSH ICEBLOCK");
 
-	        block.startSlide(direction);
+			block.startSlide(direction);
 
-	        //pengo reste devant le bloc
-	        cancelGridMove();
-	        return;
-	    }
+			// pengo reste devant le bloc
+			cancelGridMove();
+			return;
+		}
 
-	    //ENEMY devant ==Pengo perd une vie sauf si l'ennemi est harmless
-	    if (front instanceof Enemy) {
-	        Enemy enemy = (Enemy) front;
+		// ENEMY devant ==Pengo perd une vie sauf si l'ennemi est harmless
+		if (front instanceof Enemy) {
+			Enemy enemy = (Enemy) front;
 
-	        if (!enemy.harmlessForPlayer()) {
-	            pm.loseLife();
-	            cancelGridMove();
-	            return;
-	        }
-	    }
+			if (!enemy.harmlessForPlayer()) {
+				pm.loseLife();
+				cancelGridMove();
+				return;
+			}
+		}
 
-	    //FISH BONUS devant == on le mémorise, il sera consommé quand Pengo arrive dessus.
+		// FISH BONUS devant == on le mémorise, il sera consommé quand Pengo arrive
+		// dessus.
 
-	    pendingFishBonus = null;
+		pendingFishBonus = null;
 
-	    if (front instanceof FishBonus) {
-	        pendingFishBonus = (FishBonus) front;
-	    }
+		if (front instanceof FishBonus) {
+			pendingFishBonus = (FishBonus) front;
+		}
 
-	    //case libre ou bonus == Pengo avance d'une case.
-	     
-	    originCell = pm.grid().new Position(position().x(), position().y());
-	    targetCell = nextCell;
-	    movingOneCell = true;
+		// case libre ou bonus == Pengo avance d'une case.
 
-	    if (direction == 0) {
-	        setLinearSpeed(isu.new Vector(speed, 0));
-	    } else if (direction == 90) {
-	        setLinearSpeed(isu.new Vector(0, speed));
-	    } else if (direction == 180) {
-	        setLinearSpeed(isu.new Vector(-speed, 0));
-	    } else if (direction == 270) {
-	        setLinearSpeed(isu.new Vector(0, -speed));
-	    }
+		originCell = pm.grid().new Position(position().x(), position().y());
+		targetCell = nextCell;
+		movingOneCell = true;
+
+		if (direction == 0) {
+			setLinearSpeed(isu.new Vector(speed, 0));
+		} else if (direction == 90) {
+			setLinearSpeed(isu.new Vector(0, speed));
+		} else if (direction == 180) {
+			setLinearSpeed(isu.new Vector(-speed, 0));
+		} else if (direction == 270) {
+			setLinearSpeed(isu.new Vector(0, -speed));
+		}
 	}
-    public void cancelGridMoveAndSnapBack() {
-        if (originCell != null) {
-            setPosition(originCell);
-            setBounding();
-        }
 
-        movingOneCell = false;
-        originCell = null;
-        targetCell = null;
-        pendingFishBonus = null;
-        stop();
-    }
-    private void finishGridMoveOnTarget() {
-        if (targetCell != null) {
-            setPosition(targetCell);
-            setBounding();
-        }
+	public void cancelGridMoveAndSnapBack() {
+		if (originCell != null) {
+			setPosition(originCell);
+			setBounding();
+		}
 
-        // if la case cible has un FishBonus on le consomme seulement quand Pengo arrive vraiment dessus.
-         
-        if (pendingFishBonus != null && !pendingFishBonus.consumed()) {
-            pendingFishBonus.consume(this);
-        }
+		movingOneCell = false;
+		originCell = null;
+		targetCell = null;
+		pendingFishBonus = null;
+		stop();
+	}
 
-        movingOneCell = false;
-        originCell = null;
-        targetCell = null;
-        pendingFishBonus = null;
-        stop();
-    }
-    private void stopCleanlyOnCurrentCell() {
-        if (model instanceof PengoModel && position() != null) {
-            PengoModel pm = (PengoModel) model;
+	private void finishGridMoveOnTarget() {
+		if (targetCell != null) {
+			setPosition(targetCell);
+			setBounding();
+		}
 
-            Grid.Position current = pm.grid().new Position(
-                position().x(),
-                position().y()
-            );
+		// if la case cible has un FishBonus on le consomme seulement quand Pengo arrive
+		// vraiment dessus.
 
-            setPosition(current);
-            setBounding();
-        }
-        movingOneCell = false;
-        originCell = null;
-        targetCell = null;
-        pendingFishBonus = null;
+		if (pendingFishBonus != null && !pendingFishBonus.consumed()) {
+			pendingFishBonus.consume(this);
+		}
 
-        stop();
-    }
+		movingOneCell = false;
+		originCell = null;
+		targetCell = null;
+		pendingFishBonus = null;
+		stop();
+	}
+
+	private void stopCleanlyOnCurrentCell() {
+		if (model instanceof PengoModel && position() != null) {
+			PengoModel pm = (PengoModel) model;
+
+			Grid.Position current = pm.grid().new Position(
+					position().x(),
+					position().y());
+
+			setPosition(current);
+			setBounding();
+		}
+		movingOneCell = false;
+		originCell = null;
+		targetCell = null;
+		pendingFishBonus = null;
+
+		stop();
+	}
 
 }
