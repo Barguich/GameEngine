@@ -28,6 +28,7 @@ public class PengoPlayer extends Entity {
 		this.targetCell = null;
 		this.pendingFishBonus = null;
 	}
+	@Override
 	public double speedMultiplier() {
 		if (speedBoost) {
 			return 2.0;

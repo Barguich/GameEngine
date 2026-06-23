@@ -3,7 +3,6 @@ package model;
 import java.util.List;
 
 import geometry.Grid.Cell;
-import pengo.model.PengoPlayer;
 
 public class BasicStunt extends Stunt {
 
@@ -38,13 +37,10 @@ public class BasicStunt extends Stunt {
 	@Override
 	public void walk(int degree) {
 
-		// Vitesse de base de l'entité
-		double speed = entity.step().x();
-
-		// Le joueur peut avoir une vitesse modifiée par un bonus
-		if (entity instanceof PengoPlayer) {
-			speed *= ((PengoPlayer) entity).speedMultiplier();
-		}
+		// Vitesse de base de l'entité, éventuellement modulée par un bonus.
+		// Le multiplicateur est neutre par défaut ; un jeu peut le redéfinir
+		// en surchargeant Entity.speedMultiplier().
+		double speed = entity.step().x() * entity.speedMultiplier();
 
 		// Déplacement vers la droite
 		if (degree == 0) {
