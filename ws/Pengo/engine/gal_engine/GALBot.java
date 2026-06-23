@@ -2,6 +2,7 @@ package gal_engine;
 
 import gal.aut.Automaton;
 import model.Entity;
+import pengo.model.Enemy;
 
 public class GALBot extends Bot {
 
@@ -42,6 +43,9 @@ public class GALBot extends Bot {
 	 */
 	@Override
 	public void tick(double elapsed) {
+		if (entity instanceof Enemy && !((Enemy) entity).canRunBot()) {
+			return;
+		}
 		if (automaton == null)
 			return;
 		System.out.println(
@@ -55,10 +59,13 @@ public class GALBot extends Bot {
 	 */
 	@Override
 	public void collision(Entity impactor, double elapsed_ms) {
-	    if (automaton == null) {
-	        return;
-	    }
-	    automaton.step(entity);
+		if (entity instanceof Enemy && !((Enemy) entity).canRunBot()) {
+			return;
+		}
+		if (automaton == null) {
+			return;
+		}
+		automaton.step(entity);
 	}
 
 	/**
@@ -66,10 +73,13 @@ public class GALBot extends Bot {
 	 */
 	@Override
 	public void completed() {
-	    if (automaton == null) {
-	        return;
-	    }
-	    automaton.step(entity);
+		if (entity instanceof Enemy && !((Enemy) entity).canRunBot()) {
+			return;
+		}
+		if (automaton == null) {
+			return;
+		}
+		automaton.step(entity);
 	}
 
 }

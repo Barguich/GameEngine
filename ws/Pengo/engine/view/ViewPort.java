@@ -50,8 +50,56 @@ public class ViewPort {
 	public void centerOn(ISU.Coord target) {
 		double nx = target.x() - width_cm / 2;
 		double ny = target.y() - height_cm / 2;
-		this.x_cm = Math.max(0, Math.min(nx, mapWidth_cm - width_cm));
-		this.y_cm = Math.max(0, Math.min(ny, mapHeight_cm - height_cm));
+		this.x_cm = clampX(nx);
+		this.y_cm = clampY(ny);
+	}
+
+	/**
+	 * Suivi élastique : le joueur peut bouger dans une zone morte (dead-zone)
+	 * centrée sur le viewport sans déclencher de déplacement de la caméra.
+	 * La caméra ne se décale que de la quantité dont {@code target} dépasse
+	 * cette zone.
+	 *
+	 * @param target      position à suivre (centre du joueur), en ISU
+	 * @param marginX_cm  demi-largeur de la dead-zone depuis le centre, en cm
+	 * @param marginY_cm  demi-hauteur de la dead-zone depuis le centre, en cm
+	 */
+	public void followElastic(ISU.Coord target, double marginX_cm, double marginY_cm) {
+		// Position du joueur relative au coin courant de la caméra.
+		double relX = target.x() - x_cm;
+		double relY = target.y() - y_cm;
+
+		// Bornes de la dead-zone (centrée dans le viewport).
+		double leftBound = width_cm / 2 - marginX_cm;
+		double rightBound = width_cm / 2 + marginX_cm;
+		double topBound = height_cm / 2 - marginY_cm;
+		double bottomBound = height_cm / 2 + marginY_cm;
+
+		// On ne pousse la caméra que de ce qui dépasse la dead-zone.
+		if (relX < leftBound) {
+			x_cm -= (leftBound - relX);
+		} else if (relX > rightBound) {
+			x_cm += (relX - rightBound);
+		}
+		if (relY < topBound) {
+			y_cm -= (topBound - relY);
+		} else if (relY > bottomBound) {
+			y_cm += (relY - bottomBound);
+		}
+
+		// Clamping aux bords de la map (contrainte Non-Tore).
+		x_cm = clampX(x_cm);
+		y_cm = clampY(y_cm);
+	}
+
+	/** Borne l'origine X de la caméra à l'intérieur de la map. */
+	private double clampX(double x) {
+		return Math.max(0, Math.min(x, mapWidth_cm - width_cm));
+	}
+
+	/** Borne l'origine Y de la caméra à l'intérieur de la map. */
+	private double clampY(double y) {
+		return Math.max(0, Math.min(y, mapHeight_cm - height_cm));
 	}
 
 	public double x() {

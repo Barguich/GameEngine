@@ -78,25 +78,14 @@ public final class PengoBots {
 			e.setCategory(Category.O);
 		}
 
-		// ── Bot GAL pour les ennemis ──────────────────────────────────────
-		if (e instanceof Enemy enemy) {
-
-			/*
-			 * Très important :
-			 * Les ennemis frozen, dragged, crushed ou dying ne doivent PAS recevoir de bot
-			 * GAL.
-			 * Sinon le bot essaie de faire Move/Turn pendant que le IceBlock le déplace.
-			 */
-			if (!enemy.canRunBot()) {
-				System.out.println("[PengoBots] Bot non configuré pour ennemi inactif : " + enemy);
-				return;
-			}
+        // ── Bot GAL pour les ennemis ──────────────────────────────────────
+        if (e instanceof Enemy enemy) {
 
 			enemy.turnTo(0);
 
 			GALStunt stunt = new GALStunt(model, enemy);
 
-			double baseLinear = stunt.stepLength() / 1000.0;
+            double baseLinear = stunt.stepLength();
 
 			stunt.setMaxLinearSpeed(baseLinear * SPEED_FACTOR);
 			stunt.setMaxAngularSpeed((90.0 / 1000.0) * SPEED_FACTOR);

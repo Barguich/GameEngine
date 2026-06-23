@@ -41,8 +41,15 @@ public class PengoMain {
 		double mapW = game.width_cm;
 		double mapH = game.height_cm;
 
-		ViewPort viewPort = new ViewPort(mapW, mapH, mapW, mapH);
+		ViewPort viewPort = new ViewPort(mapW / 2, mapH / 2, mapW, mapH);
 		View view = new View(model, viewPort);
+		model.setEnemySpawnListener(enemy -> {
+			EnemyAvatar avatar = new EnemyAvatar(enemy);
+			enemy.setAvatar(avatar);
+			avatar.setView(view);
+
+			PengoBots.configureEntity(model, enemy);
+		});
 		view.debug().setEnabled(true);
 
 		view.addRenderHook(new EntityRenderHook() {
@@ -95,7 +102,7 @@ public class PengoMain {
 		 * Il commence près du scénario principal.
 		 */
 		PengoPlayer player = new PengoPlayer();
-		player.setPosition(Game.grid().new Position(2, 5));
+		player.setPosition(Game.grid().new Position(12, 3));		
 		player.setSize(Game.grid().new Dimension(1, 1));
 		model.setPlayer(player);
 
@@ -114,6 +121,7 @@ public class PengoMain {
 		 */
 		addBorders(model, view);
 
+
 		/*
 		 * ==========================================================
 		 * SCENARIO 1 : Slide simple
@@ -125,6 +133,8 @@ public class PengoMain {
 		 * ==========================================================
 		 */
 		addIce(model, view, 4, 2);
+		addEnemy(model, view, 4, 3, false);
+		addIce(model, view, 5, 3);
 
 		/*
 		 * ==========================================================
@@ -140,6 +150,7 @@ public class PengoMain {
 		 */
 		addIce(model, view, 4, 5);
 		addEnemy(model, view, 8, 5, true);
+		addSnoBeeEgg(model, view, 6, 8, 5_000);
 
 		/*
 		 * ==========================================================
@@ -183,8 +194,8 @@ public class PengoMain {
 		addIce(model, view, 16, 2);
 		addEnemy(model, view, 16, 5, true);
 		addWall(model, view, 16, 10);
-
-		addEnemyBlock(model, view, 6, 7);
+		Enemy frozenEnemy = addEnemy(model, view, 12, 8, false);
+		frozenEnemy.freeze(5_000);
 
 		/*
 		 * ==========================================================
@@ -228,6 +239,10 @@ public class PengoMain {
 		addFish(model, view, 3, 6);
 
 		view.follow(player);
+		// Élasticité : le joueur peut bouger dans ±15 % du viewport autour du
+		// centre avant que la caméra ne se déplace. Visible seulement si le
+		// viewport est plus petit que la map.
+		view.setElasticZone(0.15, 0.15);
 
 	}
 
@@ -242,18 +257,24 @@ public class PengoMain {
 		avatar.setView(view);
 	}
 
-	private static void addEnemyBlock(PengoModel model, View view, int x, int y) {
-		pengo.model.EnemyBlock block = new pengo.model.EnemyBlock();
-		block.setPosition(Game.grid().new Position(x, y));
-		block.setSize(Game.grid().new Dimension(1, 1));
-		model.add(block);
+	private static void addSnoBeeEgg(
+			PengoModel model,
+			View view,
+			int x,
+			int y,
+			long hatchDelay) {
 
-		IceBlockAvatar avatar = new IceBlockAvatar(block);
-		block.setAvatar(avatar);
+		IceBlock ice = new IceBlock(true, hatchDelay);
+		ice.setPosition(Game.grid().new Position(x, y));
+		ice.setSize(Game.grid().new Dimension(1, 1));
+		model.add(ice);
+
+		IceBlockAvatar avatar = new IceBlockAvatar(ice);
+		ice.setAvatar(avatar);
 		avatar.setView(view);
 	}
 
-	private static void addEnemy(PengoModel model, View view, int x, int y, boolean frozen) {
+	private static Enemy addEnemy(PengoModel model, View view, int x, int y, boolean frozen) {
 		Enemy enemy = new Enemy();
 		enemy.setPosition(Game.grid().new Position(x, y));
 		enemy.setSize(Game.grid().new Dimension(1, 1));
@@ -270,6 +291,7 @@ public class PengoMain {
 		if (frozen) {
 			enemy.freeze(600_000);
 		}
+		return enemy;
 	}
 
 	private static void addDiamond(PengoModel model, View view, int x, int y) {

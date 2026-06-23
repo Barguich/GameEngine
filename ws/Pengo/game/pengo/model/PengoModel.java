@@ -2,6 +2,7 @@ package pengo.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import geometry.Grid;
 import model.Entity;
@@ -39,6 +40,7 @@ public class PengoModel extends Model {
     private long invincibleRemaining;
 
     private Runnable sceneBuilder;
+    private Consumer<Enemy> enemySpawnListener;
 
 
 	 public PengoModel(Grid grid) {
@@ -290,13 +292,7 @@ public class PengoModel extends Model {
     }
 
     private boolean allEnemiesDead() {
-        for (Entity e : entities()) {
-            if (e instanceof Enemy) {
-                return false;
-            }
-        }
-
-        return true;
+        return enemiesRemaining() == 0;
     }
 
     public int enemiesRemaining() {
@@ -305,9 +301,11 @@ public class PengoModel extends Model {
         for (Entity e : entities()) {
             if (e instanceof Enemy) {
                 count++;
+            } else if (e instanceof IceBlock
+                    && ((IceBlock) e).containsSnoBee()) {
+                count++;
             }
         }
-
         return count;
     }
 
@@ -394,11 +392,11 @@ public class PengoModel extends Model {
         }
 
         int[][] positions = {
-            {2, 2},
-            {2, 3},
-            {3, 2},
-            {3, 3},
-            {1, 2}
+                { 2, 2 },
+                { 2, 3 },
+                { 3, 2 },
+                { 3, 3 },
+                { 1, 2 }
         };
 
         for (int[] p : positions) {
@@ -550,7 +548,6 @@ public class PengoModel extends Model {
         }
     }
 
-    
     public boolean moveSlidingIceBlock(IceBlock ice, geometry.ISU.Vector movement) {
         if (ice == null || movement == null) {
             return false;
@@ -586,9 +583,8 @@ public class PengoModel extends Model {
 
             if (obstacle != null) {
                 System.out.println(
-                    "ENEMY IMMEDIATELY CRUSHED AGAINST "
-                    + obstacle.getClass().getSimpleName()
-                );
+                        "ENEMY IMMEDIATELY CRUSHED AGAINST "
+                                + obstacle.getClass().getSimpleName());
 
                 crushDraggedEnemiesByIce(ice, enemyPos);
                 return true;
@@ -597,9 +593,8 @@ public class PengoModel extends Model {
             return slideWithEnemiesInFront(ice, movement);
         }
 
-     
         // Aucun ennemi, glissade normale.
-         
+
         boolean moved = move(ice, movement);
 
         if (!moved) {
@@ -633,12 +628,12 @@ public class PengoModel extends Model {
                 return true;
             }
 
-            //Le premier de la liste est l'ennemi le plus devant.
-         
+            // Le premier de la liste est l'ennemi le plus devant.
+
             Enemy frontEnemy = chain.get(0);
 
-//si un deuxième ennemi est devant la chaîne,on l'ajoute aussi à la chaîne.
-           
+            // si un deuxième ennemi est devant la chaîne,on l'ajoute aussi à la chaîne.
+
             Enemy nextEnemy = enemyReachedByFrontEnemy(ice, frontEnemy, movement);
 
             if (nextEnemy != null) {
@@ -650,23 +645,25 @@ public class PengoModel extends Model {
                 frontEnemy = chain.get(0);
             }
 
-            //On vérifie l'obstacle devant l'ennemi le plus devant Si obstacle : tous les ennemis transportés disparaissent,et le IceBlock prend la place de l'ennemi le plus devant.
+            // On vérifie l'obstacle devant l'ennemi le plus devant Si obstacle : tous les
+            // ennemis transportés disparaissent,et le IceBlock prend la place de l'ennemi
+            // le plus devant.
             Grid.Position frontEnemyPos = copyPosition(frontEnemy.position());
             Grid.Position frontEnemyNextCell = nextPosition(frontEnemy, ice.direction());
             Entity obstacle = firstSolidAt(frontEnemyNextCell, ice, null);
 
             if (obstacle != null) {
                 System.out.println(
-                    "DRAGGED ENEMIES CRUSHED AGAINST "
-                    + obstacle.getClass().getSimpleName()
-                );
+                        "DRAGGED ENEMIES CRUSHED AGAINST "
+                                + obstacle.getClass().getSimpleName());
 
                 crushDraggedEnemiesByIce(ice, frontEnemyPos);
                 return true;
             }
 
-            //Les ennemis sont ghost pendant draggedByIce,donc ils ne bloquent pas le moteur.On les déplace tous avec le même movement que le IceBlock.
-             
+            // Les ennemis sont ghost pendant draggedByIce,donc ils ne bloquent pas le
+            // moteur.On les déplace tous avec le même movement que le IceBlock.
+
             boolean allEnemiesMoved = true;
 
             for (Enemy dragged : new ArrayList<Enemy>(chain)) {
@@ -697,7 +694,6 @@ public class PengoModel extends Model {
                 return false;
             }
 
-           
             if (!allEnemiesMoved) {
                 placeDraggedEnemiesInFrontOfIce(ice);
             }
@@ -707,8 +703,9 @@ public class PengoModel extends Model {
         } finally {
             resolvingIceEnemyCollision = false;
         }
-        
+
     }
+
     private List<Enemy> validDraggedEnemies(IceBlock ice) {
         List<Enemy> result = new ArrayList<Enemy>();
 
@@ -734,6 +731,7 @@ public class PengoModel extends Model {
 
         return result;
     }
+
     private Enemy enemyReachedByFrontEnemy(
             IceBlock ice,
             Enemy frontEnemy,
@@ -765,8 +763,8 @@ public class PengoModel extends Model {
             double movementLength = Math.abs(movement.x()) + Math.abs(movement.y());
             double contactDistance = frontEnemy.step().x();
 
-          // pour attraper l'ennemi avant que le moteur bloque.
-         
+            // pour attraper l'ennemi avant que le moteur bloque.
+
             double epsilon = 0.35;
 
             if (distance <= contactDistance + movementLength + epsilon) {
@@ -779,6 +777,7 @@ public class PengoModel extends Model {
 
         return closestEnemy;
     }
+
     private void placeDraggedEnemiesInFrontOfIce(IceBlock ice) {
         if (ice == null || ice.position() == null) {
             return;
@@ -813,8 +812,6 @@ public class PengoModel extends Model {
             pos = nextPosition(enemy, ice.direction());
         }
     }
-
-  
 
     private Enemy enemyReachedDuringThisMovement(IceBlock ice, geometry.ISU.Vector movement) {
         if (ice == null || movement == null) {
@@ -888,6 +885,7 @@ public class PengoModel extends Model {
                 return false;
         }
     }
+
     private Entity firstSolidAt(Grid.Position p, Entity ignoreA, Entity ignoreB) {
         if (p == null) {
             return null;
@@ -901,8 +899,8 @@ public class PengoModel extends Model {
             if (e == ignoreA || e == ignoreB) {
                 continue;
             }
-             //les ennemis transportés ne sont pas des obstacles.
-             
+            // les ennemis transportés ne sont pas des obstacles.
+
             if (e instanceof Enemy) {
                 Enemy enemy = (Enemy) e;
 
@@ -934,8 +932,8 @@ public class PengoModel extends Model {
             return false;
         }
 
-       //diamondBlock et GoldBlock héritent de IceBlock, donc ils sont inclus ici.
-         
+        // diamondBlock et GoldBlock héritent de IceBlock, donc ils sont inclus ici.
+
         return e instanceof Wall || e instanceof IceBlock;
     }
 
@@ -962,11 +960,11 @@ public class PengoModel extends Model {
             addScore(config.scoreCrush());
         }
 
-        //on arrête le bloc et on vide la liste des ennemis transportés.
-         
+        // on arrête le bloc et on vide la liste des ennemis transportés.
+
         ice.stopSlide();
-//Le IceBlock prend la place de l'ennemi le plus devant.
-      
+        // Le IceBlock prend la place de l'ennemi le plus devant.
+
         if (finalIcePosition != null) {
             ice.setPosition(finalIcePosition);
             ice.setBounding();
@@ -979,5 +977,28 @@ public class PengoModel extends Model {
         }
 
         return grid().new Position(p.x(), p.y());
+    }
+
+    public void setEnemySpawnListener(Consumer<Enemy> listener) {
+        this.enemySpawnListener = listener;
+    }
+
+    public void hatchSnoBee(IceBlock block) {
+        if (block == null || block.position() == null) {
+            return;
+        }
+
+        Grid.Position spawnPosition = block.position().copy();
+
+        remove(block);
+
+        Enemy enemy = new Enemy();
+        enemy.setPosition(spawnPosition);
+        enemy.setSize(grid().new Dimension(1, 1));
+        add(enemy);
+
+        if (enemySpawnListener != null) {
+            enemySpawnListener.accept(enemy);
+        }
     }
 }

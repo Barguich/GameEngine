@@ -110,9 +110,10 @@ public class PengoMapLoader {
 
 			case 'F':
 				return new FishBonus();
-
+				
 			case 'B':
-				return new EnemyBlock();
+				return new IceBlock(true, 10_000);
+
 			case '.':
 			case ' ':
 				return null;

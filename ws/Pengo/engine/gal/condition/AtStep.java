@@ -1,6 +1,7 @@
 package gal.condition;
 
 import model.Entity;
+import pengo.model.Enemy;
 
 import java.util.List;
 
@@ -46,19 +47,19 @@ public class AtStep extends GALCondition {
 		if (direction != Direction.H) {
 			int angle;
 			if (direction.isRelative()) {
-			    if (direction == Direction.F) {
-			        angle = e.orientation();
-			    } else if (direction == Direction.B) {
-			        angle = (e.orientation() + 180) % 360;
-			    } else if (direction == Direction.L) {
-			        angle = (e.orientation() + 270) % 360;
-			    } else if (direction == Direction.R) {
-			        angle = (e.orientation() + 90) % 360;
-			    } else {
-			        angle = e.orientation();
-			    }
+				if (direction == Direction.F) {
+					angle = e.orientation();
+				} else if (direction == Direction.B) {
+					angle = (e.orientation() + 180) % 360;
+				} else if (direction == Direction.L) {
+					angle = (e.orientation() + 270) % 360;
+				} else if (direction == Direction.R) {
+					angle = (e.orientation() + 90) % 360;
+				} else {
+					angle = e.orientation();
+				}
 			} else {
-			    angle = direction.toAngle();
+				angle = direction.toAngle();
 			}
 			int dx = 0;
 			int dy = 0;
@@ -69,7 +70,7 @@ public class AtStep extends GALCondition {
 					break;
 				case 90:
 					dx = 0;
-					dy = -1;
+					dy = 1;
 					break;
 				case 180:
 					dx = -1;
@@ -77,7 +78,7 @@ public class AtStep extends GALCondition {
 					break;
 				case 270:
 					dx = 0;
-					dy = 1;
+					dy = -1;
 					break;
 				default:
 					dx = (int) Math.round(Math.cos(Math.toRadians(angle)));
@@ -95,9 +96,14 @@ public class AtStep extends GALCondition {
 	private boolean checkCategory(Entity e, List<Entity> occupants) {
 		if (category == Category.V) {
 			for (Entity candidate : occupants) {
-				if (candidate != e) {
-					return false;
+				if (candidate == e) {
+					continue;
 				}
+				// Deux SnoBees peuvent partager et traverser la même case.
+				if (e instanceof Enemy && candidate instanceof Enemy) {
+					continue;
+				}
+				return false;
 			}
 			return true;
 		}

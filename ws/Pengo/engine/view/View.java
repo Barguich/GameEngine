@@ -3,7 +3,6 @@ package view;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.Game;
 import model.Entity;
 import model.Model;
 import oop.graphics.Canvas;
@@ -21,6 +20,10 @@ public class View implements Canvas.PaintListener {
 	private final List<EntityRenderHook> renderHooks = new ArrayList<>();
 
 	private Entity followed;
+	// Demi-taille de la dead-zone élastique, en fraction du viewport (0 = pas
+	// d'élasticité, caméra strictement centrée).
+	private double elasticFractionX = 0.0;
+	private double elasticFractionY = 0.0;
 	private final DebugOverlay debug = new DebugOverlay();
 	private final MenuOverlay menu = new MenuOverlay();
 
@@ -32,6 +35,16 @@ public class View implements Canvas.PaintListener {
 	/** Désigne l'entité que la caméra recentre à chaque update(). */
 	public void follow(Entity e) {
 		this.followed = e;
+	}
+
+	/**
+	 * Active le suivi élastique : le joueur bouge librement dans une zone morte
+	 * centrée, exprimée en fraction du viewport (0.2 = ±20 % autour du centre).
+	 * Mettre 0 désactive l'élasticité (caméra strictement centrée).
+	 */
+	public void setElasticZone(double fractionX, double fractionY) {
+		this.elasticFractionX = Math.max(0, Math.min(fractionX, 0.5));
+		this.elasticFractionY = Math.max(0, Math.min(fractionY, 0.5));
 	}
 
 	public ViewPort viewPort() {
@@ -58,18 +71,16 @@ public class View implements Canvas.PaintListener {
 			return;
 		}
 
-		double vpW = viewPort.getWidth_cm();
-		double vpH = viewPort.getHeight_cm();
-		double mapW = Game.game().width_cm;
-		double mapH = Game.game().height_cm;
-
-		double x = followed.center().x() - vpW / 2.0;
-		double y = followed.center().y() - vpH / 2.0;
-
-		x = Math.max(0, Math.min(x, mapW - vpW));
-		y = Math.max(0, Math.min(y, mapH - vpH));
-
-		viewPort.MoveTo(x, y);
+		if (elasticFractionX > 0 || elasticFractionY > 0) {
+			// Suivi élastique : la caméra ne bouge que lorsque le joueur sort de
+			// la dead-zone centrée.
+			double marginX = viewPort.getWidth_cm() * elasticFractionX;
+			double marginY = viewPort.getHeight_cm() * elasticFractionY;
+			viewPort.followElastic(followed.center(), marginX, marginY);
+		} else {
+			// Suivi strictement centré (avec clamping aux bords de la map).
+			viewPort.centerOn(followed.center());
+		}
 	}
 
 	/**
@@ -77,6 +88,9 @@ public class View implements Canvas.PaintListener {
 	 */
 	@Override
 	public void paint(Canvas canvas, Graphics g) {
+		// Recale la caméra sur l'entité suivie avant de dessiner.
+		update();
+
 		debug.begin();
 
 		g.setColor(Graphics.Colors.darkGray);
