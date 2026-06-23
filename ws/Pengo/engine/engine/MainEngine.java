@@ -59,13 +59,12 @@ public class MainEngine {
 		view.addOverlay(new PengoMenuOverlay(model, view.menu()));
 
 		model.setSceneBuilder(() -> {
-		    buildScene(model, view);
-		    // PengoBots.configure(model);
+			buildScene(model, view);
+			PengoBots.configure(model);
 		});
 
 		buildScene(model, view);
-		// PengoBots.configure(model);
-		
+		PengoBots.configure(model);
 
 		int winW = (int) (mapW * game.pixelPerCm);
 		int winH = (int) (mapH * game.pixelPerCm);
@@ -84,146 +83,144 @@ public class MainEngine {
 
 	private static void buildScene(PengoModel model, View view) {
 
-	    /*
-	     * PLAYER
-	     */
-	    PengoPlayer player = new PengoPlayer();
-	    player.setPosition(Game.grid().new Position(2, 5));
-	    player.setSize(Game.grid().new Dimension(1, 1));
-	    model.setPlayer(player);
+		/*
+		 * PLAYER
+		 * Il commence près du scénario principal.
+		 */
+		PengoPlayer player = new PengoPlayer();
+		player.setPosition(Game.grid().new Position(2, 5));
+		player.setSize(Game.grid().new Dimension(1, 1));
+		model.setPlayer(player);
 
-	    ShapeAvatar playerAvatar = new ShapeAvatar(
-	        player,
-	        ShapeAvatar.Shape.OVAL,
-	        255,
-	        220,
-	        220,
-	        0
-	    );
+		ShapeAvatar playerAvatar = new ShapeAvatar(
+				player,
+				ShapeAvatar.Shape.OVAL,
+				255,
+				220,
+				220,
+				0);
+		player.setAvatar(playerAvatar);
+		playerAvatar.setView(view);
 
-	    player.setAvatar(playerAvatar);
-	    playerAvatar.setView(view);
+		/*
+		 * Bordures une seule fois.
+		 */
+		addBorders(model, view);
 
-	    /*
-	     * Bordures une seule fois.
-	     */
-	    addBorders(model, view);
+		/*
+		 * ==========================================================
+		 * SCENARIO 1 : Slide simple
+		 *
+		 * IceBlock en (4,2)
+		 * Wall en (12,2)
+		 *
+		 * Le bloc glisse vers la droite et s'arrête contre le mur.
+		 * ==========================================================
+		 */
+		addIce(model, view, 4, 2);
 
-	    /*
-	     * ==========================================================
-	     * SCENARIO 1 : Slide simple
-	     *
-	     * IceBlock en (4,2)
-	     * Wall en (12,2)
-	     * ==========================================================
-	     */
-	    addIce(model, view, 4, 2);
-	 
+		/*
+		 * ==========================================================
+		 * SCENARIO 2 : IceBlock emporte Enemy puis l'écrase
+		 *
+		 * IceBlock en (4,5)
+		 * Enemy en (8,5)
+		 * Wall en (13,5)
+		 *
+		 * Après écrasement, le IceBlock finit près du mur,
+		 * mais il reste de l'espace au-dessus et en-dessous pour le repousser.
+		 * ==========================================================
+		 */
+		addIce(model, view, 4, 5);
+		addEnemy(model, view, 8, 5, true);
 
-	    /*
-	     * ==========================================================
-	     * SCENARIO 2 : IceBlock emporte Enemy puis l'écrase
-	     *
-	     * IceBlock en (4,5)
-	     * Enemy en (8,5)
-	     * Wall en (13,5)
-	     * ==========================================================
-	     */
-	    addIce(model, view, 4, 5);
-	    addEnemy(model, view, 8, 5, true);
-	  
+		/*
+		 * ==========================================================
+		 * SCENARIO 3 : Enemy proche d'un obstacle, écrasement rapide
+		 *
+		 * IceBlock en (4,8)
+		 * Enemy en (8,8)
+		 * Wall en (10,8)
+		 *
+		 * J'ai mis le mur en (10,8), pas directement en (9,8),
+		 * pour éviter que l'ennemi soit écrasé trop instantanément.
+		 * ==========================================================
+		 */
+		addIce(model, view, 4, 8);
+		addEnemy(model, view, 8, 8, true);
 
-	    /*
-	     * ==========================================================
-	     * SCENARIO 3 : Enemy proche d'un obstacle
-	     *
-	     * IceBlock en (4,8)
-	     * Enemy en (8,8)
-	     * Wall en (10,8)
-	     * ==========================================================
-	     */
-	    addIce(model, view, 4, 8);
-	    addEnemy(model, view, 8, 8, true);
-	   
+		/*
+		 * ==========================================================
+		 * SCENARIO 4 : IceBlock contre IceBlock
+		 *
+		 * IceBlock mobile en (4,10)
+		 * IceBlock obstacle en (10,10)
+		 *
+		 * Il y a assez d'espace autour pour retester le bloc après.
+		 * ==========================================================
+		 */
+		addIce(model, view, 4, 10);
+		addIce(model, view, 10, 10);
 
-	    /*
-	     * ==========================================================
-	     * SCENARIO 4 : IceBlock contre IceBlock
-	     *
-	     * IceBlock mobile en (4,10)
-	     * IceBlock obstacle en (10,10)
-	     * ==========================================================
-	     */
-	    addIce(model, view, 4, 10);
-	    addIce(model, view, 10, 10);
+		/*
+		 * ==========================================================
+		 * SCENARIO 5 : Vertical vers le bas
+		 *
+		 * IceBlock en (16,2)
+		 * Enemy en (16,5)
+		 * Wall en (16,10)
+		 *
+		 * Le bloc pousse l'ennemi vers le bas.
+		 * ==========================================================
+		 */
+		addIce(model, view, 16, 2);
+		addEnemy(model, view, 16, 5, true);
+		addWall(model, view, 16, 10);
 
-	    /*
-	     * ==========================================================
-	     * SCENARIO 5 : Vertical vers le bas
-	     *
-	     * IceBlock en (16,2)
-	     * Enemy en (16,5)
-	     * Wall en (16,10)
-	     * ==========================================================
-	     */
-	    addIce(model, view, 16, 2);
-	    addEnemy(model, view, 16, 5, true);
-	   
+		/*
+		 * ==========================================================
+		 * SCENARIO 6 : Alignement de 3 DiamondBlock
+		 *
+		 * Départ :
+		 * Diamond mobile en (11,3)
+		 * Diamond fixe en (14,3)
+		 * Diamond fixe en (15,3)
+		 *
+		 * Action :
+		 * Pengo pousse le DiamondBlock de (11,3) vers la droite.
+		 *
+		 * Résultat attendu :
+		 * Le DiamondBlock mobile s'arrête en (13,3),
+		 * donc les diamonds sont alignés :
+		 * (13,3), (14,3), (15,3)
+		 *
+		 * Pas de mur juste à côté, pour éviter que les DiamondBlock
+		 * soient bloqués par la bordure ou par un obstacle inutile.
+		 * ==========================================================
+		 */
+		addDiamond(model, view, 11, 3);
+		addDiamond(model, view, 14, 3);
+		addDiamond(model, view, 16, 3);
 
-	    /*
-	     * ==========================================================
-	     * SCENARIO 6 : Alignement de 3 DiamondBlock
-	     *
-	     * Départ :
-	     * Diamond mobile en (11,3)
-	     * Diamond fixe en (14,3)
-	     * Diamond fixe en (15,3)
-	     *
-	     * Action :
-	     * Pousser celui de (11,3) vers la droite.
-	     *
-	     * Résultat attendu :
-	     * Le DiamondBlock mobile s'arrête en (13,3),
-	     * donc alignement : (13,3), (14,3), (15,3)
-	     * ==========================================================
-	     */
-	    addDiamond(model, view, 11, 3);
-	    addDiamond(model, view, 14, 3);
-	    addDiamond(model, view, 15, 3);
-	  
+		/*
+		 * Enemy normal en plus pour éviter que la partie se termine
+		 * trop vite après avoir tué les ennemis de test.
+		 */
+		addEnemy(model, view, 17, 9, false);
+		/*
+		 * SCENARIO GOLD BLOCK :
+		 *
+		 * Enemy proche du GoldBlock.
+		 * Quand l'ennemi le touche, il doit freeze pendant 5 secondes.
+		 */
+		addGold(model, view, 10, 6);
+		addEnemy(model, view, 9, 6, false);
+		// fidh bonus
+		addFish(model, view, 3, 6);
 
-	    /*
-	     * ==========================================================
-	     * SCENARIO 7 : GoldBlock
-	     *
-	     * GoldBlock en (10,6)
-	     * Enemy en (9,6)
-	     *
-	     * Objectif :
-	     * quand l'ennemi touche le GoldBlock, il freeze.
-	     * ==========================================================
-	     */
-	    addIce(model, view, 10, 6);
-	    addEnemy(model, view, 9, 6, false);
+		view.follow(player);
 
-	    /*
-	     * ==========================================================
-	     * SCENARIO 8 : FishBonus
-	     *
-	     * FishBonus proche du joueur.
-	     * ==========================================================
-	     */
-	    addFish(model, view, 3, 6);
-
-	    /*
-	     * Enemy normal en plus pour éviter que la partie se termine trop vite
-	     * si tous les ennemis de test sont tués.
-	     */
-	    addEnemy(model, view, 17, 9, false);
-
-	    view.follow(player);
 	}
-
 
 	private static void addIce(PengoModel model, View view, int x, int y) {
 		IceBlock ice = new IceBlock();
@@ -235,7 +232,6 @@ public class MainEngine {
 		ice.setAvatar(avatar);
 		avatar.setView(view);
 	}
-
 
 	private static void addEnemy(PengoModel model, View view, int x, int y, boolean frozen) {
 		Enemy enemy = new Enemy();
@@ -268,40 +264,28 @@ public class MainEngine {
 	}
 
 	private static void addGold(PengoModel model, View view, int x, int y) {
-	    GoldBlock gold = new GoldBlock();
-	    gold.setPosition(Game.grid().new Position(x, y));
-	    gold.setSize(Game.grid().new Dimension(1, 1));
-	    model.add(gold);
+		GoldBlock g = new GoldBlock();
+		g.setPosition(Game.grid().new Position(x, y));
+		g.setSize(Game.grid().new Dimension(1, 1));
+		model.add(g);
 
-	    ShapeAvatar avatar = new ShapeAvatar(
-	        gold,
-	        ShapeAvatar.Shape.RECT,
-	        255,
-	        255,
-	        215,
-	        0
-	    );
-
-	    gold.setAvatar(avatar);
-	    avatar.setView(view);
+		ShapeAvatar avatar = new ShapeAvatar(g, ShapeAvatar.Shape.RECT, 255, 200, 0, 255);
+		g.setAvatar(avatar);
+		avatar.setView(view);
 	}
+
 	private static void addWall(PengoModel model, View view, int x, int y) {
-	    Wall wall = new Wall();
-	    wall.setPosition(Game.grid().new Position(x, y));
-	    wall.setSize(Game.grid().new Dimension(1, 1));
-	    model.add(wall);
+		Wall wall = new Wall();
+		wall.setPosition(Game.grid().new Position(x, y));
+		wall.setSize(Game.grid().new Dimension(1, 1));
+		model.add(wall);
+		wall.setPosition(Game.grid().new Position(x, y));
+		wall.setSize(Game.grid().new Dimension(1, 1));
+		model.add(wall);
 
-	    ShapeAvatar avatar = new ShapeAvatar(
-	        wall,
-	        ShapeAvatar.Shape.RECT,
-	        255,
-	        120,
-	        120,
-	        120
-	    );
-
-	    wall.setAvatar(avatar);
-	    avatar.setView(view);
+		ShapeAvatar avatar = new ShapeAvatar(wall, ShapeAvatar.Shape.RECT, 255, 120, 120, 120);
+		wall.setAvatar(avatar);
+		avatar.setView(view);
 	}
 
 	private static void addBorders(PengoModel model, View view) {
@@ -318,23 +302,39 @@ public class MainEngine {
 			addWall(model, view, w - 1, y);
 		}
 	}
-	
+	// private static void addGold(PengoModel model, View view, int x, int y) {
+	// GoldBlock gold = new GoldBlock();
+	// gold.setPosition(Game.grid().new Position(x, y));
+	// gold.setSize(Game.grid().new Dimension(1, 1));
+	// model.add(gold);
+
+	// ShapeAvatar avatar = new ShapeAvatar(
+	// gold,
+	// ShapeAvatar.Shape.RECT,
+	// 255,
+	// 255,
+	// 215,
+	// 0
+	// );
+
+	// gold.setAvatar(avatar);
+	// avatar.setView(view);
+	// }
 	private static void addFish(PengoModel model, View view, int x, int y) {
-	    FishBonus fish = new FishBonus();
-	    fish.setPosition(Game.grid().new Position(x, y));
-	    fish.setSize(Game.grid().new Dimension(1, 1));
-	    model.add(fish);
+		FishBonus fish = new FishBonus();
+		fish.setPosition(Game.grid().new Position(x, y));
+		fish.setSize(Game.grid().new Dimension(1, 1));
+		model.add(fish);
 
-	    ShapeAvatar fishAvatar = new ShapeAvatar(
-	        fish,
-	        ShapeAvatar.Shape.OVAL,
-	        255,
-	        0,
-	        180,
-	        255
-	    );
+		ShapeAvatar fishAvatar = new ShapeAvatar(
+				fish,
+				ShapeAvatar.Shape.OVAL,
+				255,
+				0,
+				180,
+				255);
 
-	    fish.setAvatar(fishAvatar);
-	    fishAvatar.setView(view);
+		fish.setAvatar(fishAvatar);
+		fishAvatar.setView(view);
 	}
 }

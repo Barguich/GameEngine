@@ -23,7 +23,7 @@ public class MainSmoke4 {
 
 	public static void main(String[] args) {
 		try {
-			List<Automaton> automates = GalBuilder.loadAutomata("ws/Pengo/gal/demo/test/test.gal");
+			List<Automaton> automates = GalBuilder.loadAutomata("Pengo/gal/demo/test/test.gal");
 			Automaton chaserAuto = automates.get(0);
 			System.out.println("Automate charge : " + chaserAuto.name());
 
