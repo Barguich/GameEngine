@@ -41,7 +41,7 @@ public class PengoMain {
 		double mapW = game.width_cm;
 		double mapH = game.height_cm;
 
-		ViewPort viewPort = new ViewPort(mapW, mapH, mapW, mapH);
+		ViewPort viewPort = new ViewPort(mapW / 2, mapH / 2, mapW, mapH);
 		View view = new View(model, viewPort);
 		view.debug().setEnabled(true);
 
@@ -228,6 +228,10 @@ public class PengoMain {
 		addFish(model, view, 3, 6);
 
 		view.follow(player);
+		// Élasticité : le joueur peut bouger dans ±15 % du viewport autour du
+		// centre avant que la caméra ne se déplace. Visible seulement si le
+		// viewport est plus petit que la map.
+		view.setElasticZone(0.15, 0.15);
 
 	}
 
