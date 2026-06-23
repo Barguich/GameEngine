@@ -356,8 +356,8 @@ public class IceBlock extends Entity {
 		// Hitbox réduite : sinon le IceBlock touche trop facilement les murs/blocs
 		// autour et se bloque.
 
-		double w = size.x() * 0.78;
-		double h = size.y() * 0.78;
+		double w = size.x() * 0.85;
+		double h = size.y() * 0.85;
 
 		bounding.add(new Rect(center, center.isu().new Dimension(w, h), orientation_degree));
 	}
@@ -382,6 +382,9 @@ public class IceBlock extends Entity {
 		// securité : le bloc doit rester réutilisable après l'écrasement.
 
 		direction = 0;
+	}
+	public boolean passableByPlayer() {
+		return hp == 1;
 	}
 
 }

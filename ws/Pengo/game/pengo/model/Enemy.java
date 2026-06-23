@@ -193,6 +193,7 @@ public class Enemy extends Entity {
 		super.tick(elapsed);
 	}
 
+
 	@Override
 	public boolean intersects(Entity entity) {
 		if (entity instanceof Enemy) {
@@ -201,6 +202,7 @@ public class Enemy extends Entity {
 
 		return super.intersects(entity);
 	}
+
 
 	@Override
 	public void collision(Entity e) {
@@ -252,16 +254,20 @@ public class Enemy extends Entity {
 			return;
 		}
 
+
 		double radius = Math.min(size.x(), size.y()) * 0.35;
+
 		bounding.add(new Circle(center, radius));
 	}
 
 	public boolean canRunBot() {
+
 		return !dead
 				&& !dying
 				&& !frozen
 				&& !spawning()
 				&& !draggedByIce
 				&& !crushedByIce;
+
 	}
 }
