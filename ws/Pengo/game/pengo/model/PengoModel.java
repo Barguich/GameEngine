@@ -980,4 +980,25 @@ public class PengoModel extends Model {
 
         return grid().new Position(p.x(), p.y());
     }
+    @Override
+    protected boolean collisionBlocks(Entity mover, Entity other) {
+
+        // FishBonus ne bloque pas les blocs ni les ennemis
+        if (other instanceof FishBonus) {
+            if (mover instanceof IceBlock || mover instanceof Enemy) {
+                return false;
+            }
+        }
+
+        // Pengo peut traverser lentement un IceBlock presque cassé
+        if (mover instanceof PengoPlayer && other instanceof IceBlock) {
+            IceBlock block = (IceBlock) other;
+
+            if (block.passableByPlayer()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

@@ -28,50 +28,52 @@ public class Enemy extends Entity {
 		this.draggedByIce = false;
 		this.crushedByIce = false;
 	}
+
 	public boolean crushedByIce() {
-	    return crushedByIce;
+		return crushedByIce;
 	}
 
 	public boolean harmlessForPlayer() {
-	    return dead || dying || draggedByIce || crushedByIce;
+		return dead || dying || draggedByIce || crushedByIce;
 	}
 
 	public void markCrushedByIce() {
-	    crushedByIce = true;
-	    draggedByIce = false;
-	    frozen = false;
-	    frozenRemaining = 0;
-	    stop();
+		crushedByIce = true;
+		draggedByIce = false;
+		frozen = false;
+		frozenRemaining = 0;
+		stop();
 
-	    System.out.println("ENEMY MARKED CRUSHED BY ICE");
+		System.out.println("ENEMY MARKED CRUSHED BY ICE");
 	}
+
 	public boolean draggedByIce() {
-	    return draggedByIce;
+		return draggedByIce;
 	}
 
 	public void startDraggedByIce() {
-	    if (dead || dying || crushedByIce) {
-	        return;
-	    }
+		if (dead || dying || crushedByIce) {
+			return;
+		}
 
-	    draggedByIce = true;
+		draggedByIce = true;
 
-	    frozen = false;
-	    frozenRemaining = 0;
+		frozen = false;
+		frozenRemaining = 0;
 
-	    stop();
-	    setBot(null);
+		stop();
+		setBot(null);
 
-	    //recalcule la hitbox :Comme draggedByIce = true, la hitbox devient vide.
-	 
-	    setBounding();
+		// recalcule la hitbox :Comme draggedByIce = true, la hitbox devient vide.
 
-	    System.out.println("ENEMY START DRAGGED BY ICE");
+		setBounding();
+
+		System.out.println("ENEMY START DRAGGED BY ICE");
 	}
 
 	public void stopDraggedByIce() {
-	    draggedByIce = false;
-	    setBounding();
+		draggedByIce = false;
+		setBounding();
 	}
 
 	public boolean frozen() {
@@ -81,19 +83,21 @@ public class Enemy extends Entity {
 	public boolean dead() {
 		return dead;
 	}
+
 	public boolean dying() {
-	    return dying;
+		return dying;
 	}
 
 	public long dyingRemaining() {
-	    return dyingRemaining;
+		return dyingRemaining;
 	}
+
 	public boolean spawning() {
-	    return spawnAnimationRemaining > 0;
+		return spawnAnimationRemaining > 0;
 	}
 
 	public long spawnAnimationRemaining() {
-	    return spawnAnimationRemaining;
+		return spawnAnimationRemaining;
 	}
 
 	public void freeze(long duration_ms) {
@@ -120,50 +124,52 @@ public class Enemy extends Entity {
 		frozen = false;
 		frozenRemaining = 0;
 	}
+
 	public boolean moving() {
-	    return linearSpeed() != null && linearSpeed().norm() > 0;
+		return linearSpeed() != null && linearSpeed().norm() > 0;
 	}
 
 	public void kill() {
-	    if (dead || dying) {
-	        return;
-	    }
+		if (dead || dying) {
+			return;
+		}
 
-	    dying = true;
-	    dyingRemaining = 1000;
+		dying = true;
+		dyingRemaining = 1000;
 
-	    frozen = false;
-	    frozenRemaining = 0;
-	    draggedByIce = false;
+		frozen = false;
+		frozenRemaining = 0;
+		draggedByIce = false;
 
-	    stop();
+		stop();
 
-	    System.out.println("Enemy dying animation");
+		System.out.println("Enemy dying animation");
 	}
+
 	@Override
 	public void tick(long elapsed) {
 		assert elapsed >= 0;
 		if (spawnAnimationRemaining > 0) {
-		    spawnAnimationRemaining -= elapsed;
+			spawnAnimationRemaining -= elapsed;
 
-		    if (spawnAnimationRemaining < 0) {
-		        spawnAnimationRemaining = 0;
-		    }
+			if (spawnAnimationRemaining < 0) {
+				spawnAnimationRemaining = 0;
+			}
 		}
 		if (dying) {
-		    dyingRemaining -= elapsed;
+			dyingRemaining -= elapsed;
 
-		    if (dyingRemaining <= 0) {
-		        dead = true;
-		        dying = false;
-		        dyingRemaining = 0;
+			if (dyingRemaining <= 0) {
+				dead = true;
+				dying = false;
+				dyingRemaining = 0;
 
-		        if (model != null) {
-		            model.remove(this);
-		        }
-		    }
+				if (model != null) {
+					model.remove(this);
+				}
+			}
 
-		    return;
+			return;
 		}
 
 		if (dead) {
@@ -180,69 +186,68 @@ public class Enemy extends Entity {
 			return;
 		}
 		if (draggedByIce) {
-		    stop();
-		    return;
+			stop();
+			return;
 		}
 
 		super.tick(elapsed);
 	}
-	
+
 	@Override
 	public void collision(Entity e) {
-	    if (e == null) {
-	        return;
-	    }
+		if (e == null) {
+			return;
+		}
 
-	    //si l'ennemi est transporté / tué / gelé il ne doit plus déclencher de collision normale.
-	     
-	    if (harmlessForPlayer()) {
-	        return;
-	    }
+		// si l'ennemi est transporté / tué / gelé il ne doit plus déclencher de
+		// collision normale.
 
-	    //si un IceBlock glissant touche l'ennemi,l'ennemi ne doit pas bloquer le IceBlock.
+		if (harmlessForPlayer()) {
+			return;
+		}
 
-	    if (e instanceof IceBlock) {
-	        IceBlock ice = (IceBlock) e;
+		// si un IceBlock glissant touche l'ennemi,l'ennemi ne doit pas bloquer le
+		// IceBlock.
 
-	        if (ice.sliding()) {
-	            System.out.println("ENEMY IGNORE SLIDING ICEBLOCK COLLISION");
-	            return;
-	        }
-	    }
+		if (e instanceof IceBlock) {
+			IceBlock ice = (IceBlock) e;
 
-	    //GoldBlock avant IceBlock, parce que GoldBlock extends IceBlock
-	    if (e instanceof GoldBlock && model instanceof PengoModel) {
-	        GoldBlock gold = (GoldBlock) e;
-	        gold.activate((PengoModel) model, this);
-	        return;
-	    }
+			if (ice.sliding()) {
+				System.out.println("ENEMY IGNORE SLIDING ICEBLOCK COLLISION");
+				return;
+			}
+		}
 
-	    super.collision(e);
+		// GoldBlock avant IceBlock, parce que GoldBlock extends IceBlock
+		if (e instanceof GoldBlock && model instanceof PengoModel) {
+			GoldBlock gold = (GoldBlock) e;
+			gold.activate((PengoModel) model, this);
+			return;
+		}
+
+		super.collision(e);
 	}
+
 	@Override
 	public void setBounding() {
-	    if (center == null || size == null) {
-	        return;
-	    }
+		if (center == null || size == null) {
+			return;
+		}
 
-	    bounding = new Bounding();
+		bounding = new Bounding();
 
-	
-	     //quand l'ennemi est transporté par un IceBlock,
-	     //il ne doit plus bloquer physiquement le moteur.
-	  
-	    if (dead || dying || draggedByIce || crushedByIce) {
-	        return;
-	    }
+		// quand l'ennemi est transporté par un IceBlock,
+		// il ne doit plus bloquer physiquement le moteur.
 
-	    double radius = Math.min(size.x(), size.y()) * 0.35;
-	    bounding.add(new Circle(center, radius));
+		if (dead || dying || draggedByIce || crushedByIce) {
+			return;
+		}
+
+		double radius = Math.min(size.x(), size.y()) * 0.42;
+		bounding.add(new Circle(center, radius));
 	}
+
 	public boolean canRunBot() {
-	    return !dead
-	        && !dying
-	        && !frozen
-	        && !draggedByIce
-	        && !crushedByIce;
+		return !dead && !dying && !frozen && !draggedByIce && !crushedByIce;
 	}
 }

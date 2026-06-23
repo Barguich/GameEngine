@@ -133,4 +133,23 @@ public class View implements Canvas.PaintListener {
 	@Override
 	public void revoked(Canvas canvas) {
 	}
+	private void drawEntity(Canvas canvas, Graphics g, double scale, Entity e) {
+		if (e == null || e.center() == null || e.avatar() == null) {
+			return;
+		}
+
+		if (!viewPort.contains(e.center())) {
+			return;
+		}
+
+		int px = viewPort.toPixelX(canvas, e.center().x());
+		int py = viewPort.toPixelY(canvas, e.center().y());
+
+		for (EntityRenderHook h : renderHooks) {
+			px += h.offsetX(e);
+			py += h.offsetY(e);
+		}
+
+		e.avatar().paint(g, px, py, scale);
+	}
 }

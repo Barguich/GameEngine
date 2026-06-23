@@ -24,11 +24,12 @@ public class FishBonus extends Entity {
 			return;
 		}
 
-		// Zone de collision circulaire du bonus
 		bounding = new Bounding();
 
-		double radius = Math.min(size.x(), size.y()) / 3.0;
+		double radius = Math.min(size.x(), size.y()) * 0.40;
+
 		bounding.add(new Circle(center, radius));
+
 	}
 
 	// Active le bonus lorsqu'il est récupéré par le joueur
@@ -47,9 +48,7 @@ public class FishBonus extends Entity {
 
 		// Bonus de vitesse pendant 8 secondes
 
-		long boost = (model instanceof PengoModel)
-				? ((PengoModel) model).config().fishBoostDuration()
-				: 8000;
+		long boost = (model instanceof PengoModel) ? ((PengoModel) model).config().fishBoostDuration() : 8000;
 		player.activateSpeedBoost(boost);
 
 		// Le bonus disparaît après utilisation
