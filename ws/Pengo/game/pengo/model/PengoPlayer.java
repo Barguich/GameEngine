@@ -160,7 +160,7 @@ public class PengoPlayer extends Entity {
 
 		bounding = new Bounding();
 
-		double radius = Math.min(size.x(), size.y()) * 0.35;
+		double radius = Math.min(size.x(), size.y()) * 0.5;
 
 		bounding.add(new Circle(center, radius));
 	}

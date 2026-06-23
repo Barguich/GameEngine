@@ -1,11 +1,13 @@
 package pengo.view;
 
 import model.Entity;
+import oop.graphics.BufferedImage;
 import oop.graphics.Graphics;
-import pengo.model.Wall;
 import view.Avatar;
 
 public class WallAvatar extends Avatar {
+
+	private static final String WALL_PATH = "Asset/border/border.png";
 
 	public WallAvatar(Entity entity) {
 		super(entity);
@@ -13,16 +15,14 @@ public class WallAvatar extends Avatar {
 
 	@Override
 	public void paint(Graphics g, int xPix, int yPix, double scale) {
-
-		Wall wall = (Wall) entity;
-
-		if (wall.isVibrating()) {
-			xPix += wall.vibrationOffset();
+		if (entity == null || entity.size() == null) {
+			return;
 		}
 
-		int side = (int) (entity.size().x() * scale);
+		BufferedImage img = Sprites.get(g, WALL_PATH);
 
-		g.setColor(Graphics.Colors.gray);
-		g.fillRect(xPix - side / 2, yPix - side / 2, side, side);
+		int side = (int) Math.round(entity.size().x() * scale);
+
+		g.drawImage(img, xPix - side / 2, yPix - side / 2, side, side);
 	}
 }

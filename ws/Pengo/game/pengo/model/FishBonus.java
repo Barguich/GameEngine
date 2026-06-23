@@ -26,7 +26,8 @@ public class FishBonus extends Entity {
 
 		bounding = new Bounding();
 
-		double radius = Math.min(size.x(), size.y()) * 0.48;
+		double radius = Math.min(size.x(), size.y()) * 0.50;
+
 		bounding.add(new Circle(center, radius));
 	}
 

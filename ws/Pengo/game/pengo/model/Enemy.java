@@ -298,8 +298,8 @@ public class Enemy extends Entity {
 			return;
 		}
 
-		double w = size.x() * 0.82;
-		double h = size.y() * 0.82;
+		double w = size.x();
+		double h = size.y();
 
 		bounding.add(new Rect(center, center.isu().new Dimension(w, h), orientation_degree));
 	}

@@ -1,5 +1,7 @@
 package pengo;
 
+import java.io.IOException;
+
 import engine.Game;
 import model.Entity;
 import model.Ticker;
@@ -15,12 +17,15 @@ import pengo.model.FishBonus;
 import pengo.model.GoldBlock;
 import pengo.model.IceBlock;
 import pengo.model.PengoConfig;
+import pengo.model.PengoMapLoader;
 import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
 import pengo.model.Wall;
 import pengo.view.PengoHUD;
 import pengo.view.PengoMenuOverlay;
+import pengo.view.WallAvatar;
 import pengo.view.EnemyAvatar;
+import pengo.view.FishBonusAvatar;
 import pengo.view.IceBlockAvatar;
 import pengo.view.PengoAvatar;
 import view.EntityRenderHook;
@@ -35,7 +40,12 @@ import view.ViewPort;
 public class PengoMain {
 
 	public static void main(String[] args) {
-
+		String[] map;
+		try {
+			map = PengoMapLoader.readMap("Asset/rsrc/maps/lvl1.txt");
+		} catch (IOException e) {
+			throw new RuntimeException("Impossible de lire la map", e);
+		}
 		Game game = new Game(20, 13);
 		PengoConfig config = new PengoConfig();
 		PengoModel model = new PengoModel(Game.grid(), config);
@@ -82,11 +92,11 @@ public class PengoMain {
 		view.addOverlay(new PengoMenuOverlay(model, view.menu()));
 
 		model.setSceneBuilder(() -> {
-			buildScene(model, view);
+			buildSceneFromMap(model, view, map);
 			PengoBots.configure(model);
 		});
 
-		buildScene(model, view);
+		buildSceneFromMap(model, view, map);
 		PengoBots.configure(model);
 
 		int winW = (int) (mapW * game.pixelPerCm);
@@ -285,7 +295,7 @@ public class PengoMain {
 		d.setSize(Game.grid().new Dimension(1, 1));
 		model.add(d);
 
-		ShapeAvatar avatar = new ShapeAvatar(d, ShapeAvatar.Shape.RECT, 255, 0, 200, 255);
+		IceBlockAvatar avatar = new IceBlockAvatar(d);
 		d.setAvatar(avatar);
 		avatar.setView(view);
 	}
@@ -296,7 +306,7 @@ public class PengoMain {
 		g.setSize(Game.grid().new Dimension(1, 1));
 		model.add(g);
 
-		ShapeAvatar avatar = new ShapeAvatar(g, ShapeAvatar.Shape.RECT, 255, 200, 0, 255);
+		IceBlockAvatar avatar = new IceBlockAvatar(g);
 		g.setAvatar(avatar);
 		avatar.setView(view);
 	}
@@ -307,7 +317,7 @@ public class PengoMain {
 		wall.setSize(Game.grid().new Dimension(1, 1));
 		model.add(wall);
 
-		pengo.view.WallAvatar avatar = new pengo.view.WallAvatar(wall);
+		WallAvatar avatar = new WallAvatar(wall);
 		wall.setAvatar(avatar);
 		avatar.setView(view);
 	}
@@ -333,9 +343,57 @@ public class PengoMain {
 		fish.setSize(Game.grid().new Dimension(1, 1));
 		model.add(fish);
 
-		ShapeAvatar fishAvatar = new ShapeAvatar(fish, ShapeAvatar.Shape.OVAL, 255, 0, 180, 255);
-
+		FishBonusAvatar fishAvatar = new FishBonusAvatar(fish);
 		fish.setAvatar(fishAvatar);
 		fishAvatar.setView(view);
+	}
+
+	private static void buildSceneFromMap(PengoModel model, View view, String[] map) {
+		PengoMapLoader.load(model, map);
+
+		for (Entity e : model.entities()) {
+			attachAvatar(e, view);
+		}
+
+		if (model.player() != null) {
+			view.follow(model.player());
+		}
+	}
+
+	private static void attachAvatar(Entity e, View view) {
+		if (e instanceof PengoPlayer) {
+			PengoAvatar avatar = new PengoAvatar((PengoPlayer) e);
+			e.setAvatar(avatar);
+			avatar.setView(view);
+			return;
+		}
+
+		if (e instanceof Enemy) {
+			EnemyAvatar avatar = new EnemyAvatar((Enemy) e);
+			e.setAvatar(avatar);
+			avatar.setView(view);
+			return;
+		}
+
+		if (e instanceof Wall) {
+			WallAvatar avatar = new WallAvatar(e);
+			e.setAvatar(avatar);
+			avatar.setView(view);
+			return;
+		}
+
+		if (e instanceof IceBlock) {
+			IceBlockAvatar avatar = new IceBlockAvatar((IceBlock) e);
+			e.setAvatar(avatar);
+			avatar.setView(view);
+			return;
+		}
+
+		if (e instanceof FishBonus) {
+			FishBonusAvatar avatar = new FishBonusAvatar(e);
+			e.setAvatar(avatar);
+			avatar.setView(view);
+			return;
+		}
 	}
 }
