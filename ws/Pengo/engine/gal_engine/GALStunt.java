@@ -59,11 +59,13 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		if (action_ms <= 0) {
 			action_ms = 0;
 			entity.stop();
+			if (entity.position() != null) {
+				entity.setPosition(entity.position());
+			}
 			entity.done();
 		}
 	}
 
-	// MOVE — résout F/B/L/R selon l'orientation courante de l'entité
 	public boolean startMoving(Direction direction, double intensity, double duration_ms) {
 		if (action_ms > 0) {
 			System.out.println("MOVE REFUSED");
@@ -78,15 +80,19 @@ public class GALStunt extends Stunt implements iAllGALActions {
 
 		switch (absDir.name()) {
 			case "N":
+				entity.turnTo(270);
 				entity.setLinearSpeed(isu.new Vector(0, -speed));
 				break;
 			case "S":
+				entity.turnTo(90);
 				entity.setLinearSpeed(isu.new Vector(0, speed));
 				break;
 			case "E":
+				entity.turnTo(0);
 				entity.setLinearSpeed(isu.new Vector(speed, 0));
 				break;
 			case "W":
+				entity.turnTo(180);
 				entity.setLinearSpeed(isu.new Vector(-speed, 0));
 				break;
 			default:
@@ -179,6 +185,7 @@ public class GALStunt extends Stunt implements iAllGALActions {
 	public void collision(Entity e) {
 		action_ms = 0;
 		entity.stop();
+		entity.snapToGrid();
 	}
 
 	@Override
@@ -216,5 +223,19 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		} else
 			return;
 		startMoving(dir, 1.0, 1000.0);
+	}
+
+	public boolean busy() {
+		return action_ms > 0;
+	}
+
+	public boolean startWaiting(double durationMs) {
+		if (action_ms > 0) {
+			return false;
+		}
+
+		entity.stop();
+		action_ms = durationMs;
+		return true;
 	}
 }

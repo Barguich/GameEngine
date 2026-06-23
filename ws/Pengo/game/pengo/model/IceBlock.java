@@ -17,6 +17,8 @@ public class IceBlock extends Entity {
 	private double friction;
 	private boolean breakingAnimation;
 	private long breakingAnimationRemaining;
+	private long breakingAnimationDuration;
+	public static final long ENEMY_BREAK_DURATION_MS = 1_000;
 	private int breakingFrame;
 	private List<Enemy> draggedEnemies; // liste des ennemies a emporter lors de sliding
 	private boolean containsSnoBee;
@@ -31,9 +33,9 @@ public class IceBlock extends Entity {
 		friction = 0.9992; // si on met a 1 plus de frottement
 		breakingAnimation = false;
 		breakingAnimationRemaining = 0;
+		breakingAnimationDuration = 0;
 		breakingFrame = 0;
 		draggedEnemies = new ArrayList<Enemy>();
-
 	}
 
 	public IceBlock(boolean containsSnoBee, long hatchDelay) {
@@ -147,6 +149,12 @@ public class IceBlock extends Entity {
 		return breakingFrame;
 	}
 
+	// Indique si ce bloc peut être détruit par un ennemi (action GAL Hit).
+	// Les blocs spéciaux (Diamond, Gold) redéfinissent à false.
+	public boolean destructibleByEnemy() {
+		return true;
+	}
+
 	public boolean destroyByEnemy() {
 		if (broken) {
 			return false;
@@ -157,7 +165,8 @@ public class IceBlock extends Entity {
 		hp = 0;
 		stopSlide();
 		breakingAnimation = true;
-		breakingAnimationRemaining = 300;
+		breakingAnimationDuration = ENEMY_BREAK_DURATION_MS;
+		breakingAnimationRemaining = breakingAnimationDuration;
 		breakingFrame = 0;
 		System.out.println("ICEBLOCK DESTROYED BY ENEMY");
 		return true;
@@ -173,7 +182,8 @@ public class IceBlock extends Entity {
 		System.out.println("ICEBLOCK DAMAGE, hp = " + hp);
 
 		breakingAnimation = true;
-		breakingAnimationRemaining = 300;
+		breakingAnimationDuration = 300;
+		breakingAnimationRemaining = breakingAnimationDuration;
 		breakingFrame = 0;
 	}
 
@@ -283,13 +293,11 @@ public class IceBlock extends Entity {
 		if (breakingAnimation) {
 			breakingAnimationRemaining -= elapsed;
 
-			if (breakingAnimationRemaining > 200) {
-				breakingFrame = 0;
-			} else if (breakingAnimationRemaining > 100) {
-				breakingFrame = 1;
-			} else {
-				breakingFrame = 2;
-			}
+			double progress = 1.0
+					- breakingAnimationRemaining
+							/ (double) breakingAnimationDuration;
+			progress = Math.max(0.0, Math.min(1.0, progress));
+			breakingFrame = Math.min(2, (int) (progress * 3));
 
 			if (breakingAnimationRemaining <= 0) {
 				breakingAnimation = false;
@@ -377,8 +385,10 @@ public class IceBlock extends Entity {
 		direction = 0;
 	}
 
+
 	public boolean passableByPlayer() {
 		return hp == 1 && !broken && !sliding && !breakingAnimation;
 	}
 
 }
+

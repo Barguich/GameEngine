@@ -14,8 +14,10 @@ public class Enemy extends Entity {
 	private long spawnAnimationRemaining;
 	private boolean draggedByIce;
 	private boolean crushedByIce;
-
+	private IceBlock breakingThroughBlock;
 	private boolean dead;
+	private long frozenAnimationClock = 0;
+	private long walkAnimationClock = 0;
 
 	public Enemy() {
 		super("Enemy");
@@ -26,6 +28,7 @@ public class Enemy extends Entity {
 		this.dying = false;
 		this.dyingRemaining = 0;
 		this.spawnAnimationRemaining = 800;
+		this.breakingThroughBlock = null;
 		this.draggedByIce = false;
 		this.crushedByIce = false;
 	}
@@ -36,6 +39,14 @@ public class Enemy extends Entity {
 
 	public boolean harmlessForPlayer() {
 		return dead || dying || draggedByIce || crushedByIce;
+	}
+
+	public long frozenAnimationClock() {
+		return frozenAnimationClock;
+	}
+
+	public long walkAnimationClock() {
+		return walkAnimationClock;
 	}
 
 	public void markCrushedByIce() {
@@ -108,10 +119,9 @@ public class Enemy extends Entity {
 			return;
 		}
 
-		System.out.println("ENEMY FREEZE");
-
 		frozen = true;
 		frozenRemaining = duration_ms;
+		frozenAnimationClock = 0;
 		stop();
 	}
 
@@ -178,6 +188,7 @@ public class Enemy extends Entity {
 		}
 
 		if (frozen) {
+			frozenAnimationClock += elapsed;
 			frozenRemaining -= elapsed;
 
 			if (frozenRemaining <= 0) {
@@ -186,12 +197,24 @@ public class Enemy extends Entity {
 
 			return;
 		}
+
 		if (draggedByIce) {
 			stop();
 			return;
 		}
 
+		// Horloge d'animation de marche : accumule pendant un déplacement,
+		// se remet à 0 dès que SnoBee est arrêté (mur, etc.) — pose stable.
+		if (moving()) {
+			walkAnimationClock += elapsed;
+		} else {
+			walkAnimationClock = 0;
+		}
+
 		super.tick(elapsed);
+		if (breakingThroughBlock != null && breakingThroughBlock.model() == null) {
+			breakingThroughBlock = null;
+		}
 	}
 
 	@Override
@@ -200,12 +223,8 @@ public class Enemy extends Entity {
 			return false;
 		}
 
-		if (entity instanceof Enemy) {
-			Enemy other = (Enemy) entity;
-
-			if (other.dead() || other.dying() || other.draggedByIce() || other.crushedByIce()) {
-				return false;
-			}
+		if (entity == breakingThroughBlock && breakingThroughBlock.hp() <= 0) {
+			return false;
 		}
 
 		return super.intersects(entity);
@@ -268,5 +287,17 @@ public class Enemy extends Entity {
 
 		return !dead && !dying && !frozen && !spawning() && !draggedByIce && !crushedByIce;
 
+	}
+
+	public void beginBreakingThrough(IceBlock block) {
+		breakingThroughBlock = block;
+	}
+
+	public void stopBreakingThrough() {
+		breakingThroughBlock = null;
+	}
+
+	public boolean breakingThrough() {
+		return breakingThroughBlock != null;
 	}
 }

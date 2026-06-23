@@ -11,4 +11,10 @@ public class DiamondBlock extends IceBlock {
     public boolean isDiamond() {
         return true;
     }
+
+    // Un diamant ne doit jamais être détruit par un ennemi.
+    @Override
+    public boolean destructibleByEnemy() {
+        return false;
+    }
 }

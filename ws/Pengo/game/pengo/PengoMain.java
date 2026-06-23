@@ -8,6 +8,7 @@ import oop.tasks.Runtime;
 import oop.tasks.Task;
 import pengo.brain.PengoBots;
 import pengo.controller.PengoController;
+import pengo.model.BlockRespawn;
 import pengo.model.DiamondBlock;
 import pengo.model.Enemy;
 import pengo.model.FishBonus;
@@ -19,8 +20,9 @@ import pengo.model.PengoPlayer;
 import pengo.model.Wall;
 import pengo.view.PengoHUD;
 import pengo.view.PengoMenuOverlay;
-import testSprite.EnemyAvatar;
-import testSprite.IceBlockAvatar;
+import pengo.view.EnemyAvatar;
+import pengo.view.IceBlockAvatar;
+import pengo.view.PengoAvatar;
 import view.EntityRenderHook;
 import view.Painter;
 import view.ShapeAvatar;
@@ -41,7 +43,8 @@ public class PengoMain {
 		double mapW = game.width_cm;
 		double mapH = game.height_cm;
 
-		ViewPort viewPort = new ViewPort(mapW , mapH , mapW, mapH);
+		ViewPort viewPort = new ViewPort(mapW, mapH, mapW, mapH);
+
 		View view = new View(model, viewPort);
 		model.setEnemySpawnListener(enemy -> {
 			EnemyAvatar avatar = new EnemyAvatar(enemy);
@@ -49,6 +52,12 @@ public class PengoMain {
 			avatar.setView(view);
 
 			PengoBots.configureEntity(model, enemy);
+		});
+		// Quand un BlockRespawn réapparaît, la vue lui recrée un avatar.
+		model.setBlockRespawnListener(block -> {
+			IceBlockAvatar avatar = new IceBlockAvatar(block);
+			block.setAvatar(avatar);
+			avatar.setView(view);
 		});
 		view.debug().setEnabled(true);
 
@@ -102,17 +111,11 @@ public class PengoMain {
 		 * Il commence près du scénario principal.
 		 */
 		PengoPlayer player = new PengoPlayer();
-		player.setPosition(Game.grid().new Position(12, 3));		
+		player.setPosition(Game.grid().new Position(12, 3));
 		player.setSize(Game.grid().new Dimension(1, 1));
 		model.setPlayer(player);
 
-		ShapeAvatar playerAvatar = new ShapeAvatar(
-				player,
-				ShapeAvatar.Shape.OVAL,
-				255,
-				220,
-				220,
-				0);
+		PengoAvatar playerAvatar = new PengoAvatar(player);
 		player.setAvatar(playerAvatar);
 		playerAvatar.setView(view);
 
@@ -120,7 +123,6 @@ public class PengoMain {
 		 * Bordures une seule fois.
 		 */
 		addBorders(model, view);
-
 
 		/*
 		 * ==========================================================
@@ -246,8 +248,10 @@ public class PengoMain {
 
 	}
 
+	// Tous les blocs de glace sont des BlockRespawn : une fois détruits, ils
+	// réapparaissent à leur position de départ (comportement de l'arcade Pengo).
 	private static void addIce(PengoModel model, View view, int x, int y) {
-		IceBlock ice = new IceBlock();
+		BlockRespawn ice = new BlockRespawn();
 		ice.setPosition(Game.grid().new Position(x, y));
 		ice.setSize(Game.grid().new Dimension(1, 1));
 		model.add(ice);

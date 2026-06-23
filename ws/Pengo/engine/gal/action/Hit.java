@@ -3,6 +3,7 @@ package gal.action;
 import java.util.List;
 
 import gal.arguments.Direction;
+import gal_engine.GALStunt;
 import geometry.Grid;
 import model.Entity;
 import model.Model;
@@ -36,10 +37,23 @@ public class Hit extends GALAction {
 			if (victim == e)
 				continue;
 
-			// Les entités Killable (K) ou les blocs (IceBlock, etc.) sont détruits
-			if (victim.getClass() == IceBlock.class) {
+			// Les blocs destructibles par l'ennemi (IceBlock et sous-classes
+			// comme BlockRespawn). On s'appuie sur destructibleByEnemy() pour
+			// exclure les blocs spéciaux (Diamond, Gold).
+			if (victim instanceof IceBlock
+					&& ((IceBlock) victim).destructibleByEnemy()) {
 				return ((IceBlock) victim).destroyByEnemy();
 			}
+
+			IceBlock block = (IceBlock) victim;
+			if (!block.destroyByEnemy()) {
+				return false;
+			}
+			if (e.stunt() instanceof GALStunt) {
+				((GALStunt) e.stunt()).startWaiting(750);
+			}
+
+			return true;
 		}
 		return false;
 	}
@@ -93,6 +107,14 @@ public class Hit extends GALAction {
 			return (e.orientation() + 90) % 360;
 		if (direction == Direction.H)
 			return e.orientation();
+		if (direction == Direction.N)
+			return 270;
+		if (direction == Direction.S)
+			return 90;
+		if (direction == Direction.E)
+			return 0;
+		if (direction == Direction.W)
+			return 180;
 		if (direction.isAbsolute())
 			return ((direction.toAngle() % 360) + 360) % 360;
 		return e.orientation();
