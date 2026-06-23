@@ -36,8 +36,11 @@ public class Hit extends GALAction {
 			if (victim == e)
 				continue;
 
-			// Les entités Killable (K) ou les blocs (IceBlock, etc.) sont détruits
-			if (victim.getClass() == IceBlock.class) {
+			// Les blocs destructibles par l'ennemi (IceBlock et sous-classes
+			// comme BlockRespawn). On s'appuie sur destructibleByEnemy() pour
+			// exclure les blocs spéciaux (Diamond, Gold).
+			if (victim instanceof IceBlock
+					&& ((IceBlock) victim).destructibleByEnemy()) {
 				return ((IceBlock) victim).destroyByEnemy();
 			}
 		}

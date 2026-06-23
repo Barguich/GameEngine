@@ -41,6 +41,20 @@ public class PengoModel extends Model {
 
     private Runnable sceneBuilder;
     private Consumer<Enemy> enemySpawnListener;
+    private Consumer<BlockRespawn> blockRespawnListener;
+
+    // Respawns de blocs en attente : chacun réapparaît quand son délai expire.
+    private final List<PendingRespawn> pendingRespawns = new ArrayList<>();
+
+    private static final class PendingRespawn {
+        final Grid.Position position;
+        long remaining;
+
+        PendingRespawn(Grid.Position position, long remaining) {
+            this.position = position;
+            this.remaining = remaining;
+        }
+    }
 
 
 	 public PengoModel(Grid grid) {
@@ -228,6 +242,8 @@ public class PengoModel extends Model {
         }
 
         super.tick(elapsed);
+
+        updateBlockRespawns(elapsed);
 
         if (invincibleRemaining > 0) {
             invincibleRemaining -= elapsed;
@@ -981,6 +997,99 @@ public class PengoModel extends Model {
 
     public void setEnemySpawnListener(Consumer<Enemy> listener) {
         this.enemySpawnListener = listener;
+    }
+
+    public void setBlockRespawnListener(Consumer<BlockRespawn> listener) {
+        this.blockRespawnListener = listener;
+    }
+
+    
+    public void scheduleBlockRespawn(Grid.Position position, long delay) {
+        if (position == null || delay <= 0) {
+            return;
+        }
+        pendingRespawns.add(new PendingRespawn(position.copy(), delay));
+    }
+
+
+    private void updateBlockRespawns(long elapsed) {
+        if (pendingRespawns.isEmpty()) {
+            return;
+        }
+
+        for (PendingRespawn pending : new ArrayList<>(pendingRespawns)) {
+            pending.remaining -= elapsed;
+
+            if (pending.remaining <= 0) {
+                pendingRespawns.remove(pending);
+                respawnBlock(pending.position);
+            }
+        }
+    }
+
+    private void respawnBlock(Grid.Position position) {
+        if (position == null) {
+            return;
+        }
+
+        // Le bloc réapparaît sur une case libre tirée au hasard ; si aucune
+        // n'est trouvée, on retombe sur sa position d'origine.
+        Grid.Position target = randomFreeCell();
+        if (target == null) {
+            target = position;
+        }
+
+        BlockRespawn block = new BlockRespawn();
+        block.setPosition(target.copy());
+        block.setSize(grid().new Dimension(1, 1));
+        add(block);
+
+        if (blockRespawnListener != null) {
+            blockRespawnListener.accept(block);
+        }
+    }
+
+    /*
+     * Tire une case libre au hasard à l'intérieur de la zone jouable
+     * (hors bordures). Renvoie null si aucune case libre n'est trouvée.
+     */
+    private Grid.Position randomFreeCell() {
+        int w = grid().width();
+        int h = grid().height();
+
+        // On évite les bordures (rangée/colonne 0 et w-1/h-1).
+        int minX = 1;
+        int maxX = w - 2;
+        int minY = 1;
+        int maxY = h - 2;
+
+        if (maxX < minX || maxY < minY) {
+            return null;
+        }
+
+        // Quelques tirages aléatoires, puis balayage complet en dernier recours.
+        java.util.concurrent.ThreadLocalRandom rng =
+                java.util.concurrent.ThreadLocalRandom.current();
+
+        for (int attempt = 0; attempt < 30; attempt++) {
+            int x = rng.nextInt(minX, maxX + 1);
+            int y = rng.nextInt(minY, maxY + 1);
+            Grid.Position p = grid().new Position(x, y);
+            if (isFree(p)) {
+                return p;
+            }
+        }
+
+        for (int y = minY; y <= maxY; y++) {
+            for (int x = minX; x <= maxX; x++) {
+                Grid.Position p = grid().new Position(x, y);
+                if (isFree(p)) {
+                    return p;
+                }
+            }
+        }
+
+        return null;
     }
 
     public void hatchSnoBee(IceBlock block) {

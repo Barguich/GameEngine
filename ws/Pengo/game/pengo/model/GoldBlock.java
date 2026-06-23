@@ -23,6 +23,12 @@ public class GoldBlock extends IceBlock {
 		return active;
 	}
 
+	// Le GoldBlock est un bloc spécial : un ennemi ne le détruit pas.
+	@Override
+	public boolean destructibleByEnemy() {
+		return false;
+	}
+
 	/*
 	 * Activation globale : tous les ennemis sont gelés.
 	 */

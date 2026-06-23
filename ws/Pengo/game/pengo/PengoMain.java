@@ -8,6 +8,7 @@ import oop.tasks.Runtime;
 import oop.tasks.Task;
 import pengo.brain.PengoBots;
 import pengo.controller.PengoController;
+import pengo.model.BlockRespawn;
 import pengo.model.DiamondBlock;
 import pengo.model.Enemy;
 import pengo.model.FishBonus;
@@ -41,7 +42,7 @@ public class PengoMain {
 		double mapW = game.width_cm;
 		double mapH = game.height_cm;
 
-		ViewPort viewPort = new ViewPort(mapW / 2, mapH / 2, mapW, mapH);
+		ViewPort viewPort = new ViewPort(mapW, mapH, mapW, mapH);
 		View view = new View(model, viewPort);
 		model.setEnemySpawnListener(enemy -> {
 			EnemyAvatar avatar = new EnemyAvatar(enemy);
@@ -49,6 +50,12 @@ public class PengoMain {
 			avatar.setView(view);
 
 			PengoBots.configureEntity(model, enemy);
+		});
+		// Quand un BlockRespawn réapparaît, la vue lui recrée un avatar.
+		model.setBlockRespawnListener(block -> {
+			IceBlockAvatar avatar = new IceBlockAvatar(block);
+			block.setAvatar(avatar);
+			avatar.setView(view);
 		});
 		view.debug().setEnabled(true);
 
@@ -246,8 +253,10 @@ public class PengoMain {
 
 	}
 
+	// Tous les blocs de glace sont des BlockRespawn : une fois détruits, ils
+	// réapparaissent à leur position de départ (comportement de l'arcade Pengo).
 	private static void addIce(PengoModel model, View view, int x, int y) {
-		IceBlock ice = new IceBlock();
+		BlockRespawn ice = new BlockRespawn();
 		ice.setPosition(Game.grid().new Position(x, y));
 		ice.setSize(Game.grid().new Dimension(1, 1));
 		model.add(ice);

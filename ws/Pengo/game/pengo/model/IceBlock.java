@@ -147,6 +147,12 @@ public class IceBlock extends Entity {
 		return breakingFrame;
 	}
 
+	// Indique si ce bloc peut être détruit par un ennemi (action GAL Hit).
+	// Les blocs spéciaux (Diamond, Gold) redéfinissent à false.
+	public boolean destructibleByEnemy() {
+		return true;
+	}
+
 	public boolean destroyByEnemy() {
 		if (broken) {
 			return false;
