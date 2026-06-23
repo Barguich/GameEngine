@@ -179,6 +179,8 @@ public class MainEngine {
 		addEnemy(model, view, 16, 5, true);
 		addWall(model, view, 16, 10);
 
+		addEnemyBlock(model, view, 6, 7);
+
 		/*
 		 * ==========================================================
 		 * SCENARIO 6 : Alignement de 3 DiamondBlock
@@ -232,6 +234,17 @@ public class MainEngine {
 
 		IceBlockAvatar avatar = new IceBlockAvatar(ice);
 		ice.setAvatar(avatar);
+		avatar.setView(view);
+	}
+
+	private static void addEnemyBlock(PengoModel model, View view, int x, int y) {
+		pengo.model.EnemyBlock block = new pengo.model.EnemyBlock();
+		block.setPosition(Game.grid().new Position(x, y));
+		block.setSize(Game.grid().new Dimension(1, 1));
+		model.add(block);
+
+		IceBlockAvatar avatar = new IceBlockAvatar(block);
+		block.setAvatar(avatar);
 		avatar.setView(view);
 	}
 
