@@ -15,6 +15,8 @@ public class Enemy extends Entity {
 	private boolean crushedByIce;
 	private IceBlock breakingThroughBlock;
 	private boolean dead;
+	private long frozenAnimationClock = 0;
+	private long walkAnimationClock = 0;
 
 	public Enemy() {
 		super("Enemy");
@@ -36,6 +38,14 @@ public class Enemy extends Entity {
 
 	public boolean harmlessForPlayer() {
 		return dead || dying || draggedByIce || crushedByIce;
+	}
+
+	public long frozenAnimationClock() {
+		return frozenAnimationClock;
+	}
+
+	public long walkAnimationClock() {
+		return walkAnimationClock;
 	}
 
 	public void markCrushedByIce() {
@@ -108,10 +118,9 @@ public class Enemy extends Entity {
 			return;
 		}
 
-		System.out.println("ENEMY FREEZE");
-
 		frozen = true;
 		frozenRemaining = duration_ms;
+		frozenAnimationClock = 0;
 		stop();
 	}
 
@@ -178,6 +187,7 @@ public class Enemy extends Entity {
 		}
 
 		if (frozen) {
+			frozenAnimationClock += elapsed;
 			frozenRemaining -= elapsed;
 
 			if (frozenRemaining <= 0) {
@@ -186,9 +196,18 @@ public class Enemy extends Entity {
 
 			return;
 		}
+
 		if (draggedByIce) {
 			stop();
 			return;
+		}
+
+		// Horloge d'animation de marche : accumule pendant un déplacement,
+		// se remet à 0 dès que SnoBee est arrêté (mur, etc.) — pose stable.
+		if (moving()) {
+			walkAnimationClock += elapsed;
+		} else {
+			walkAnimationClock = 0;
 		}
 
 		super.tick(elapsed);

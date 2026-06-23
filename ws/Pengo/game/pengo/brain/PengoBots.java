@@ -14,7 +14,7 @@ import pengo.model.GoldBlock;
 import pengo.model.IceBlock;
 import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
-import testSprite.EnemyAvatar;
+import pengo.view.EnemyAvatar;
 
 import java.util.List;
 
@@ -78,14 +78,14 @@ public final class PengoBots {
 			e.setCategory(Category.O);
 		}
 
-        // ── Bot GAL pour les ennemis ──────────────────────────────────────
-        if (e instanceof Enemy enemy) {
+		// ── Bot GAL pour les ennemis ──────────────────────────────────────
+		if (e instanceof Enemy enemy) {
 
 			enemy.turnTo(0);
 
 			GALStunt stunt = new GALStunt(model, enemy);
 
-            double baseLinear = stunt.stepLength();
+			double baseLinear = stunt.stepLength();
 
 			stunt.setMaxLinearSpeed(baseLinear * SPEED_FACTOR);
 			stunt.setMaxAngularSpeed((90.0 / 1000.0) * SPEED_FACTOR);
