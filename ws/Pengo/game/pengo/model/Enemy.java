@@ -2,6 +2,7 @@ package pengo.model;
 
 import collision.Bounding;
 import collision.Circle;
+import collision.Rect;
 import model.Entity;
 
 public class Enemy extends Entity {
@@ -193,25 +194,21 @@ public class Enemy extends Entity {
 		super.tick(elapsed);
 	}
 
-
 	@Override
 	public boolean intersects(Entity entity) {
-	    if (dead || dying || draggedByIce || crushedByIce) {
-	        return false;
-	    }
+		if (dead || dying || draggedByIce || crushedByIce) {
+			return false;
+		}
 
-	    if (entity instanceof Enemy) {
-	        Enemy other = (Enemy) entity;
+		if (entity instanceof Enemy) {
+			Enemy other = (Enemy) entity;
 
-	        if (other.dead()
-	                || other.dying()
-	                || other.draggedByIce()
-	                || other.crushedByIce()) {
-	            return false;
-	        }
-	    }
+			if (other.dead() || other.dying() || other.draggedByIce() || other.crushedByIce()) {
+				return false;
+			}
+		}
 
-	    return super.intersects(entity);
+		return super.intersects(entity);
 	}
 
 	@Override
@@ -257,27 +254,19 @@ public class Enemy extends Entity {
 
 		bounding = new Bounding();
 
-		// quand l'ennemi est transporté par un IceBlock,
-		// il ne doit plus bloquer physiquement le moteur.
-
 		if (dead || dying || draggedByIce || crushedByIce) {
 			return;
 		}
 
+		double w = size.x() * 0.82;
+		double h = size.y() * 0.82;
 
-		double radius = Math.min(size.x(), size.y()) * 0.42;
-
-		bounding.add(new Circle(center, radius));
+		bounding.add(new Rect(center, center.isu().new Dimension(w, h), orientation_degree));
 	}
 
 	public boolean canRunBot() {
 
-		return !dead
-				&& !dying
-				&& !frozen
-				&& !spawning()
-				&& !draggedByIce
-				&& !crushedByIce;
+		return !dead && !dying && !frozen && !spawning() && !draggedByIce && !crushedByIce;
 
 	}
 }

@@ -26,10 +26,8 @@ public class FishBonus extends Entity {
 
 		bounding = new Bounding();
 
-		double radius = Math.min(size.x(), size.y()) * 0.40;
-
+		double radius = Math.min(size.x(), size.y()) * 0.48;
 		bounding.add(new Circle(center, radius));
-
 	}
 
 	// Active le bonus lorsqu'il est récupéré par le joueur

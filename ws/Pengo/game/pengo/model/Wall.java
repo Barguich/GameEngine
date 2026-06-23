@@ -6,17 +6,17 @@ import model.Entity;
 
 public class Wall extends Entity {
 
-    public Wall() {
-        super("Wall");
-    }
+	public Wall() {
+		super("Wall");
+	}
 
-    @Override
-    public void setBounding() {
-        if (center == null || size == null) {
-            return;
-        }
+	@Override
+	public void setBounding() {
+		if (center == null || size == null) {
+			return;
+		}
 
-        bounding = new Bounding();
-        bounding.add(new Rect(center, size, orientation_degree));
-    }
+		bounding = new Bounding();
+		bounding.add(new Rect(center, size, orientation_degree));
+	}
 }
