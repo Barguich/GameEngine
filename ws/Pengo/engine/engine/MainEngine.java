@@ -11,6 +11,7 @@ import pengo.model.Enemy;
 import pengo.model.FishBonus;
 import pengo.model.GoldBlock;
 import pengo.model.IceBlock;
+import pengo.model.PengoConfig;
 import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
 import pengo.model.Wall;
@@ -29,7 +30,8 @@ public class MainEngine {
 	public static void main(String[] args) {
 
 		Game game = new Game(20, 13);
-		PengoModel model = new PengoModel(Game.grid());
+		PengoConfig config = new PengoConfig();
+		PengoModel model = new PengoModel(Game.grid(), config);
 
 		double mapW = game.width_cm;
 		double mapH = game.height_cm;
