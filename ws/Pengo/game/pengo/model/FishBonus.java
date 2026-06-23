@@ -6,6 +6,7 @@ import model.Entity;
 
 public class FishBonus extends Entity {
 
+    // Indique si le bonus a déjà été récupéré
     private boolean consumed;
 
     public FishBonus() {
@@ -23,13 +24,17 @@ public class FishBonus extends Entity {
             return;
         }
 
+        // Zone de collision circulaire du bonus
         bounding = new Bounding();
 
         double radius = Math.min(size.x(), size.y()) / 3.0;
         bounding.add(new Circle(center, radius));
     }
 
+    // Active le bonus lorsqu'il est récupéré par le joueur
     public void consume(PengoPlayer player) {
+
+        // Évite de récupérer plusieurs fois le même bonus
         if (consumed) {
             return;
         }
@@ -40,13 +45,14 @@ public class FishBonus extends Entity {
 
         consumed = true;
 
-        System.out.println("FISH BONUS CONSUMED");
 
-        /*
-         * Speed boost pendant 8 secondes.
-         */
+
+        // Bonus de vitesse pendant 8 secondes
+
+
         player.activateSpeedBoost(8000);
 
+        // Le bonus disparaît après utilisation
         if (model != null) {
             model.remove(this);
         }

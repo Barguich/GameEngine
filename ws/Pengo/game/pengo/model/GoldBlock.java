@@ -4,110 +4,105 @@ import model.Entity;
 
 public class GoldBlock extends IceBlock {
 
-    private static final long FREEZE_DURATION = 5000;
-    private static final long DOUBLE_SCORE_DURATION = 5000;
+	// Durée du gel appliqué aux ennemis
+	private static final long FREEZE_DURATION = 5000;
 
-    /*
-     * Cooldown pour éviter que le GoldBlock active l'effet
-     * 30 fois par seconde si l'ennemi reste collé dessus.
-     */
-    private boolean active;
-    private long activeRemaining;
+	// Durée du bonus de score x2
+	private static final long DOUBLE_SCORE_DURATION = 5000;
 
-    public GoldBlock() {
-        super();
+	/*
+	 * Empêche l'activation répétée du GoldBlock tant que son effet est encore
+	 * actif.
+	 */
 
-        active = false;
-        activeRemaining = 0;
-    }
+	private boolean active;
+	private long activeRemaining;
 
-    public boolean active() {
-        return active;
-    }
+	public GoldBlock() {
+		super();
 
-    /*
-     * Activation générale : utile si tu veux un bouton/test
-     * qui gèle tous les ennemis.
-     */
-    public void activate(PengoModel model) {
-        if (model == null) {
-            return;
-        }
+		active = false;
+		activeRemaining = 0;
+	}
 
-        if (active) {
-            return;
-        }
+	public boolean active() {
+		return active;
+	}
 
-        System.out.println("GOLD BLOCK ACTIVATED - ALL ENEMIES FREEZE");
+	/*
+	 * Activation globale : tous les ennemis sont gelés.
+	 */
 
-        model.freezeEnemies(FREEZE_DURATION);
-        model.activateDoubleScore(DOUBLE_SCORE_DURATION);
+	public void activate(PengoModel model) {
+		if (model == null) {
+			return;
+		}
 
-        active = true;
-        activeRemaining = FREEZE_DURATION;
-    }
+		if (active) {
+			return;
+		}
 
-    /*
-     * Activation normale du jeu :
-     * un ennemi touche le GoldBlock, donc seulement cet ennemi est gelé.
-     */
-    public void activate(PengoModel model, Enemy enemy) {
-        if (model == null || enemy == null) {
-            return;
-        }
+		model.freezeEnemies(FREEZE_DURATION);
+		model.activateDoubleScore(DOUBLE_SCORE_DURATION);
 
-        if (active) {
-            return;
-        }
+		active = true;
+		activeRemaining = FREEZE_DURATION;
+	}
 
-        if (enemy.dead() || enemy.dying() || enemy.draggedByIce()) {
-            return;
-        }
+	/*
+	 * Activation normale : seul l'ennemi ayant touché le GoldBlock est gelé.
+	 */
 
-        System.out.println("GOLD BLOCK ACTIVATED - ENEMY FREEZE");
+	public void activate(PengoModel model, Enemy enemy) {
+		if (model == null || enemy == null) {
+			return;
+		}
 
-        enemy.freeze(FREEZE_DURATION);
-        model.activateDoubleScore(DOUBLE_SCORE_DURATION);
+		if (active) {
+			return;
+		}
 
-        active = true;
-        activeRemaining = FREEZE_DURATION;
-    }
+		// Les ennemis déjà neutralisés ne déclenchent pas l'effet
+		if (enemy.dead() || enemy.dying() || enemy.draggedByIce()) {
+			return;
+		}
 
-    @Override
-    public void collision(Entity e) {
-        if (e == null) {
-            return;
-        }
+		enemy.freeze(FREEZE_DURATION);
+		model.activateDoubleScore(DOUBLE_SCORE_DURATION);
 
-        /*
-         * Si un ennemi touche le GoldBlock,
-         * on déclenche l'effet.
-         */
-        if (e instanceof Enemy && model instanceof PengoModel) {
-            activate((PengoModel) model, (Enemy) e);
-            return;
-        }
+		active = true;
+		activeRemaining = FREEZE_DURATION;
+	}
 
-        /*
-         * Sinon, le GoldBlock reste un bloc de glace spécial :
-         * il peut être poussé comme un IceBlock.
-         */
-        super.collision(e);
-    }
+	@Override
+	public void collision(Entity e) {
+		if (e == null) {
+			return;
+		}
 
-    @Override
-    public void tick(long elapsed) {
-        super.tick(elapsed);
+		// Un ennemi qui touche le GoldBlock déclenche son pouvoir
+		if (e instanceof Enemy && model instanceof PengoModel) {
+			activate((PengoModel) model, (Enemy) e);
+			return;
+		}
 
-        if (active) {
-            activeRemaining -= elapsed;
+		// Pour les autres interactions, le comportement reste celui d'un IceBlock
 
-            if (activeRemaining <= 0) {
-                active = false;
-                activeRemaining = 0;
+		super.collision(e);
+	}
 
-                System.out.println("GOLD BLOCK READY AGAIN");
-            }
-        }
-    }
+	@Override
+	public void tick(long elapsed) {
+		super.tick(elapsed);
+
+		// Gestion du temps de recharge du GoldBlock
+		if (active) {
+			activeRemaining -= elapsed;
+
+			if (activeRemaining <= 0) {
+				active = false;
+				activeRemaining = 0;
+			}
+		}
+	}
 }

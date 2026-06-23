@@ -55,15 +55,23 @@ public class Enemy extends Entity {
 	    }
 
 	    draggedByIce = true;
+
 	    frozen = false;
 	    frozenRemaining = 0;
+
 	    stop();
+	    setBot(null);
+
+	    //recalcule la hitbox :Comme draggedByIce = true, la hitbox devient vide.
+	 
+	    setBounding();
 
 	    System.out.println("ENEMY START DRAGGED BY ICE");
 	}
 
 	public void stopDraggedByIce() {
 	    draggedByIce = false;
+	    setBounding();
 	}
 
 	public boolean frozen() {
@@ -179,55 +187,62 @@ public class Enemy extends Entity {
 		super.tick(elapsed);
 	}
 	
-
 	@Override
 	public void collision(Entity e) {
 	    if (e == null) {
 	        return;
 	    }
 
-	    /*
-	     * Si l'ennemi est mort, en train de mourir,
-	     * emporté ou écrasé par un IceBlock,
-	     * il ne doit pas déclencher de collision normale.
-	     */
+	    //si l'ennemi est transporté / tué / gelé il ne doit plus déclencher de collision normale.
+	     
 	    if (harmlessForPlayer()) {
 	        return;
 	    }
 
-	    /*
-	     * GOLD BLOCK :
-	     * Si l'ennemi touche un GoldBlock, il est gelé.
-	     */
+	    //si un IceBlock glissant touche l'ennemi,l'ennemi ne doit pas bloquer le IceBlock.
+
+	    if (e instanceof IceBlock) {
+	        IceBlock ice = (IceBlock) e;
+
+	        if (ice.sliding()) {
+	            System.out.println("ENEMY IGNORE SLIDING ICEBLOCK COLLISION");
+	            return;
+	        }
+	    }
+
+	    //GoldBlock avant IceBlock, parce que GoldBlock extends IceBlock
 	    if (e instanceof GoldBlock && model instanceof PengoModel) {
 	        GoldBlock gold = (GoldBlock) e;
 	        gold.activate((PengoModel) model, this);
 	        return;
 	    }
 
-	    /*
-	     * Si un IceBlock en glissade touche l'ennemi,
-	     * la logique est gérée dans PengoModel.moveSlidingIceBlock().
-	     */
-	    if (e instanceof IceBlock) {
-	        IceBlock ice = (IceBlock) e;
-
-	        if (ice.sliding()) {
-	            return;
-	        }
-	    }
-
 	    super.collision(e);
 	}
 	@Override
 	public void setBounding() {
-		if (center == null || size == null) {
-			return;
-		}
+	    if (center == null || size == null) {
+	        return;
+	    }
 
-		bounding = new Bounding();
+	    bounding = new Bounding();
 
-		double radius = Math.min(size.x(), size.y()) / 2.0;
-		bounding.add(new Circle(center, radius));
+	
+	     //quand l'ennemi est transporté par un IceBlock,
+	     //il ne doit plus bloquer physiquement le moteur.
+	  
+	    if (dead || dying || draggedByIce || crushedByIce) {
+	        return;
+	    }
+
+	    double radius = Math.min(size.x(), size.y()) * 0.35;
+	    bounding.add(new Circle(center, radius));
+	}
+	public boolean canRunBot() {
+	    return !dead
+	        && !dying
+	        && !frozen
+	        && !draggedByIce
+	        && !crushedByIce;
 	}
 }

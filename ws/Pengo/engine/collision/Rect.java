@@ -7,11 +7,12 @@ import geometry.Vector;
 
 public class Rect extends Shape implements iShape {
 
-	// FIELDS
+	// Demi-dimensions du rectangle
 	protected double halfWidth, halfHeight;
+
+	// Orientation du rectangle en degrés
 	protected int angle_degree;
 
-	// CONSTRUCTOR
 	public Rect(ISU.Coord center, ISU.Dimension size, int angle_degree) {
 		super(center);
 		this.angle_degree = angle_degree;
@@ -19,9 +20,7 @@ public class Rect extends Shape implements iShape {
 		this.halfHeight = size.y() / 2;
 	}
 
-	// TRANSLATION ?
-
-	// ROTATION
+	// Fait tourner le rectangle autour de son centre
 	void rotate(int angle_degree) {
 		this.angle_degree += angle_degree;
 		this.angle_degree = this.angle_degree % 360;
@@ -31,25 +30,29 @@ public class Rect extends Shape implements iShape {
 		}
 	}
 
-	// == INTERSECTION ==
+	// Double dispatch : permet de choisir le bon test de collision
 	public boolean intersects(iShape shape) {
 		return shape.intersects(this);
 	}
 
-	// === Rect/Circle Intersection ===
+	// Test de collision entre un rectangle et un cercle
 	public boolean intersects(Circle circle) {
-		// on depasse pas et on teste la collisition
+
+		// Test direct sans copie virtuelle
 		if (intersectsCircleAt(circle, 0, 0, 0, 0)) {
 			return true;
 		}
-		// le cercle depasse on copie
+
+		// Test avec copies virtuelles du cercle si le monde est torique
 		if (intersectsWithVirtualCircleCopies(circle)) {
 			return true;
 		}
-		// le rect depasse on copie
+
+		// Test avec copies virtuelles du rectangle si le monde est torique
 		if (intersectsWithVirtualRectCopies(circle)) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -59,39 +62,34 @@ public class Rect extends Shape implements iShape {
 		boolean top = circle.center.y() - circle.radius < 0;
 		boolean bottom = circle.center.y() + circle.radius > isu.height_cm();
 
-		// on depasse a gauche on test collision avec la copie a droite
+		// Si le cercle dépasse un bord, on teste sa copie virtuelle de l'autre côté
 		if (left && intersectsCircleAt(circle, isu.width_cm(), 0, 0, 0)) {
 			return true;
 		}
-		// on depasse a droite on test collision avec la copie a gauche
 		if (right && intersectsCircleAt(circle, -isu.width_cm(), 0, 0, 0)) {
 			return true;
 		}
-		// on depasse en haut on test collision avec la copie a en bas
 		if (top && intersectsCircleAt(circle, 0, isu.height_cm(), 0, 0)) {
 			return true;
 		}
-		// on depasse en bas on test collision avec la copie en haut
 		if (bottom && intersectsCircleAt(circle, 0, -isu.height_cm(), 0, 0)) {
 			return true;
 		}
-		// coin depassement en haut et a gauche
+
+		// Cas où le cercle dépasse dans un coin du monde
 		if (left && top && intersectsCircleAt(circle, isu.width_cm(), isu.height_cm(), 0, 0)) {
 			return true;
 		}
-		// coin depassement en bas et a gauche
 		if (left && bottom && intersectsCircleAt(circle, isu.width_cm(), -isu.height_cm(), 0, 0)) {
 			return true;
 		}
-		// coin depassement en haut et a droite
 		if (right && top && intersectsCircleAt(circle, -isu.width_cm(), isu.height_cm(), 0, 0)) {
 			return true;
 		}
-		// coin deppassement en bas et a droite
 		if (right && bottom && intersectsCircleAt(circle, -isu.width_cm(), -isu.height_cm(), 0, 0)) {
 			return true;
 		}
-		// si aucun cas de collision
+
 		return false;
 	}
 
@@ -101,34 +99,30 @@ public class Rect extends Shape implements iShape {
 		boolean top = rectTouchesTop(this);
 		boolean bottom = rectTouchesBottom(this);
 
+		// Même principe, mais cette fois on déplace virtuellement le rectangle
 		if (left && intersectsCircleAt(circle, 0, 0, isu.width_cm(), 0)) {
 			return true;
 		}
-
 		if (right && intersectsCircleAt(circle, 0, 0, -isu.width_cm(), 0)) {
 			return true;
 		}
-
 		if (top && intersectsCircleAt(circle, 0, 0, 0, isu.height_cm())) {
 			return true;
 		}
-
 		if (bottom && intersectsCircleAt(circle, 0, 0, 0, -isu.height_cm())) {
 			return true;
 		}
 
+		// Copies virtuelles dans les coins
 		if (left && top && intersectsCircleAt(circle, 0, 0, isu.width_cm(), isu.height_cm())) {
 			return true;
 		}
-
 		if (left && bottom && intersectsCircleAt(circle, 0, 0, isu.width_cm(), -isu.height_cm())) {
 			return true;
 		}
-
 		if (right && top && intersectsCircleAt(circle, 0, 0, -isu.width_cm(), isu.height_cm())) {
 			return true;
 		}
-
 		if (right && bottom && intersectsCircleAt(circle, 0, 0, -isu.width_cm(), -isu.height_cm())) {
 			return true;
 		}
@@ -142,32 +136,19 @@ public class Rect extends Shape implements iShape {
 		return new RectCircleIntersection(this, virtualCircleCenter, circle.radius, rectDx, rectDy).intersects();
 	}
 
-	// === Helping inner class ===
-	/**
-	 * @implNote Principe
-	 *           <UL>
-	 *           <LI>translate le centre du cercle vers le repère formé par les axes
-	 *           du rectangle,</LI>
-	 *           <LI>redresse le repère du rectangle en annulant la rotation du
-	 *           rectangle,</LI>
-	 *           <LI>détermine le point <i>P</i> du rectangle le plus proche du
-	 *           centre <i>C</i> du cercle de façon efficace car le rectangle est
-	 *           aligné sur les axes X,Y.</LI>
-	 *           </UL>
-	 * @implNote Il y a intersection si distance(P,C) < rayon du cercle</LI>
+	/*
+	 * Collision Rectangle/Cercle :
+	 * on place le cercle dans le repère local du rectangle.
+	 * Cela permet de ramener le problème à un rectangle non tourné,
+	 * puis de chercher le point du rectangle le plus proche du cercle.
 	 */
-
 	class RectCircleIntersection {
-
-		// FIELDS
 
 		private Rect outer;
 		private Point center;
 		private double radius;
 		private double rectDx;
 		private double rectDy;
-
-		// CONSTRUCTOR
 
 		RectCircleIntersection(Rect outer, Point center, double radius, double rectDx, double rectDy) {
 			this.outer = outer;
@@ -178,37 +159,30 @@ public class Rect extends Shape implements iShape {
 
 			remedy();
 		}
-		// REMEDY means `set right an undesirable situation`
 
-		/**
-		 * @apiNote
-		 * @implNote Translate virtuellement Rect et Circle dans un repère centré sur le
-		 *           centre du rectangle donc les axes sont ceux du rectangle.
-		 * @implNote Les coordonnées du centre du rectangle deviennent alors (0,0)
-		 * @implNote On translate le centre du cercle
-		 * @implNote On déplace par rotation le centre du cercle de -Rect.angle.
-		 */
-
+		// Transforme le centre du cercle dans le repère local du rectangle
 		void remedy() {
 			Point rectCenter = new Point(outer.center.x() + rectDx, outer.center.y() + rectDy);
 			Vector fromRectToCircle = rectCenter.vectorToward(center);
 			Vector local = fromRectToCircle.turned(-outer.angle_degree);
 			center = new Point(local.x(), local.y());
 		}
-		// INTERSECTION in the easy case
 
+		// Collision si la distance au point le plus proche est inférieure au rayon
 		boolean intersects() {
 			Point p = closestRectpoint();
 			double d = p.vectorToward(center).norm();
 			return d <= radius;
 		}
 
+		// Point du rectangle le plus proche du centre du cercle
 		Point closestRectpoint() {
 			double x = clamp(center.x(), -outer.halfWidth, outer.halfWidth);
 			double y = clamp(center.y(), -outer.halfHeight, outer.halfHeight);
 			return new Point(x, y);
 		}
 
+		// Ramène une coordonnée dans l'intervalle du rectangle
 		double clamp(double p, double l, double r) {
 			if (p < l) {
 				return l;
@@ -218,23 +192,24 @@ public class Rect extends Shape implements iShape {
 			}
 			return p;
 		}
-
 	}
 
-	// === Rect/Rect Intersection ===
-
+	// Test de collision entre deux rectangles
 	public boolean intersects(Rect rect) {
+
+		// Test direct
 		if (intersectsRectAt(this, rect, 0, 0)) {
 			return true;
 		}
+
+		// Tests avec copies virtuelles pour gérer le monde torique
 		if (intersectsRectWithVirtualCopies(this, rect)) {
 			return true;
 		}
 		if (intersectsRectWithVirtualCopies(rect, this)) {
 			return true;
 		}
-		// on teste les 2 sens car si b est au bord mais a non
-		// sa ne suffit pas de copier juste a car il reste a sa place
+
 		return false;
 	}
 
@@ -248,34 +223,30 @@ public class Rect extends Shape implements iShape {
 		boolean top = rectTouchesTop(moved);
 		boolean bottom = rectTouchesBottom(moved);
 
+		// On teste moved à la position de ses copies virtuelles
 		if (left && intersectsRectAt(fixed, moved, isu.width_cm(), 0)) {
 			return true;
 		}
-
 		if (right && intersectsRectAt(fixed, moved, -isu.width_cm(), 0)) {
 			return true;
 		}
-
 		if (top && intersectsRectAt(fixed, moved, 0, isu.height_cm())) {
 			return true;
 		}
-
 		if (bottom && intersectsRectAt(fixed, moved, 0, -isu.height_cm())) {
 			return true;
 		}
 
+		// Copies virtuelles diagonales
 		if (left && top && intersectsRectAt(fixed, moved, isu.width_cm(), isu.height_cm())) {
 			return true;
 		}
-
 		if (left && bottom && intersectsRectAt(fixed, moved, isu.width_cm(), -isu.height_cm())) {
 			return true;
 		}
-
 		if (right && top && intersectsRectAt(fixed, moved, -isu.width_cm(), isu.height_cm())) {
 			return true;
 		}
-
 		if (right && bottom && intersectsRectAt(fixed, moved, -isu.width_cm(), -isu.height_cm())) {
 			return true;
 		}
@@ -355,33 +326,30 @@ public class Rect extends Shape implements iShape {
 		return max;
 	}
 
+	// Calcule les 4 coins du rectangle en tenant compte de sa rotation
 	Point[] cornersAt(double dx, double dy) {
 		double cos = Math.cos(Math.toRadians(angle_degree));
 		double sin = Math.sin(Math.toRadians(angle_degree));
-		// centre virtuel euclidien du rectangle
+
 		Point center = new Point(this.center.x() + dx, this.center.y() + dy);
 
-		// axe X local mis à l'échelle par halfWidth
 		Vector axisX = new Vector(cos * halfWidth, sin * halfWidth);
-		// axe Y local mis à l'échelle par halfHeight
 		Vector axisY = new Vector(-sin * halfHeight, cos * halfHeight);
 
-		// Vecteurs du centre vers chacun des 4 corners
 		Vector topRightV = new Vector(axisX.x() + axisY.x(), axisX.y() + axisY.y());
 		Vector topLeftV = new Vector(-axisX.x() + axisY.x(), -axisX.y() + axisY.y());
 		Vector bottomLeftV = new Vector(-axisX.x() - axisY.x(), -axisX.y() - axisY.y());
 		Vector bottomRightV = new Vector(axisX.x() - axisY.x(), axisX.y() - axisY.y());
 
-		// Les 4 corners du rectangle virtuel
 		Point topRight = center.translated(topRightV);
 		Point topLeft = center.translated(topLeftV);
 		Point bottomLeft = center.translated(bottomLeftV);
 		Point bottomRight = center.translated(bottomRightV);
 
 		return new Point[] { topRight, topLeft, bottomLeft, bottomRight };
-
 	}
 
+	// Boîte englobante utilisée pour les tests rapides de collision
 	@Override
 	public Box box() {
 		Point[] corners = cornersAt(0, 0);
@@ -394,6 +362,7 @@ public class Rect extends Shape implements iShape {
 		return new Box(minX, minY, maxX, maxY);
 	}
 
+	// Boîte englobante maximale, valable quelle que soit la rotation
 	public Box box_360() {
 		double radius = Math.sqrt(halfWidth * halfWidth + halfHeight * halfHeight);
 
@@ -401,15 +370,19 @@ public class Rect extends Shape implements iShape {
 	}
 }
 
-// === Helping inner class ===
-
+/*
+ * Collision Rectangle/Rectangle.
+ * Si les rectangles ne sont pas tournés, on utilise un test AABB simple.
+ * Sinon, on utilise le théorème des axes séparateurs (SAT).
+ */
 class RectRectIntersection {
 
 	private Rect r1;
 	private Rect r2;
 
-	private double r2dx; // déplacement virtuel en x de r2
-	private double r2dy; // déplacement virtuel en y de r2
+	// Décalage virtuel de r2 pour tester les copies dans le monde torique
+	private double r2dx;
+	private double r2dy;
 
 	public RectRectIntersection(Rect r1, Rect r2, double r2dx, double r2dy) {
 		this.r1 = r1;
@@ -419,19 +392,22 @@ class RectRectIntersection {
 	}
 
 	void remedy() {
-		// rien a faire on fait les projection avec vecteurs et ps
+		// Rien à faire ici : le traitement est fait par projection
 	}
 
 	public boolean intersects() {
-		// Optimisation : si les deux rects sont axis-aligned → AABB simple
+
+		// Optimisation : cas simple où les deux rectangles ne sont pas tournés
 		if (r1.angle_degree == 0 && r2.angle_degree == 0) {
 			return intersectsAABB();
 		}
-		// Cas général : SAT (Separating Axis Theorem)
+
+		// Cas général : test SAT sur les axes des deux rectangles
 		double[][] axes = new double[4][2];
 
 		double[] Ar1 = getAxes(r1);
 		double[] Ar2 = getAxes(r2);
+
 		axes[0] = new double[] { Ar1[0], Ar1[1] };
 		axes[1] = new double[] { Ar1[2], Ar1[3] };
 		axes[2] = new double[] { Ar2[0], Ar2[1] };
@@ -440,26 +416,34 @@ class RectRectIntersection {
 		for (int i = 0; i < axes.length; i++) {
 			double[] projR1 = project(r1, axes[i], 0, 0);
 			double[] projR2 = project(r2, axes[i], r2dx, r2dy);
+
+			// Si les projections ne se chevauchent pas,
+			// l'axe courant sépare les deux rectangles.
 			if (!overlaps(projR1, projR2))
-				return false; // axe séparateur trouvé → pas de collision
+				return false;
 		}
-		return true; // aucun axe séparateur → collision
+
+		// Aucun axe séparateur trouvé : les rectangles se coupent
+		return true;
 	}
 
-	// AABB : test rapide quand angle_degree == 0 pour les deux rects
+	// Test AABB pour deux rectangles alignés sur les axes
 	private boolean intersectsAABB() {
 		double cx1 = r1.center.x();
 		double cy1 = r1.center.y();
 		double cx2 = r2.center.x() + r2dx;
 		double cy2 = r2.center.y() + r2dy;
 
-		return Math.abs(cx1 - cx2) < r1.halfWidth + r2.halfWidth && Math.abs(cy1 - cy2) < r1.halfHeight + r2.halfHeight;
+		return Math.abs(cx1 - cx2) < r1.halfWidth + r2.halfWidth
+				&& Math.abs(cy1 - cy2) < r1.halfHeight + r2.halfHeight;
 	}
 
+	// Vérifie si deux projections se chevauchent sur un axe
 	private boolean overlaps(double[] projR1, double[] projR2) {
 		return projR1[1] >= projR2[0] && projR2[1] >= projR1[0];
 	}
 
+	// Projette les sommets d'un rectangle sur un axe
 	private double[] project(Rect r, double[] axis, double dx, double dy) {
 		Point[] corners = r.cornersAt(dx, dy);
 
@@ -468,8 +452,10 @@ class RectRectIntersection {
 
 		for (int i = 1; i < corners.length; i++) {
 			double p = dot(axis, corners[i]);
+
 			if (p < min)
 				min = p;
+
 			if (p > max)
 				max = p;
 		}
@@ -477,10 +463,11 @@ class RectRectIntersection {
 		return new double[] { min, max };
 	}
 
+	// Retourne les deux axes locaux du rectangle
 	private double[] getAxes(Rect r) {
 		double cos = Math.cos(Math.toRadians(r.angle_degree));
 		double sin = Math.sin(Math.toRadians(r.angle_degree));
-		// les 2 axes normaux du rectangle dans le monde
+
 		return new double[] { cos, sin, -sin, cos };
 	}
 

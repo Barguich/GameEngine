@@ -22,35 +22,37 @@ import view.Avatar;
 
 public class Entity {
 
-	// FIELDS
+	// Données principales de l'entité
 	protected Bounding bounding;
 	protected Grid grid;
 	protected ISU isu;
 	protected String name;
 	protected Avatar avatar;
 
+	// Liens avec le modèle, le comportement et éventuellement un bot GAL
 	protected Model model;
 	protected Stunt stunt;
 	protected Bot bot;
 
+	// Position, taille et déplacement dans les deux repères du moteur
 	protected ISU.Dimension size;
 	protected ISU.Dimension step;
 	protected Grid.Position position;
 	protected ISU.Coord center;
 
+	// Vitesses linéaire et angulaire
 	protected ISU.Vector lSpeed;
 	protected double aSpeed;
 
 	protected int orientation_degree;
 
-	// cellules occupées par l'entité
+	// Cellules actuellement occupées par l'entité
 	protected Set<Grid.Cell> occupied;
+
+	// Catégorie utilisée par les automates GAL
 	protected Category category;
 
-	// CONSTRUCTOR
 	public Entity(String name) {
-		assert name != null;
-
 		this.name = name;
 		this.orientation_degree = 0;
 		this.lSpeed = null;
@@ -58,9 +60,11 @@ public class Entity {
 		this.occupied = new HashSet<>();
 	}
 
-	// SETTER
-
+	// Positionnement dans la grille discrète
 	public void setPosition(Grid.Position position) {
+		if (position == null)
+			return;
+
 		retract();
 
 		this.position = position.copy();
@@ -79,7 +83,11 @@ public class Entity {
 		deploy();
 	}
 
+	// Positionnement dans le repère continu en centimètres
 	public void setCoord(ISU.Coord center) {
+		if (center == null)
+			return;
+
 		retract();
 
 		this.center = center.mkCopy();
@@ -97,6 +105,9 @@ public class Entity {
 	}
 
 	public void setSize(Grid.Dimension dimension) {
+		if (dimension == null)
+			return;
+
 		this.size = dimension.toISUDimension();
 
 		if (center != null)
@@ -104,6 +115,9 @@ public class Entity {
 	}
 
 	protected void setSize(ISU.Dimension dimension) {
+		if (dimension == null)
+			return;
+
 		this.size = dimension;
 
 		if (center != null)
@@ -111,6 +125,9 @@ public class Entity {
 	}
 
 	public void setStep(Grid.Dimension step) {
+		if (step == null)
+			return;
+
 		this.step = step.toISUDimension();
 	}
 
@@ -128,6 +145,7 @@ public class Entity {
 
 	public void setAvatar(Avatar avatar) {
 		this.avatar = avatar;
+
 		if (center != null && size != null)
 			setBounding();
 	}
@@ -144,6 +162,7 @@ public class Entity {
 		this.category = category;
 	}
 
+	// Arrête tous les mouvements de l'entité
 	public void stop() {
 		if (isu != null)
 			this.lSpeed = isu.new Vector(0, 0);
@@ -153,14 +172,13 @@ public class Entity {
 		this.aSpeed = 0;
 	}
 
+	// Oriente l'entité avec un angle normalisé entre 0 et 359
 	public void turnTo(int degree) {
 		orientation_degree = ((degree % 360) + 360) % 360;
 
 		if (center != null && size != null)
 			setBounding();
 	}
-
-	// GETTER
 
 	public ISU.Coord center() {
 		return center;
@@ -228,10 +246,9 @@ public class Entity {
 		return this.category;
 	}
 
-	// TRANSLATION
-
+	// Déplacement dans le repère grille
 	public void translate(Grid.Vector v) {
-		if (position == null)
+		if (position == null || v == null)
 			return;
 
 		retract();
@@ -247,8 +264,9 @@ public class Entity {
 		deploy();
 	}
 
+	// Déplacement dans le repère continu
 	public void translate(ISU.Vector v) {
-		if (center == null)
+		if (center == null || v == null)
 			return;
 
 		retract();
@@ -264,14 +282,11 @@ public class Entity {
 		deploy();
 	}
 
-	// TURN
-
 	public void turn(int angle_degree) {
 		turnTo(orientation_degree + angle_degree);
 	}
 
-	// MOVE
-
+	// Déplacements pratiques selon les directions cardinales
 	public void moveNorth(int nStep) {
 		if (step == null)
 			throw new IllegalStateException("step non initialisé");
@@ -296,8 +311,7 @@ public class Entity {
 		translate(isu.new Vector(-length_cm, 0));
 	}
 
-	// COLLISION / INTERSECTION
-
+	// Test de collision avec une autre entité
 	public boolean intersects(Entity entity) {
 		if (entity == null)
 			return false;
@@ -315,6 +329,7 @@ public class Entity {
 		return this.center.distanceTo(e.center);
 	}
 
+	// Reconstruit la zone de collision à partir de l'avatar
 	public void setBounding() {
 		if (center == null || size == null) {
 			return;
@@ -327,6 +342,7 @@ public class Entity {
 		}
 	}
 
+	// Réaction générale lorsqu'une collision est détectée
 	public void collision(Entity e) {
 		stop();
 
@@ -334,24 +350,24 @@ public class Entity {
 			return;
 		}
 
-		// 1) Joueur touche ennemi : perte de vie
+		// Joueur contre ennemi : perte de vie
 		if (this instanceof PengoPlayer && e instanceof Enemy) {
 			if (model instanceof PengoModel) {
 				((PengoModel) model).loseLife();
 			}
 		}
 
-		// 2) Ennemi touche GoldBlock : ennemi gelé
+		// Ennemi contre bloc doré : l'ennemi est gelé
 		if (this instanceof Enemy && e instanceof GoldBlock) {
 			((Enemy) this).freeze(5000);
 		}
 
-		// 3) Joueur touche FishBonus : bonus récupéré
+		// Joueur contre bonus poisson : application du bonus
 		if (this instanceof PengoPlayer && e instanceof FishBonus) {
 			((FishBonus) e).consume((PengoPlayer) this);
 		}
 
-		// 4) Bloc de glace glissant touche ennemi : ennemi tué + score
+		// Bloc de glace glissant contre ennemi : l'ennemi est tué
 		if (this instanceof IceBlock && e instanceof Enemy) {
 			IceBlock block = (IceBlock) this;
 
@@ -364,10 +380,12 @@ public class Entity {
 			}
 		}
 
+		// Transmission de l'information de collision au comportement
 		if (stunt != null) {
 			stunt.collision(e);
 		}
 
+		// Transmission de l'information de collision au bot GAL
 		if (bot != null) {
 			bot.collision(e, 0);
 		}
@@ -381,8 +399,7 @@ public class Entity {
 			bot.completed();
 	}
 
-	// DEPLOY / OCCUPY / RETRACT
-
+	// Ajoute l'entité dans la cellule correspondant à sa position
 	public void deploy() {
 		if (position == null)
 			return;
@@ -405,6 +422,7 @@ public class Entity {
 		}
 	}
 
+	// Retire l'entité de toutes les cellules qu'elle occupait
 	public void retract() {
 		for (Grid.Cell cell : occupied) {
 			cell.remove(this);
@@ -413,16 +431,15 @@ public class Entity {
 		occupied.clear();
 	}
 
-	// CHECK
-
+	// Vérifie la cohérence entre position grille et position continue
 	void check() {
 		if (position == null || center == null)
 			return;
 
-		assert position.equiv(center.toGridPosition());
+		if (!position.equiv(center.toGridPosition())) {
+			throw new IllegalStateException("position incohérente avec center");
+		}
 	}
-
-	// SHOW
 
 	public void show(PrintStream ps) {
 		ps.println("Entity: " + name);
@@ -444,8 +461,10 @@ public class Entity {
 			ps.println("size = null");
 	}
 
+	// Mise à jour de l'entité à chaque tick du jeu
 	public void tick(long elapsed) {
-		assert elapsed >= 0;
+		if (elapsed < 0)
+			return;
 
 		if (stunt != null) {
 			stunt.update(elapsed);
@@ -461,6 +480,7 @@ public class Entity {
 
 		double dt = elapsed / 1000.0;
 
+		// Déplacement = vitesse * temps
 		ISU.Vector movement = center.isu().new Vector(lSpeed.x() * dt, lSpeed.y() * dt);
 
 		boolean moved = model.move(this, movement);
@@ -473,5 +493,4 @@ public class Entity {
 	public String name() {
 		return name;
 	}
-
 }
