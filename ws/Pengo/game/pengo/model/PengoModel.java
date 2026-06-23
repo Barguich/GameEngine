@@ -41,7 +41,6 @@ public class PengoModel extends Model {
 
     private Runnable sceneBuilder;
     private Consumer<Enemy> enemySpawnListener;
-    private Consumer<BlockRespawn> blockRespawnListener;
 
     // Respawns de blocs en attente : chacun réapparaît quand son délai expire.
     private final List<PendingRespawn> pendingRespawns = new ArrayList<>();
@@ -999,9 +998,6 @@ public class PengoModel extends Model {
         this.enemySpawnListener = listener;
     }
 
-    public void setBlockRespawnListener(Consumer<BlockRespawn> listener) {
-        this.blockRespawnListener = listener;
-    }
 
     
     public void scheduleBlockRespawn(Grid.Position position, long delay) {
@@ -1037,15 +1033,6 @@ public class PengoModel extends Model {
         Grid.Position target = randomFreeCell();
         if (target == null) {
             target = position;
-        }
-
-        BlockRespawn block = new BlockRespawn();
-        block.setPosition(target.copy());
-        block.setSize(grid().new Dimension(1, 1));
-        add(block);
-
-        if (blockRespawnListener != null) {
-            blockRespawnListener.accept(block);
         }
     }
 
