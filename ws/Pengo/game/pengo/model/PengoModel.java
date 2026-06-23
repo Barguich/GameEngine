@@ -628,12 +628,15 @@ public class PengoModel extends Model {
                 return true;
             }
 
-            // Le premier de la liste est l'ennemi le plus devant.
-
+            /*
+             * L'ennemi le plus devant.
+             */
             Enemy frontEnemy = chain.get(0);
 
-            // si un deuxième ennemi est devant la chaîne,on l'ajoute aussi à la chaîne.
-
+            /*
+             * Si un autre ennemi est devant la chaîne,
+             * on l'ajoute aussi.
+             */
             Enemy nextEnemy = enemyReachedByFrontEnemy(ice, frontEnemy, movement);
 
             if (nextEnemy != null) {
@@ -645,25 +648,32 @@ public class PengoModel extends Model {
                 frontEnemy = chain.get(0);
             }
 
-            // On vérifie l'obstacle devant l'ennemi le plus devant Si obstacle : tous les
-            // ennemis transportés disparaissent,et le IceBlock prend la place de l'ennemi
-            // le plus devant.
-            Grid.Position frontEnemyPos = copyPosition(frontEnemy.position());
+            /*
+             * Position où le IceBlock doit finir si écrasement.
+             * C'est la position de l'ennemi le plus devant AVANT collision.
+             */
+            Grid.Position crushPosition = copyPosition(frontEnemy.position());
+
+            /*
+             * Obstacle devant l'ennemi le plus devant.
+             */
             Grid.Position frontEnemyNextCell = nextPosition(frontEnemy, ice.direction());
             Entity obstacle = firstSolidAt(frontEnemyNextCell, ice, null);
 
             if (obstacle != null) {
                 System.out.println(
-                        "DRAGGED ENEMIES CRUSHED AGAINST "
-                                + obstacle.getClass().getSimpleName());
+                    "DRAGGED ENEMIES CRUSHED AGAINST "
+                    + obstacle.getClass().getSimpleName()
+                );
 
-                crushDraggedEnemiesByIce(ice, frontEnemyPos);
+                crushDraggedEnemiesByIce(ice, crushPosition);
                 return true;
             }
 
-            // Les ennemis sont ghost pendant draggedByIce,donc ils ne bloquent pas le
-            // moteur.On les déplace tous avec le même movement que le IceBlock.
-
+            /*
+             * On déplace tous les ennemis transportés.
+             * Ils sont ghost, donc normalement ils ne bloquent pas.
+             */
             boolean allEnemiesMoved = true;
 
             for (Enemy dragged : new ArrayList<Enemy>(chain)) {
@@ -680,22 +690,22 @@ public class PengoModel extends Model {
                 dragged.stop();
             }
 
+            /*
+             * Ensuite on déplace le IceBlock.
+             */
             boolean iceMoved = move(ice, movement);
 
-            if (!iceMoved) {
-                ice.stopSlide();
+            /*
+             * Très important :
+             * si le IceBlock ou un ennemi transporté est bloqué,
+             * alors ce n'est pas un simple stop.
+             * C'est un écrasement.
+             */
+            if (!iceMoved || !allEnemiesMoved) {
+                System.out.println("ICEBLOCK BLOCKED WHILE DRAGGING - CRUSH");
 
-                for (Enemy dragged : chain) {
-                    if (dragged != null) {
-                        dragged.stop();
-                    }
-                }
-
-                return false;
-            }
-
-            if (!allEnemiesMoved) {
-                placeDraggedEnemiesInFrontOfIce(ice);
+                crushDraggedEnemiesByIce(ice, crushPosition);
+                return true;
             }
 
             return true;
@@ -703,7 +713,6 @@ public class PengoModel extends Model {
         } finally {
             resolvingIceEnemyCollision = false;
         }
-
     }
 
     private List<Enemy> validDraggedEnemies(IceBlock ice) {
@@ -844,7 +853,7 @@ public class PengoModel extends Model {
              * Epsilon assez large pour détecter l'ennemi avant que
              * le moteur de collision bloque le IceBlock.
              */
-            double epsilon = 0.35;
+            double epsilon = 0.75;
 
             if (distance <= contactDistance + movementLength + epsilon) {
                 if (distance < closestDistance) {
@@ -1006,14 +1015,58 @@ public class PengoModel extends Model {
     @Override
     protected boolean collisionBlocks(Entity mover, Entity other) {
 
-        // FishBonus ne bloque pas les blocs ni les ennemis
+        /*
+         * Un ennemi transporté par un IceBlock est ghost.
+         */
+        if (mover instanceof Enemy) {
+            Enemy enemy = (Enemy) mover;
+
+            if (enemy.draggedByIce()) {
+                return false;
+            }
+        }
+
+        if (other instanceof Enemy) {
+            Enemy enemy = (Enemy) other;
+
+            if (enemy.draggedByIce()) {
+                return false;
+            }
+        }
+
+        /*
+         * Un IceBlock qui glisse ne doit pas être bloqué
+         * physiquement par un Enemy.
+         * La logique d'écrasement est gérée dans moveSlidingIceBlock().
+         */
+        if (mover instanceof IceBlock && other instanceof Enemy) {
+            IceBlock ice = (IceBlock) mover;
+
+            if (ice.sliding()) {
+                return false;
+            }
+        }
+
+        if (mover instanceof Enemy && other instanceof IceBlock) {
+            IceBlock ice = (IceBlock) other;
+
+            if (ice.sliding()) {
+                return false;
+            }
+        }
+
+        /*
+         * FishBonus ne bloque pas les blocs ni les ennemis.
+         */
         if (other instanceof FishBonus) {
             if (mover instanceof IceBlock || mover instanceof Enemy) {
                 return false;
             }
         }
 
-        // Pengo peut traverser lentement un IceBlock presque cassé
+        /*
+         * Pengo peut traverser lentement un IceBlock presque cassé.
+         */
         if (mover instanceof PengoPlayer && other instanceof IceBlock) {
             IceBlock block = (IceBlock) other;
 
@@ -1023,6 +1076,5 @@ public class PengoModel extends Model {
         }
 
         return true;
-
     }
 }
