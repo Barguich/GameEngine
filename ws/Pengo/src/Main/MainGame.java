@@ -2,6 +2,7 @@ package Main;
 
 import engine.Game;
 import geometry.Grid;
+import pengo.model.PengoConfig;
 import pengo.model.PengoMapLoader;
 import pengo.model.PengoModel;
 
@@ -9,7 +10,11 @@ public class MainGame {
 
 	public static void main(String[] args) throws Exception {
 
-		String[] map = PengoMapLoader.readMap("Asset/rsrc/maps/lvl1.txt");
+		PengoConfig config = (args.length > 0)
+				? new PengoConfig(args[0])
+				: new PengoConfig();
+
+		String[] map = PengoMapLoader.readMap(config.mapPath());
 
 		Game game = new Game(
 				PengoMapLoader.width(map),
@@ -17,7 +22,7 @@ public class MainGame {
 
 		Grid grid = game.grid();
 
-		PengoModel model = new PengoModel(grid);
+		PengoModel model = new PengoModel(grid, config);
 
 		PengoMapLoader.load(model, map);
 

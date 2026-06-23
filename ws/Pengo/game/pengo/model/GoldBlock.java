@@ -4,12 +4,6 @@ import model.Entity;
 
 public class GoldBlock extends IceBlock {
 
-	// Durée du gel appliqué aux ennemis
-	private static final long FREEZE_DURATION = 5000;
-
-	// Durée du bonus de score x2
-	private static final long DOUBLE_SCORE_DURATION = 5000;
-
 	/*
 	 * Empêche l'activation répétée du GoldBlock tant que son effet est encore
 	 * actif.
@@ -42,11 +36,15 @@ public class GoldBlock extends IceBlock {
 			return;
 		}
 
-		model.freezeEnemies(FREEZE_DURATION);
-		model.activateDoubleScore(DOUBLE_SCORE_DURATION);
+		// Durées lues depuis le fichier de configuration (equilibrage 3.9)
+		long freeze = model.config().goldFreezeDuration();
+		long doubleScore = model.config().goldDoubleScoreDuration();
+
+		model.freezeEnemies(freeze);
+		model.activateDoubleScore(doubleScore);
 
 		active = true;
-		activeRemaining = FREEZE_DURATION;
+		activeRemaining = freeze;
 	}
 
 	/*
@@ -67,11 +65,15 @@ public class GoldBlock extends IceBlock {
 			return;
 		}
 
-		enemy.freeze(FREEZE_DURATION);
-		model.activateDoubleScore(DOUBLE_SCORE_DURATION);
+		// Durées lues depuis le fichier de configuration (equilibrage 3.9)
+		long freeze = model.config().goldFreezeDuration();
+		long doubleScore = model.config().goldDoubleScoreDuration();
+
+		enemy.freeze(freeze);
+		model.activateDoubleScore(doubleScore);
 
 		active = true;
-		activeRemaining = FREEZE_DURATION;
+		activeRemaining = freeze;
 	}
 
 	@Override

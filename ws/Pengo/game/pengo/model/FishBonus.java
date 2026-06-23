@@ -6,55 +6,55 @@ import model.Entity;
 
 public class FishBonus extends Entity {
 
-    // Indique si le bonus a déjà été récupéré
-    private boolean consumed;
+	// Indique si le bonus a déjà été récupéré
+	private boolean consumed;
 
-    public FishBonus() {
-        super("FishBonus");
-        consumed = false;
-    }
+	public FishBonus() {
+		super("FishBonus");
+		consumed = false;
+	}
 
-    public boolean consumed() {
-        return consumed;
-    }
+	public boolean consumed() {
+		return consumed;
+	}
 
-    @Override
-    public void setBounding() {
-        if (center == null || size == null) {
-            return;
-        }
+	@Override
+	public void setBounding() {
+		if (center == null || size == null) {
+			return;
+		}
 
-        // Zone de collision circulaire du bonus
-        bounding = new Bounding();
+		// Zone de collision circulaire du bonus
+		bounding = new Bounding();
 
-        double radius = Math.min(size.x(), size.y()) / 3.0;
-        bounding.add(new Circle(center, radius));
-    }
+		double radius = Math.min(size.x(), size.y()) / 3.0;
+		bounding.add(new Circle(center, radius));
+	}
 
-    // Active le bonus lorsqu'il est récupéré par le joueur
-    public void consume(PengoPlayer player) {
+	// Active le bonus lorsqu'il est récupéré par le joueur
+	public void consume(PengoPlayer player) {
 
-        // Évite de récupérer plusieurs fois le même bonus
-        if (consumed) {
-            return;
-        }
+		// Évite de récupérer plusieurs fois le même bonus
+		if (consumed) {
+			return;
+		}
 
-        if (player == null) {
-            return;
-        }
+		if (player == null) {
+			return;
+		}
 
-        consumed = true;
+		consumed = true;
 
+		// Bonus de vitesse pendant 8 secondes
 
+		long boost = (model instanceof PengoModel)
+				? ((PengoModel) model).config().fishBoostDuration()
+				: 8000;
+		player.activateSpeedBoost(boost);
 
-        // Bonus de vitesse pendant 8 secondes
-
-
-        player.activateSpeedBoost(8000);
-
-        // Le bonus disparaît après utilisation
-        if (model != null) {
-            model.remove(this);
-        }
-    }
+		// Le bonus disparaît après utilisation
+		if (model != null) {
+			model.remove(this);
+		}
+	}
 }

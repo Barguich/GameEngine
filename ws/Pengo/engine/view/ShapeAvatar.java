@@ -3,7 +3,6 @@ package view;
 import oop.graphics.Graphics;
 import model.Entity;
 import oop.graphics.Color;
-import pengo.model.IceBlock;
 
 public class ShapeAvatar extends Avatar {
 
@@ -11,9 +10,9 @@ public class ShapeAvatar extends Avatar {
 		OVAL, RECT
 	}
 
-	private final Shape shape;
-	private final int a, r, g, b;
-	private Color color;
+	protected final Shape shape;
+	protected final int a, r, g, b;
+	protected Color color;
 	private Color flashColor;
 	private long flashUntil = 0;
 
@@ -62,20 +61,8 @@ public class ShapeAvatar extends Avatar {
 
 		if (flashing) {
 			active = getFlashColor(g);
-		} else if (entity instanceof IceBlock ice) {
-
-			if (ice.hp() == 3) {
-				active = g.getColor(255, 120, 180, 255);
-			} else if (ice.hp() == 2) {
-				active = g.getColor(255, 100, 140, 220);
-			} else if (ice.hp() == 1) {
-				active = g.getColor(255, 180, 80, 80);
-			} else {
-				active = color;
-			}
-
 		} else {
-			active = color;
+			active = resolveBaseColor(g);
 		}
 
 		Object saved = saveTransform(g);
@@ -88,6 +75,15 @@ public class ShapeAvatar extends Avatar {
 			g.fillRect(-halfW, -halfH, halfW * 2, halfH * 2);
 		}
 		restoreTransform(g, saved);
+	}
+
+	/**
+	 * Couleur de fond de la forme hors flash. Le moteur renvoie la couleur fixe
+	 * fournie au constructeur ; un jeu peut surcharger cette méthode pour faire
+	 * varier la couleur selon l'état de son entité (sans coupler le moteur au jeu).
+	 */
+	protected Color resolveBaseColor(Graphics g) {
+		return color;
 	}
 
 	private Color getFlashColor(Graphics g) {

@@ -197,6 +197,11 @@ public class IceBlock extends Entity {
 		detachEnemy();
 
 		double speed = 20.0;
+		if (model instanceof PengoModel) {
+			PengoConfig cfg = ((PengoModel) model).config();
+			speed = cfg.iceSpeed();
+			friction = cfg.iceFriction();
+		}
 
 		if (isu == null) {
 			sliding = false;
