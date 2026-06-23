@@ -21,6 +21,7 @@
 .metadata/
 .vscode/
 Drawios/
+docs/
 
 # --- Fichiers temporaires ---
 *.log

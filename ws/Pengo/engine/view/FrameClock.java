@@ -5,12 +5,8 @@ package view;
  *
  * <p>C'est le seul endroit du package view qui accumule de l'état temporel
  * mutable. On l'isole ici plutôt que dans View pour que View.paint() reste
- * structurellement un orchestrateur de rendu sans logique d'état (contrainte
- * MVCB : paint() ne mute pas le modèle, et on garde la mutation de mesure
- * confinée à un composant dédié).
+ * structurellement un orchestrateur de rendu sans logique d'état.
  *
- * <p>La mesure est lissée par moyenne glissante exponentielle (EMA) pour
- * éviter un affichage qui saute à chaque micro-variation de frame time.
  */
 final class FrameClock {
 
