@@ -59,7 +59,9 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		if (action_ms <= 0) {
 			action_ms = 0;
 			entity.stop();
-			entity.snapToGrid();
+			if (entity.position() != null) {
+				entity.setPosition(entity.position());
+			}
 			entity.done();
 		}
 	}

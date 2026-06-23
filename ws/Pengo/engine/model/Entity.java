@@ -457,9 +457,6 @@ public class Entity {
 	public String name() {
 		return name;
 	}
-<<<<<<< HEAD
-}
-=======
 
 	// Multiplicateur de vitesse appliqué aux déplacements.
 	// Valeur neutre par défaut côté moteur ; un jeu peut le surcharger
@@ -468,4 +465,3 @@ public class Entity {
 		return 1.0;
 	}
 }
->>>>>>> feature/engine

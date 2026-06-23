@@ -1,12 +1,10 @@
 package gal.action;
 
-import java.util.List;
-
 import gal.arguments.Direction;
-import geometry.Grid;
 import model.Entity;
-import model.Model;
 import pengo.model.IceBlock;
+import pengo.model.PengoModel;
+import geometry.Grid;
 
 public class Hit extends GALAction {
 
@@ -18,83 +16,54 @@ public class Hit extends GALAction {
 
 	@Override
 	public boolean exec(Entity e) {
-		if (e == null || e.position() == null || e.model() == null)
+		if (e == null || e.position() == null) {
 			return false;
-
-		Grid.Position target = targetPosition(e);
-		if (target == null)
-			return false;
-
-		Model model = e.model();
-		List<Entity> occupants = model.entitiesAt(target);
-
-		if (occupants.isEmpty())
-			return false;
-
-		// Frappe la première entité destructible trouvée (pas l'entité elle-même)
-		for (Entity victim : occupants) {
-			if (victim == e)
-				continue;
-
-			// Les entités Killable (K) ou les blocs (IceBlock, etc.) sont détruits
-			if (victim.getClass() == IceBlock.class) {
-				return ((IceBlock) victim).destroyByEnemy();
-			}
 		}
+
+		int angle = resolveAngle(direction, e.orientation());
+
+		int x = e.position().x();
+		int y = e.position().y();
+
+		switch (angle) {
+			case 0:
+				x++;
+				break;
+			case 90:
+				y++;
+				break;
+			case 180:
+				x--;
+				break;
+			case 270:
+				y--;
+				break;
+			default:
+				return false;
+		}
+
+		if (!(e.model() instanceof PengoModel pm)) {
+			return false;
+		}
+
+		Grid.Position target = pm.grid().new Position(x, y);
+		Entity hit = pm.firstAt(target);
+
+		if (hit instanceof IceBlock ice) {
+			ice.damage();
+			return true;
+		}
+
 		return false;
 	}
 
-	// ── Calcul de la case cible ──────────────────────────────────────────────
-
-	private Grid.Position targetPosition(Entity e) {
-		Grid.Position pos = e.position();
-
-		// Résolution de la direction relative en angle absolu
-		int absAngle = resolveAngle(e);
-
-		int dx = 0, dy = 0;
-		// Convention moteur : 0°=Est, 90°=Sud, 180°=Ouest, 270°=Nord
-		switch (absAngle) {
-			case 0:
-				dx = 1;
-				dy = 0;
-				break; // Est
-			case 90:
-				dx = 0;
-				dy = 1;
-				break; // Sud
-			case 180:
-				dx = -1;
-				dy = 0;
-				break; // Ouest
-			case 270:
-				dx = 0;
-				dy = -1;
-				break; // Nord
-			default:
-				dx = (int) Math.round(Math.cos(Math.toRadians(absAngle)));
-				dy = -(int) Math.round(Math.sin(Math.toRadians(absAngle)));
-				break;
+	private int resolveAngle(Direction d, int orientation) {
+		if (d.isAbsolute()) {
+			return d.toAngle();
 		}
-
-		Grid.Position result = pos.copy();
-		result.translate(pos.grid().new Vector(dx, dy));
-		return result;
-	}
-
-	private int resolveAngle(Entity e) {
-		if (direction == null || direction == Direction.F)
-			return e.orientation();
-		if (direction == Direction.B)
-			return (e.orientation() + 180) % 360;
-		if (direction == Direction.L)
-			return (e.orientation() + 270) % 360;
-		if (direction == Direction.R)
-			return (e.orientation() + 90) % 360;
-		if (direction == Direction.H)
-			return e.orientation();
-		if (direction.isAbsolute())
-			return ((direction.toAngle() % 360) + 360) % 360;
-		return e.orientation();
+		if (d == Direction.H) {
+			return orientation;
+		}
+		return ((orientation + d.toAngle()) % 360 + 360) % 360;
 	}
 }
