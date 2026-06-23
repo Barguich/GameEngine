@@ -16,41 +16,41 @@ import view.ViewPort;
 
 public class Main {
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
-        Runtime.boot(new Dimension(800, 600), new Runnable() {
+		Runtime.boot(new Dimension(800, 600), new Runnable() {
 
-            @Override
-            public void run() {
+			@Override
+			public void run() {
 
-                new Game(FixedMap.width(), FixedMap.height());
+				new Game(FixedMap.width(), FixedMap.height());
 
-                Model model = new Model(Game.grid());
+				Model model = new Model(Game.grid());
 
-                FixedMap.build(model);
+				FixedMap.build(model);
 
-                Canvas canvas = (Canvas) Task.task().find("canvas");
+				Canvas canvas = (Canvas) Task.task().find("canvas");
 
-                if (canvas == null) {
-                    System.err.println("Canvas introuvable.");
-                    return;
-                }
+				if (canvas == null) {
+					System.err.println("Canvas introuvable.");
+					return;
+				}
 
-                ViewPort viewPort = new ViewPort(
-                        Game.game().width_cm,
-                        Game.game().height_cm);
+				ViewPort viewPort = new ViewPort(
+						Game.game().width_cm,
+						Game.game().height_cm);
 
-                View view = new View(model, viewPort);
+				View view = new View(model, viewPort);
 
-                canvas.set((Canvas.PaintListener) view);
+				canvas.set((Canvas.PaintListener) view);
 
-                Painter painter = new Painter(canvas);
+				Painter painter = new Painter(canvas);
 
-                Task.task().post(painter, 0);
-            }
+				Task.task().post(painter, 0);
+			}
 
-        }, true);
+		}, true);
 
-        System.exit(0);
-    }
+		System.exit(0);
+	}
 }

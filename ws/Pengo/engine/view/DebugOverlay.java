@@ -16,17 +16,6 @@ import oop.graphics.Graphics;
  * Affiche : FPS réel (frames de rendu), durée de la dernière frame, tick
  * rate logique (fourni par View), bounding boxes des entités, et l'action
  * inférée de l'entité suivie.
- *
- * <p>
- * Contraintes respectées :
- * <ul>
- * <li>Game-agnostic : aucun import de game.* ou pengo.* — ne dépend que de
- * engine/model, engine/collision et oop.graphics.</li>
- * <li>paint() ne mute pas le modèle : l'overlay ne lit que des données
- * publiques et ne touche jamais l'état des entités.</li>
- * <li>Le seul état mutable (FrameClock) est confiné et mis à jour
- * explicitement par tick de rendu via begin().</li>
- * </ul>
  */
 public class DebugOverlay {
 

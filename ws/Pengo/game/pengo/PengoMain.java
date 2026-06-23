@@ -1,5 +1,7 @@
-package engine;
+package pengo;
 
+import engine.Game;
+import model.Entity;
 import model.Ticker;
 import oop.graphics.Canvas;
 import oop.tasks.Runtime;
@@ -11,25 +13,30 @@ import pengo.model.Enemy;
 import pengo.model.FishBonus;
 import pengo.model.GoldBlock;
 import pengo.model.IceBlock;
+import pengo.model.PengoConfig;
 import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
 import pengo.model.Wall;
+import pengo.view.PengoHUD;
+import pengo.view.PengoMenuOverlay;
+import testSprite.EnemyAvatar;
 import testSprite.IceBlockAvatar;
+import view.EntityRenderHook;
 import view.Painter;
 import view.ShapeAvatar;
 import view.View;
 import view.ViewPort;
-import model.Entity;
-import pengo.view.*;
-import view.EntityRenderHook;
-import testSprite.EnemyAvatar;
 
-public class MainEngine {
+// Lanceur applicatif du jeu Pengo.
+// Réside côté game : il assemble le modèle, la vue et les entités Pengo
+// en s'appuyant sur le moteur (engine), qui lui ne connaît rien de Pengo.
+public class PengoMain {
 
 	public static void main(String[] args) {
 
 		Game game = new Game(20, 13);
-		PengoModel model = new PengoModel(Game.grid());
+		PengoConfig config = new PengoConfig();
+		PengoModel model = new PengoModel(Game.grid(), config);
 
 		double mapW = game.width_cm;
 		double mapH = game.height_cm;
@@ -177,6 +184,8 @@ public class MainEngine {
 		addEnemy(model, view, 16, 5, true);
 		addWall(model, view, 16, 10);
 
+		addEnemyBlock(model, view, 6, 7);
+
 		/*
 		 * ==========================================================
 		 * SCENARIO 6 : Alignement de 3 DiamondBlock
@@ -233,6 +242,17 @@ public class MainEngine {
 		avatar.setView(view);
 	}
 
+	private static void addEnemyBlock(PengoModel model, View view, int x, int y) {
+		pengo.model.EnemyBlock block = new pengo.model.EnemyBlock();
+		block.setPosition(Game.grid().new Position(x, y));
+		block.setSize(Game.grid().new Dimension(1, 1));
+		model.add(block);
+
+		IceBlockAvatar avatar = new IceBlockAvatar(block);
+		block.setAvatar(avatar);
+		avatar.setView(view);
+	}
+
 	private static void addEnemy(PengoModel model, View view, int x, int y, boolean frozen) {
 		Enemy enemy = new Enemy();
 		enemy.setPosition(Game.grid().new Position(x, y));
@@ -279,9 +299,6 @@ public class MainEngine {
 		wall.setPosition(Game.grid().new Position(x, y));
 		wall.setSize(Game.grid().new Dimension(1, 1));
 		model.add(wall);
-		wall.setPosition(Game.grid().new Position(x, y));
-		wall.setSize(Game.grid().new Dimension(1, 1));
-		model.add(wall);
 
 		ShapeAvatar avatar = new ShapeAvatar(wall, ShapeAvatar.Shape.RECT, 255, 120, 120, 120);
 		wall.setAvatar(avatar);
@@ -302,24 +319,7 @@ public class MainEngine {
 			addWall(model, view, w - 1, y);
 		}
 	}
-	// private static void addGold(PengoModel model, View view, int x, int y) {
-	// GoldBlock gold = new GoldBlock();
-	// gold.setPosition(Game.grid().new Position(x, y));
-	// gold.setSize(Game.grid().new Dimension(1, 1));
-	// model.add(gold);
 
-	// ShapeAvatar avatar = new ShapeAvatar(
-	// gold,
-	// ShapeAvatar.Shape.RECT,
-	// 255,
-	// 255,
-	// 215,
-	// 0
-	// );
-
-	// gold.setAvatar(avatar);
-	// avatar.setView(view);
-	// }
 	private static void addFish(PengoModel model, View view, int x, int y) {
 		FishBonus fish = new FishBonus();
 		fish.setPosition(Game.grid().new Position(x, y));

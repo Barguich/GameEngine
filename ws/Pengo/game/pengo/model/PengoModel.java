@@ -30,6 +30,7 @@ public class PengoModel extends Model {
 
     private boolean doubleScore;
     private long doubleScoreRemaining;
+	private final PengoConfig config;
 
     private boolean wallVibration;
     private long wallVibrationRemaining;
@@ -39,9 +40,15 @@ public class PengoModel extends Model {
 
     private Runnable sceneBuilder;
 
-    public PengoModel(Grid grid) {
-        super(grid);
 
+	 public PengoModel(Grid grid) {
+		this(grid, new PengoConfig());
+    }
+
+	public PengoModel(Grid grid,PengoConfig config){
+		super(grid);
+		assert config != null;
+		this.config = config;
         player = null;
         score = 0;
 
@@ -58,7 +65,9 @@ public class PengoModel extends Model {
         vibratingEntities = new ArrayList<Entity>();
 
         invincibleRemaining = 0;
-    }
+	}
+
+   
 
     public void setPlayer(PengoPlayer player) {
         if (player == null) {
@@ -79,6 +88,10 @@ public class PengoModel extends Model {
     public GameState state() {
         return state;
     }
+
+	public PengoConfig config(){
+		return this.config;
+	}
 
     public void setStateListener(StateListener listener) {
         this.stateListener = listener;
@@ -447,7 +460,7 @@ public class PengoModel extends Model {
         }
 
         enemy.kill();
-        addScore(100);
+        addScore(config.scoreWall());
     }
 
     public void damageBlockInFront(PengoPlayer player) {
@@ -946,7 +959,7 @@ public class PengoModel extends Model {
 
             enemy.markCrushedByIce();
             remove(enemy);
-            addScore(100);
+            addScore(config.scoreCrush());
         }
 
         //on arrête le bloc et on vide la liste des ennemis transportés.
