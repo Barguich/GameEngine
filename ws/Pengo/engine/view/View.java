@@ -39,8 +39,7 @@ public class View implements Canvas.PaintListener {
 
 	/**
 	 * Active le suivi élastique : le joueur bouge librement dans une zone morte
-	 * centrée, exprimée en fraction du viewport (0.2 = ±20 % autour du centre).
-	 * Mettre 0 désactive l'élasticité (caméra strictement centrée).
+	 * centrée, exprimée en fraction du viewport.
 	 */
 	public void setElasticZone(double fractionX, double fractionY) {
 		this.elasticFractionX = Math.max(0, Math.min(fractionX, 0.5));
@@ -78,7 +77,7 @@ public class View implements Canvas.PaintListener {
 			double marginY = viewPort.getHeight_cm() * elasticFractionY;
 			viewPort.followElastic(followed.center(), marginX, marginY);
 		} else {
-			// Suivi strictement centré (avec clamping aux bords de la map).
+			// Suivi strictement centré
 			viewPort.centerOn(followed.center());
 		}
 	}

@@ -36,7 +36,6 @@ public class IceBlock extends Entity {
 		breakingAnimationDuration = 0;
 		breakingFrame = 0;
 		draggedEnemies = new ArrayList<Enemy>();
-
 	}
 
 	public IceBlock(boolean containsSnoBee, long hatchDelay) {
@@ -148,6 +147,12 @@ public class IceBlock extends Entity {
 
 	public int breakingFrame() {
 		return breakingFrame;
+	}
+
+	// Indique si ce bloc peut être détruit par un ennemi (action GAL Hit).
+	// Les blocs spéciaux (Diamond, Gold) redéfinissent à false.
+	public boolean destructibleByEnemy() {
+		return true;
 	}
 
 	public boolean destroyByEnemy() {

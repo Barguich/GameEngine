@@ -9,8 +9,8 @@ import geometry.ISU;
 public class Game {
 
 	// Paramètres globaux du monde
-	public final boolean torusOnXaxis = true;
-	public final boolean torusOnYaxis = true;
+	public final boolean torusOnXaxis = false;
+	public final boolean torusOnYaxis = false;
 	public final double cmPerCell = 3.7;
 	public final int pixelPerCm = 2;
 

@@ -35,7 +35,11 @@ SnoBee(Patrol){
   | Closest(@,E) & Step(E,V) ? Move(E) :(Hunt)
   | Closest(@,W) & Step(W,K) ? Hit(W) :(Hunt)
   | Closest(@,W) & Step(W,V) ? Move(W) :(Hunt)
+  | Step(F,V) ? Move(F) :(Hunt)
+  | Step(L,V) ? Turn(L) :(Hunt)
+  | Step(R,V) ? Turn(R) :(Hunt)
   | True ? Turn(B) :(Hunt)
+
 
   * (Rage)
   | Closest(@,N) & Step(N,O) & Step(E,V) ? Move(E) :(Rage)
