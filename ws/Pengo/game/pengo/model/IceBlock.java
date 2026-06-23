@@ -33,7 +33,6 @@ public class IceBlock extends Entity {
 		breakingAnimationRemaining = 0;
 		breakingFrame = 0;
 		draggedEnemies = new ArrayList<Enemy>();
-
 	}
 
 	public IceBlock(boolean containsSnoBee, long hatchDelay) {
