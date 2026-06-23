@@ -18,6 +18,8 @@ public class Enemy extends Entity {
 	private boolean dead;
 	private long frozenAnimationClock = 0;
 	private long walkAnimationClock = 0;
+	private boolean passedOut;
+	private long passedOutRemaining;
 
 	public Enemy() {
 		super("Enemy");
@@ -31,6 +33,8 @@ public class Enemy extends Entity {
 		this.breakingThroughBlock = null;
 		this.draggedByIce = false;
 		this.crushedByIce = false;
+		this.passedOut = false;
+		this.passedOutRemaining = 0;
 	}
 
 	public boolean crushedByIce() {
@@ -38,7 +42,7 @@ public class Enemy extends Entity {
 	}
 
 	public boolean harmlessForPlayer() {
-		return dead || dying || draggedByIce || crushedByIce;
+		return dead || dying || draggedByIce || crushedByIce || passedOut ||frozen;
 	}
 
 	public long frozenAnimationClock() {
@@ -47,6 +51,15 @@ public class Enemy extends Entity {
 
 	public long walkAnimationClock() {
 		return walkAnimationClock;
+	}
+	public void passOut(long duration) {
+		passedOut = true;
+		passedOutRemaining = duration;
+		stop();
+	}
+
+	public boolean passedOut() {
+		return passedOut;
 	}
 
 	public void markCrushedByIce() {
@@ -201,6 +214,14 @@ public class Enemy extends Entity {
 		if (draggedByIce) {
 			stop();
 			return;
+		}
+		if (passedOut) {
+			passedOutRemaining -= elapsed;
+
+			if (passedOutRemaining <= 0) {
+				passedOut = false;
+				passedOutRemaining = 0;
+			}
 		}
 
 		// Horloge d'animation de marche : accumule pendant un déplacement,

@@ -145,7 +145,7 @@ Un bloc spécial disparaît et un ennemi apparaît à sa place.
 
 ---
 
-## 3.4 [x] Gestion des bonus temporaires *(optionnel)*
+## 3.4 [x] Gestion des bonus temporaires
 
 #MP: ce n'est pas cohérent de remettre ici en optionnel une partie du contrat qui n'était pas optionnelle plus haut. 
 

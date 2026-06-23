@@ -16,9 +16,10 @@ public class PengoPlayer extends Entity {
 	private Grid.Position targetCell;
 	private Grid.Position originCell;
 	private FishBonus pendingFishBonus;
+	private boolean iceSlow;
+	private long iceSlowRemaining;
 
 	private long walkAnimationClock = 0;
-
 
 	public PengoPlayer() {
 		super("PengoPlayer");
@@ -29,13 +30,12 @@ public class PengoPlayer extends Entity {
 		this.movingOneCell = false;
 		this.targetCell = null;
 		this.pendingFishBonus = null;
-		
+		this.iceSlow = false;
+		this.iceSlowRemaining = 0;
+
 	}
 
-
-
 	@Override
-
 	public double speedMultiplier() {
 		double m = 1.0;
 
@@ -43,11 +43,12 @@ public class PengoPlayer extends Entity {
 			m *= 2.0;
 		}
 
-		
+		if (iceSlow) {
+			m *= 0.45; // ralentissement
+		}
 
 		return m;
 	}
-
 
 	public long walkAnimationClock() {
 		return walkAnimationClock;
@@ -114,7 +115,6 @@ public class PengoPlayer extends Entity {
 	public void tick(long elapsed) {
 		super.tick(elapsed);
 
-
 		if (movingOneCell) {
 			walkAnimationClock += elapsed;
 		} else {
@@ -122,27 +122,34 @@ public class PengoPlayer extends Entity {
 		}
 
 		if (movingOneCell && targetCell != null && position() != null) {
-			if (position().x() == targetCell.x()
-					&& position().y() == targetCell.y()) {
-
+			if (position().x() == targetCell.x() && position().y() == targetCell.y()) {
 
 				finishGridMoveOnTarget();
 				return;
 			}
 		}
 
-
 		if (speedBoost) {
 			speedBoostRemaining -= elapsed;
-
 
 			if (speedBoostRemaining <= 0) {
 				speedBoost = false;
 				speedBoostRemaining = 0;
 
-
 			}
 		}
+		if (iceSlow) {
+			iceSlowRemaining -= elapsed;
+
+			if (iceSlowRemaining <= 0) {
+				iceSlow = false;
+				iceSlowRemaining = 0;
+			}
+		}
+	}
+	public void slowAfterIcePassage(long duration) {
+		iceSlow = true;
+		iceSlowRemaining = duration;
 	}
 
 	@Override
@@ -152,7 +159,6 @@ public class PengoPlayer extends Entity {
 		}
 
 		bounding = new Bounding();
-
 
 		double radius = Math.min(size.x(), size.y()) * 0.35;
 
@@ -178,14 +184,19 @@ public class PengoPlayer extends Entity {
 			return;
 		}
 
-		if (e instanceof Enemy && model instanceof PengoModel) {
+		if (e instanceof Enemy && model instanceof PengoModel pm) {
 			Enemy enemy = (Enemy) e;
+
+			if (enemy.passedOut()) {
+				pm.killEnemy(enemy);
+				finishGridMoveOnTarget();
+				return;
+			}
 
 			if (enemy.harmlessForPlayer()) {
 				cancelGridMoveAndSnapBack();
 				return;
 			}
-
 			((PengoModel) model).loseLife();
 			cancelGridMoveAndSnapBack();
 			return;
@@ -198,16 +209,17 @@ public class PengoPlayer extends Entity {
 		}
 
 		if (e instanceof IceBlock) {
-		System.out.println("PENGO COLLISION ICEBLOCK - SECURITY STOP");
+		    IceBlock block = (IceBlock) e;
 
-			// Collision parasite : on ne pousse pas ici on remet seulement Pengo proprement
-			// sur sa case.
+		    // HP=1 ou HP=0 : on ignore la collision
+		    if (block.passableByPlayer() || block.hp() <= 0 || block.broken()) {
+		        return;
+		    }
 
-			stopCleanlyOnCurrentCell();
-			return;
+		    // HP=2 ou HP=3 : Pengo bloque
+		    stopCleanlyOnCurrentCell();
+		    return;
 		}
-
-
 		super.collision(e);
 	}
 
@@ -234,24 +246,24 @@ public class PengoPlayer extends Entity {
 
 		switch (direction) {
 
-			case 0:
-				x++;
-				break;
+		case 0:
+			x++;
+			break;
 
-			case 90:
-				y++;
-				break;
+		case 90:
+			y++;
+			break;
 
-			case 180:
-				x--;
-				break;
+		case 180:
+			x--;
+			break;
 
-			case 270:
-				y--;
-				break;
+		case 270:
+			y--;
+			break;
 
-			default:
-				return;
+		default:
+			return;
 		}
 
 		if (!(model instanceof PengoModel)) {
@@ -269,29 +281,56 @@ public class PengoPlayer extends Entity {
 			cancelGridMove();
 			return;
 		}
-
 		if (front instanceof IceBlock) {
 			IceBlock block = (IceBlock) front;
 
-			// si le bloc glisse déjà ==Pengo ne doit pas le relancer
-			if (block.sliding()) {
-				System.out.println("PENGO TRIES TO PUSH BUT ICE ALREADY SLIDING");
+			// HP = 1 : Pengo traverse + ralentissement
+			if (block.passableByPlayer()) {
+				slowAfterIcePassage(3000);
+			}
+
+			// HP = 2 : bloque, pas poussable
+			else if (block.cracked()) {
 				cancelGridMove();
 				return;
 			}
 
-			System.out.println("PENGO PUSH ICEBLOCK");
+			// HP = 3 : poussable
+			else {
+				if (block.sliding()) {
+					cancelGridMove();
+					return;
+				}
 
-			block.startSlide(direction);
-
-			// pengo reste devant le bloc
-			cancelGridMove();
-			return;
+				block.startSlide(direction);
+				cancelGridMove();
+				return;
+			}
 		}
 
 		// ENEMY devant ==Pengo perd une vie sauf si l'ennemi est harmless
 		if (front instanceof Enemy) {
 			Enemy enemy = (Enemy) front;
+
+			if (enemy.passedOut()) {
+				pm.killEnemy(enemy);
+
+				originCell = pm.grid().new Position(position().x(), position().y());
+				targetCell = nextCell;
+				movingOneCell = true;
+
+				if (direction == 0) {
+					setLinearSpeed(isu.new Vector(speed, 0));
+				} else if (direction == 90) {
+					setLinearSpeed(isu.new Vector(0, speed));
+				} else if (direction == 180) {
+					setLinearSpeed(isu.new Vector(-speed, 0));
+				} else if (direction == 270) {
+					setLinearSpeed(isu.new Vector(0, -speed));
+				}
+
+				return;
+			}
 
 			if (!enemy.harmlessForPlayer()) {
 				pm.loseLife();
@@ -299,7 +338,6 @@ public class PengoPlayer extends Entity {
 				return;
 			}
 		}
-
 		// FISH BONUS devant == on le mémorise, il sera consommé quand Pengo arrive
 		// dessus.
 
@@ -314,7 +352,6 @@ public class PengoPlayer extends Entity {
 		originCell = pm.grid().new Position(position().x(), position().y());
 		targetCell = nextCell;
 		movingOneCell = true;
-
 
 		if (direction == 0) {
 			setLinearSpeed(isu.new Vector(speed, 0));
@@ -354,7 +391,6 @@ public class PengoPlayer extends Entity {
 			pendingFishBonus.consume(this);
 		}
 
-
 		movingOneCell = false;
 		originCell = null;
 		targetCell = null;
@@ -367,9 +403,7 @@ public class PengoPlayer extends Entity {
 		if (model instanceof PengoModel && position() != null) {
 			PengoModel pm = (PengoModel) model;
 
-			Grid.Position current = pm.grid().new Position(
-					position().x(),
-					position().y());
+			Grid.Position current = pm.grid().new Position(position().x(), position().y());
 
 			setPosition(current);
 			setBounding();

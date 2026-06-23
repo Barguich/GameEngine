@@ -436,24 +436,55 @@ public class PengoModel extends Model {
             }
         }
     }
-
     public void startWallVibration(Entity source, long duration) {
-        if (source == null || duration <= 0) {
-            return;
-        }
+    	if (source == null || duration <= 0) {
+    		return;
+    	}
 
-        wallVibration = true;
-        wallVibrationRemaining = duration;
+    	wallVibration = true;
+    	wallVibrationRemaining = duration;
 
-        vibratingEntities.clear();
+    	vibratingEntities.clear();
 
-        for (Entity e : entities()) {
-            if (e instanceof Enemy) {
-                if (e.distanceCenterToCenter(source) <= source.step().x() * 2) {
-                    vibratingEntities.add(e);
-                }
-            }
-        }
+    	// tous les murs vibrent visuellement
+    	for (Entity e : entities()) {
+    		if (e instanceof Wall) {
+    			vibratingEntities.add(e);
+    		}
+    	}
+
+    	// uniquement les ennemis à N-1 du mur touché
+    	// ennemis à côté de n'importe quel mur
+    	for (Entity e : entities()) {
+    		if (e instanceof Enemy enemy) {
+
+    			for (Entity w : entities()) {
+    				if (w instanceof Wall) {
+
+    					if (adjacentToWall(enemy, w)) {
+    						vibratingEntities.add(enemy);
+    						enemy.passOut(5000);
+    						break;
+    					}
+    				}
+    			}
+    		}
+    	}
+    }
+    	
+    private boolean adjacentToWall(Entity enemy, Entity wall) {
+    	if (enemy == null || wall == null) {
+    		return false;
+    	}
+
+    	if (enemy.position() == null || wall.position() == null) {
+    		return false;
+    	}
+
+    	int dx = Math.abs(enemy.position().x() - wall.position().x());
+    	int dy = Math.abs(enemy.position().y() - wall.position().y());
+
+    	return dx + dy == 1;
     }
 
     public boolean wallVibration() {
@@ -951,6 +982,31 @@ public class PengoModel extends Model {
         // diamondBlock et GoldBlock héritent de IceBlock, donc ils sont inclus ici.
 
         return e instanceof Wall || e instanceof IceBlock;
+    }
+    @Override
+    protected boolean collisionBlocks(Entity mover, Entity other) {
+        if (mover == null || other == null) {
+            return false;
+        }
+
+        // Pengo peut traverser un bloc HP=1 ou HP=0
+        if (mover instanceof PengoPlayer && other instanceof IceBlock) {
+            IceBlock block = (IceBlock) other;
+
+            if (block.hp() <= 1 || block.broken()) {
+                return false;
+            }
+        }
+
+        if (other instanceof PengoPlayer && mover instanceof IceBlock) {
+            IceBlock block = (IceBlock) mover;
+
+            if (block.hp() <= 1 || block.broken()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void crushDraggedEnemiesByIce(IceBlock ice, Grid.Position finalIcePosition) {
