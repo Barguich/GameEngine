@@ -19,6 +19,8 @@ public class IceBlock extends Entity {
 	private long breakingAnimationRemaining;
 	private int breakingFrame;
 	private List<Enemy> draggedEnemies; // liste des ennemies a emporter lors de sliding
+	private boolean containsSnoBee;
+	private long hatchRemaining;
 
 	public IceBlock() {
 		super("IceBlock");
@@ -34,6 +36,16 @@ public class IceBlock extends Entity {
 
 	}
 
+	public IceBlock(boolean containsSnoBee, long hatchDelay) {
+		this();
+		this.containsSnoBee = containsSnoBee;
+		this.hatchRemaining = hatchDelay;
+	}
+
+	public boolean containsSnoBee() {
+		return containsSnoBee;
+	}
+
 	public List<Enemy> draggedEnemies() {
 		return draggedEnemies;
 	}
@@ -42,7 +54,7 @@ public class IceBlock extends Entity {
 		if (draggedEnemies.isEmpty()) {
 			return null;
 		}
-//le premier de la liste est l'ennemi le plus devant.
+		// le premier de la liste est l'ennemi le plus devant.
 
 		return draggedEnemies.get(0);
 	}
@@ -135,6 +147,22 @@ public class IceBlock extends Entity {
 		return breakingFrame;
 	}
 
+	public boolean destroyByEnemy() {
+		if (broken) {
+			return false;
+		}
+		if (breakingAnimation) {
+			return true;
+		}
+		hp = 0;
+		stopSlide();
+		breakingAnimation = true;
+		breakingAnimationRemaining = 300;
+		breakingFrame = 0;
+		System.out.println("ICEBLOCK DESTROYED BY ENEMY");
+		return true;
+	}
+
 	public void damage() {
 		if (broken || breakingAnimation) {
 			return;
@@ -193,7 +221,20 @@ public class IceBlock extends Entity {
 	}
 
 	public void breakBlock() {
+		if (broken) {
+			return;
+		}
+
 		broken = true;
+		stopSlide();
+
+		if (containsSnoBee && model instanceof PengoModel) {
+			containsSnoBee = false;
+			hatchRemaining = 0;
+
+			((PengoModel) model).hatchSnoBee(this);
+			return;
+		}
 
 		if (model != null) {
 			model.remove(this);
@@ -225,6 +266,15 @@ public class IceBlock extends Entity {
 
 	@Override
 	public void tick(long elapsed) {
+		if (containsSnoBee && hatchRemaining > 0) {
+			hatchRemaining -= elapsed;
+
+			if (hatchRemaining <= 0 && model instanceof PengoModel) {
+				containsSnoBee = false;
+				((PengoModel) model).hatchSnoBee(this);
+				return;
+			}
+		}
 		if (breakingAnimation) {
 			breakingAnimationRemaining -= elapsed;
 
@@ -315,7 +365,7 @@ public class IceBlock extends Entity {
 		// On détache l'ennemi transporté.
 
 		detachEnemy();
-//on coupe complètement la vitesse.
+		// on coupe complètement la vitesse.
 		stop();
 
 		// On place le bloc exactement à la position finale.

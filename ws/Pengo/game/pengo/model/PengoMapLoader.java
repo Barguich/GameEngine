@@ -90,33 +90,36 @@ public class PengoMapLoader {
 	// Associe chaque symbole du fichier texte à une entité du jeu
 	private static Entity createEntity(char c) {
 		switch (c) {
-		case '#':
-			return new Wall();
+			case '#':
+				return new Wall();
 
-		case 'P':
-			return new PengoPlayer();
+			case 'P':
+				return new PengoPlayer();
 
-		case 'I':
-			return new IceBlock();
+			case 'I':
+				return new IceBlock();
 
-		case 'G':
-			return new GoldBlock();
+			case 'G':
+				return new GoldBlock();
 
-		case 'D':
-			return new DiamondBlock();
+			case 'D':
+				return new DiamondBlock();
 
-		case 'E':
-			return new Enemy();
+			case 'E':
+				return new Enemy();
 
-		case 'F':
-			return new FishBonus();
+			case 'F':
+				return new FishBonus();
+				
+			case 'B':
+				return new IceBlock(true, 10_000);
 
-		case '.':
-		case ' ':
-			return null;
+			case '.':
+			case ' ':
+				return null;
 
-		default:
-			throw new IllegalArgumentException("Symbole inconnu dans la map : " + c);
+			default:
+				throw new IllegalArgumentException("Symbole inconnu dans la map : " + c);
 		}
 	}
 }

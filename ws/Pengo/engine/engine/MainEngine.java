@@ -36,6 +36,13 @@ public class MainEngine {
 
 		ViewPort viewPort = new ViewPort(mapW, mapH, mapW, mapH);
 		View view = new View(model, viewPort);
+		model.setEnemySpawnListener(enemy -> {
+			EnemyAvatar avatar = new EnemyAvatar(enemy);
+			enemy.setAvatar(avatar);
+			avatar.setView(view);
+
+			PengoBots.configureEntity(model, enemy);
+		});
 		view.debug().setEnabled(true);
 
 		view.addRenderHook(new EntityRenderHook() {
@@ -88,8 +95,7 @@ public class MainEngine {
 		 * Il commence près du scénario principal.
 		 */
 		PengoPlayer player = new PengoPlayer();
-		player.setPosition(Game.grid().new Position(2, 5));
-		player.setSize(Game.grid().new Dimension(1, 1));
+player.setPosition(Game.grid().new Position(12, 3));		player.setSize(Game.grid().new Dimension(1, 1));
 		model.setPlayer(player);
 
 		ShapeAvatar playerAvatar = new ShapeAvatar(
@@ -108,118 +114,29 @@ public class MainEngine {
 		addBorders(model, view);
 
 		/*
-		 * ==========================================================
-		 * SCENARIO 1 : Slide simple
-		 *
-		 * IceBlock en (4,2)
-		 * Wall en (12,2)
-		 *
-		 * Le bloc glisse vers la droite et s'arrête contre le mur.
-		 * ==========================================================
+		 * TEST 1 :
+		 * Le SnoBee voit le joueur à droite.
+		 * Le bloc placé devant lui doit être détruit en un coup,
+		 * avec son animation de 300 ms.
 		 */
-		addIce(model, view, 4, 2);
+		addEnemy(model, view, 4, 3, false);
+		addIce(model, view, 5, 3);
 
 		/*
-		 * ==========================================================
-		 * SCENARIO 2 : IceBlock emporte Enemy puis l'écrase
-		 *
-		 * IceBlock en (4,5)
-		 * Enemy en (8,5)
-		 * Wall en (13,5)
-		 *
-		 * Après écrasement, le IceBlock finit près du mur,
-		 * mais il reste de l'espace au-dessus et en-dessous pour le repousser.
-		 * ==========================================================
+		 * TEST 2 :
+		 * Ce bloc contient un SnoBee.
+		 * Il doit éclore après 5 secondes.
 		 */
-		addIce(model, view, 4, 5);
-		addEnemy(model, view, 8, 5, true);
+		addSnoBeeEgg(model, view, 6, 8, 5_000);
 
 		/*
-		 * ==========================================================
-		 * SCENARIO 3 : Enemy proche d'un obstacle, écrasement rapide
-		 *
-		 * IceBlock en (4,8)
-		 * Enemy en (8,8)
-		 * Wall en (10,8)
-		 *
-		 * J'ai mis le mur en (10,8), pas directement en (9,8),
-		 * pour éviter que l'ennemi soit écrasé trop instantanément.
-		 * ==========================================================
+		 * TEST 3 :
+		 * Ennemi gelé pendant 5 secondes.
 		 */
-		addIce(model, view, 4, 8);
-		addEnemy(model, view, 8, 8, true);
-
-		/*
-		 * ==========================================================
-		 * SCENARIO 4 : IceBlock contre IceBlock
-		 *
-		 * IceBlock mobile en (4,10)
-		 * IceBlock obstacle en (10,10)
-		 *
-		 * Il y a assez d'espace autour pour retester le bloc après.
-		 * ==========================================================
-		 */
-		addIce(model, view, 4, 10);
-		addIce(model, view, 10, 10);
-
-		/*
-		 * ==========================================================
-		 * SCENARIO 5 : Vertical vers le bas
-		 *
-		 * IceBlock en (16,2)
-		 * Enemy en (16,5)
-		 * Wall en (16,10)
-		 *
-		 * Le bloc pousse l'ennemi vers le bas.
-		 * ==========================================================
-		 */
-		addIce(model, view, 16, 2);
-		addEnemy(model, view, 16, 5, true);
-		addWall(model, view, 16, 10);
-
-		/*
-		 * ==========================================================
-		 * SCENARIO 6 : Alignement de 3 DiamondBlock
-		 *
-		 * Départ :
-		 * Diamond mobile en (11,3)
-		 * Diamond fixe en (14,3)
-		 * Diamond fixe en (15,3)
-		 *
-		 * Action :
-		 * Pengo pousse le DiamondBlock de (11,3) vers la droite.
-		 *
-		 * Résultat attendu :
-		 * Le DiamondBlock mobile s'arrête en (13,3),
-		 * donc les diamonds sont alignés :
-		 * (13,3), (14,3), (15,3)
-		 *
-		 * Pas de mur juste à côté, pour éviter que les DiamondBlock
-		 * soient bloqués par la bordure ou par un obstacle inutile.
-		 * ==========================================================
-		 */
-		addDiamond(model, view, 11, 3);
-		addDiamond(model, view, 14, 3);
-		addDiamond(model, view, 16, 3);
-
-		/*
-		 * Enemy normal en plus pour éviter que la partie se termine
-		 * trop vite après avoir tué les ennemis de test.
-		 */
-		addEnemy(model, view, 17, 9, false);
-		/*
-		 * SCENARIO GOLD BLOCK :
-		 *
-		 * Enemy proche du GoldBlock.
-		 * Quand l'ennemi le touche, il doit freeze pendant 5 secondes.
-		 */
-		addGold(model, view, 10, 6);
-		addEnemy(model, view, 9, 6, false);
-		// fidh bonus
-		addFish(model, view, 3, 6);
+		Enemy frozenEnemy = addEnemy(model, view, 12, 8, false);
+		frozenEnemy.freeze(5_000);
 
 		view.follow(player);
-
 	}
 
 	private static void addIce(PengoModel model, View view, int x, int y) {
@@ -233,7 +150,24 @@ public class MainEngine {
 		avatar.setView(view);
 	}
 
-	private static void addEnemy(PengoModel model, View view, int x, int y, boolean frozen) {
+	private static void addSnoBeeEgg(
+			PengoModel model,
+			View view,
+			int x,
+			int y,
+			long hatchDelay) {
+
+		IceBlock ice = new IceBlock(true, hatchDelay);
+		ice.setPosition(Game.grid().new Position(x, y));
+		ice.setSize(Game.grid().new Dimension(1, 1));
+		model.add(ice);
+
+		IceBlockAvatar avatar = new IceBlockAvatar(ice);
+		ice.setAvatar(avatar);
+		avatar.setView(view);
+	}
+
+	private static Enemy addEnemy(PengoModel model, View view, int x, int y, boolean frozen) {
 		Enemy enemy = new Enemy();
 		enemy.setPosition(Game.grid().new Position(x, y));
 		enemy.setSize(Game.grid().new Dimension(1, 1));
@@ -250,6 +184,7 @@ public class MainEngine {
 		if (frozen) {
 			enemy.freeze(600_000);
 		}
+		return enemy;
 	}
 
 	private static void addDiamond(PengoModel model, View view, int x, int y) {

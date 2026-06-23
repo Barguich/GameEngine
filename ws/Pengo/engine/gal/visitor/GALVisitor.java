@@ -15,13 +15,14 @@ import gal.condition.*;
 /**
  * Visiteur AST → Automaton GAL.
  *
- * FIX choix probabiliste entre actions (ex: "70%Move(F) / 15%Turn(L) / 15%Turn(R)") :
- *   - Le pourcentage est attaché à chaque FunCall (funcall.percent()), pas à
- *     l'objet GALAction qu'on construit dans build(FunCall...).
- *   - On capture donc funcall.percent() dans exit(FunCall) au fil de la visite,
- *     dans une liste parallèle pendingPercents.
- *   - build(Actions...) consomme ensuite cette liste pour faire le tirage
- *     pondéré, puis la vide pour ne pas polluer le prochain groupe d'actions.
+ * FIX choix probabiliste entre actions (ex: "70%Move(F) / 15%Turn(L) /
+ * 15%Turn(R)") :
+ * - Le pourcentage est attaché à chaque FunCall (funcall.percent()), pas à
+ * l'objet GALAction qu'on construit dans build(FunCall...).
+ * - On capture donc funcall.percent() dans exit(FunCall) au fil de la visite,
+ * dans une liste parallèle pendingPercents.
+ * - build(Actions...) consomme ensuite cette liste pour faire le tirage
+ * pondéré, puis la vide pour ne pas polluer le prochain groupe d'actions.
  */
 public class GALVisitor implements iVisitor {
 
@@ -112,11 +113,15 @@ public class GALVisitor implements iVisitor {
     private Integer extractPercent(FunCall funcall) {
         try {
             Object p = funcall.percent();
-            if (p == null) return null;
-            if (p instanceof Integer) return (Integer) p;
-            if (p instanceof Number) return ((Number) p).intValue();
+            if (p == null)
+                return null;
+            if (p instanceof Integer)
+                return (Integer) p;
+            if (p instanceof Number)
+                return ((Number) p).intValue();
             String s = p.toString().trim();
-            if (s.isEmpty()) return null;
+            if (s.isEmpty())
+                return null;
             s = s.replace("%", "");
             return Integer.parseInt(s);
         } catch (Exception ex) {
@@ -131,6 +136,12 @@ public class GALVisitor implements iVisitor {
 
         // ---- CONDITIONS ------------------------------------------------
 
+        if (name.equals("Got")
+                && params.size() == 1
+                && params.get(0) instanceof Integer) {
+            return new EnemiesLeft((Integer) params.get(0));
+        }
+        
         if (name.equals("True")) {
             return new True();
         }

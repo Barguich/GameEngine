@@ -2,11 +2,11 @@ package gal.action;
 
 import java.util.List;
 
-import gal.arguments.Category;
 import gal.arguments.Direction;
 import geometry.Grid;
 import model.Entity;
 import model.Model;
+import pengo.model.IceBlock;
 
 public class Hit extends GALAction {
 
@@ -33,12 +33,12 @@ public class Hit extends GALAction {
 
 		// Frappe la première entité destructible trouvée (pas l'entité elle-même)
 		for (Entity victim : occupants) {
-			if (victim == e) continue;
+			if (victim == e)
+				continue;
 
 			// Les entités Killable (K) ou les blocs (IceBlock, etc.) sont détruits
-			if (isHittable(victim)) {
-				model.remove(victim);
-				return true;
+			if (victim.getClass() == IceBlock.class) {
+				return ((IceBlock) victim).destroyByEnemy();
 			}
 		}
 		return false;
@@ -55,10 +55,22 @@ public class Hit extends GALAction {
 		int dx = 0, dy = 0;
 		// Convention moteur : 0°=Est, 90°=Sud, 180°=Ouest, 270°=Nord
 		switch (absAngle) {
-			case 0: dx = 1; dy = 0; break; // Est
-			case 90:dx = 0; dy = 1; break; // Sud
-			case 180: dx = -1; dy = 0; break; // Ouest
-			case 270: dx = 0; dy = -1; break; // Nord
+			case 0:
+				dx = 1;
+				dy = 0;
+				break; // Est
+			case 90:
+				dx = 0;
+				dy = 1;
+				break; // Sud
+			case 180:
+				dx = -1;
+				dy = 0;
+				break; // Ouest
+			case 270:
+				dx = 0;
+				dy = -1;
+				break; // Nord
 			default:
 				dx = (int) Math.round(Math.cos(Math.toRadians(absAngle)));
 				dy = -(int) Math.round(Math.sin(Math.toRadians(absAngle)));
@@ -84,16 +96,5 @@ public class Hit extends GALAction {
 		if (direction.isAbsolute())
 			return ((direction.toAngle() % 360) + 360) % 360;
 		return e.orientation();
-	}
-
-
-	private boolean isHittable(Entity e) {
-		if (e == null) return false;
-		Category cat = e.category();
-		// Killable, blocs de glace (K), obstacles destructibles
-		return cat == Category.K
-			|| cat == Category.I  // ice-like
-			|| e.getClass().getSimpleName().contains("IceBlock")
-			|| e.getClass().getSimpleName().contains("Block");
 	}
 }
