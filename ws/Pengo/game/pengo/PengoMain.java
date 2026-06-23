@@ -26,6 +26,8 @@ import view.Painter;
 import view.ShapeAvatar;
 import view.View;
 import view.ViewPort;
+import java.io.IOException;
+import pengo.model.PengoMapLoader;
 
 // Lanceur applicatif du jeu Pengo.
 // Réside côté game : il assemble le modèle, la vue et les entités Pengo
@@ -34,10 +36,24 @@ public class PengoMain {
 
 	public static void main(String[] args) {
 
-		Game game = new Game(20, 13);
 		PengoConfig config = new PengoConfig();
-		PengoModel model = new PengoModel(Game.grid(), config);
 
+		String mapPath = config.mapPath();
+
+		if (args.length > 0) {
+			mapPath = args[0];
+		}
+
+		String[] map;
+
+		try {
+			map = PengoMapLoader.readMap(mapPath);
+		} catch (IOException e) {
+			throw new RuntimeException("Impossible de lire la map : " + mapPath, e);
+		}
+
+		Game game = new Game(PengoMapLoader.width(map), PengoMapLoader.height(map));
+		PengoModel model = new PengoModel(Game.grid(), config);
 		double mapW = game.width_cm;
 		double mapH = game.height_cm;
 
@@ -73,11 +89,11 @@ public class PengoMain {
 		view.addOverlay(new PengoMenuOverlay(model, view.menu()));
 
 		model.setSceneBuilder(() -> {
-			buildScene(model, view);
+			buildSceneFromMap(model, view, map);
 			PengoBots.configure(model);
 		});
 
-		buildScene(model, view);
+		buildSceneFromMap(model, view, map);
 		PengoBots.configure(model);
 
 		int winW = (int) (mapW * game.pixelPerCm);
@@ -95,24 +111,65 @@ public class PengoMain {
 		});
 	}
 
+	private static void buildSceneFromMap(PengoModel model, View view, String[] map) {
+		PengoMapLoader.load(model, map);
+
+		for (Entity e : model.entities()) {
+			attachAvatar(e, view);
+		}
+
+		view.follow(model.player());
+		view.setElasticZone(0.15, 0.15);
+	}
+
+	private static void attachAvatar(Entity e, View view) {
+		if (e instanceof PengoPlayer) {
+			ShapeAvatar avatar = new ShapeAvatar(e, ShapeAvatar.Shape.OVAL, 255, 220, 220, 0);
+			e.setAvatar(avatar);
+			avatar.setView(view);
+			return;
+		}
+
+		if (e instanceof Enemy) {
+			EnemyAvatar avatar = new EnemyAvatar((Enemy) e);
+			e.setAvatar(avatar);
+			avatar.setView(view);
+			return;
+		}
+
+		if (e instanceof IceBlock) {
+			IceBlockAvatar avatar = new IceBlockAvatar((IceBlock) e);
+			e.setAvatar(avatar);
+			avatar.setView(view);
+			return;
+		}
+
+		if (e instanceof Wall) {
+			ShapeAvatar avatar = new ShapeAvatar(e, ShapeAvatar.Shape.RECT, 255, 120, 120, 120);
+			e.setAvatar(avatar);
+			avatar.setView(view);
+			return;
+		}
+
+		if (e instanceof FishBonus) {
+			ShapeAvatar avatar = new ShapeAvatar(e, ShapeAvatar.Shape.OVAL, 255, 0, 180, 255);
+			e.setAvatar(avatar);
+			avatar.setView(view);
+			return;
+		}
+	}
+
 	private static void buildScene(PengoModel model, View view) {
 
 		/*
-		 * PLAYER
-		 * Il commence près du scénario principal.
+		 * PLAYER Il commence près du scénario principal.
 		 */
 		PengoPlayer player = new PengoPlayer();
-		player.setPosition(Game.grid().new Position(12, 3));		
+		player.setPosition(Game.grid().new Position(12, 3));
 		player.setSize(Game.grid().new Dimension(1, 1));
 		model.setPlayer(player);
 
-		ShapeAvatar playerAvatar = new ShapeAvatar(
-				player,
-				ShapeAvatar.Shape.OVAL,
-				255,
-				220,
-				220,
-				0);
+		ShapeAvatar playerAvatar = new ShapeAvatar(player, ShapeAvatar.Shape.OVAL, 255, 220, 220, 0);
 		player.setAvatar(playerAvatar);
 		playerAvatar.setView(view);
 
@@ -121,13 +178,11 @@ public class PengoMain {
 		 */
 		addBorders(model, view);
 
-
 		/*
-		 * ==========================================================
-		 * SCENARIO 1 : Slide simple
+		 * ========================================================== SCENARIO 1 : Slide
+		 * simple
 		 *
-		 * IceBlock en (4,2)
-		 * Wall en (12,2)
+		 * IceBlock en (4,2) Wall en (12,2)
 		 *
 		 * Le bloc glisse vers la droite et s'arrête contre le mur.
 		 * ==========================================================
@@ -137,15 +192,13 @@ public class PengoMain {
 		addIce(model, view, 5, 3);
 
 		/*
-		 * ==========================================================
-		 * SCENARIO 2 : IceBlock emporte Enemy puis l'écrase
+		 * ========================================================== SCENARIO 2 :
+		 * IceBlock emporte Enemy puis l'écrase
 		 *
-		 * IceBlock en (4,5)
-		 * Enemy en (8,5)
-		 * Wall en (13,5)
+		 * IceBlock en (4,5) Enemy en (8,5) Wall en (13,5)
 		 *
-		 * Après écrasement, le IceBlock finit près du mur,
-		 * mais il reste de l'espace au-dessus et en-dessous pour le repousser.
+		 * Après écrasement, le IceBlock finit près du mur, mais il reste de l'espace
+		 * au-dessus et en-dessous pour le repousser.
 		 * ==========================================================
 		 */
 		addIce(model, view, 4, 5);
@@ -153,26 +206,23 @@ public class PengoMain {
 		addSnoBeeEgg(model, view, 6, 8, 5_000);
 
 		/*
-		 * ==========================================================
-		 * SCENARIO 3 : Enemy proche d'un obstacle, écrasement rapide
+		 * ========================================================== SCENARIO 3 : Enemy
+		 * proche d'un obstacle, écrasement rapide
 		 *
-		 * IceBlock en (4,8)
-		 * Enemy en (8,8)
-		 * Wall en (10,8)
+		 * IceBlock en (4,8) Enemy en (8,8) Wall en (10,8)
 		 *
-		 * J'ai mis le mur en (10,8), pas directement en (9,8),
-		 * pour éviter que l'ennemi soit écrasé trop instantanément.
+		 * J'ai mis le mur en (10,8), pas directement en (9,8), pour éviter que l'ennemi
+		 * soit écrasé trop instantanément.
 		 * ==========================================================
 		 */
 		addIce(model, view, 4, 8);
 		addEnemy(model, view, 8, 8, true);
 
 		/*
-		 * ==========================================================
-		 * SCENARIO 4 : IceBlock contre IceBlock
+		 * ========================================================== SCENARIO 4 :
+		 * IceBlock contre IceBlock
 		 *
-		 * IceBlock mobile en (4,10)
-		 * IceBlock obstacle en (10,10)
+		 * IceBlock mobile en (4,10) IceBlock obstacle en (10,10)
 		 *
 		 * Il y a assez d'espace autour pour retester le bloc après.
 		 * ==========================================================
@@ -181,12 +231,10 @@ public class PengoMain {
 		addIce(model, view, 10, 10);
 
 		/*
-		 * ==========================================================
-		 * SCENARIO 5 : Vertical vers le bas
+		 * ========================================================== SCENARIO 5 :
+		 * Vertical vers le bas
 		 *
-		 * IceBlock en (16,2)
-		 * Enemy en (16,5)
-		 * Wall en (16,10)
+		 * IceBlock en (16,2) Enemy en (16,5) Wall en (16,10)
 		 *
 		 * Le bloc pousse l'ennemi vers le bas.
 		 * ==========================================================
@@ -198,24 +246,19 @@ public class PengoMain {
 		frozenEnemy.freeze(5_000);
 
 		/*
-		 * ==========================================================
-		 * SCENARIO 6 : Alignement de 3 DiamondBlock
+		 * ========================================================== SCENARIO 6 :
+		 * Alignement de 3 DiamondBlock
 		 *
-		 * Départ :
-		 * Diamond mobile en (11,3)
-		 * Diamond fixe en (14,3)
-		 * Diamond fixe en (15,3)
+		 * Départ : Diamond mobile en (11,3) Diamond fixe en (14,3) Diamond fixe en
+		 * (15,3)
 		 *
-		 * Action :
-		 * Pengo pousse le DiamondBlock de (11,3) vers la droite.
+		 * Action : Pengo pousse le DiamondBlock de (11,3) vers la droite.
 		 *
-		 * Résultat attendu :
-		 * Le DiamondBlock mobile s'arrête en (13,3),
-		 * donc les diamonds sont alignés :
-		 * (13,3), (14,3), (15,3)
+		 * Résultat attendu : Le DiamondBlock mobile s'arrête en (13,3), donc les
+		 * diamonds sont alignés : (13,3), (14,3), (15,3)
 		 *
-		 * Pas de mur juste à côté, pour éviter que les DiamondBlock
-		 * soient bloqués par la bordure ou par un obstacle inutile.
+		 * Pas de mur juste à côté, pour éviter que les DiamondBlock soient bloqués par
+		 * la bordure ou par un obstacle inutile.
 		 * ==========================================================
 		 */
 		addDiamond(model, view, 11, 3);
@@ -223,15 +266,15 @@ public class PengoMain {
 		addDiamond(model, view, 16, 3);
 
 		/*
-		 * Enemy normal en plus pour éviter que la partie se termine
-		 * trop vite après avoir tué les ennemis de test.
+		 * Enemy normal en plus pour éviter que la partie se termine trop vite après
+		 * avoir tué les ennemis de test.
 		 */
 		addEnemy(model, view, 17, 9, false);
 		/*
 		 * SCENARIO GOLD BLOCK :
 		 *
-		 * Enemy proche du GoldBlock.
-		 * Quand l'ennemi le touche, il doit freeze pendant 5 secondes.
+		 * Enemy proche du GoldBlock. Quand l'ennemi le touche, il doit freeze pendant 5
+		 * secondes.
 		 */
 		addGold(model, view, 10, 6);
 		addEnemy(model, view, 9, 6, false);
@@ -257,12 +300,7 @@ public class PengoMain {
 		avatar.setView(view);
 	}
 
-	private static void addSnoBeeEgg(
-			PengoModel model,
-			View view,
-			int x,
-			int y,
-			long hatchDelay) {
+	private static void addSnoBeeEgg(PengoModel model, View view, int x, int y, long hatchDelay) {
 
 		IceBlock ice = new IceBlock(true, hatchDelay);
 		ice.setPosition(Game.grid().new Position(x, y));
@@ -285,8 +323,8 @@ public class PengoMain {
 		enemyAvatar.setView(view);
 
 		/*
-		 * Pour les scénarios de test, on freeze les ennemis
-		 * pour qu'ils restent en place jusqu'au contact avec le IceBlock.
+		 * Pour les scénarios de test, on freeze les ennemis pour qu'ils restent en
+		 * place jusqu'au contact avec le IceBlock.
 		 */
 		if (frozen) {
 			enemy.freeze(600_000);
@@ -348,13 +386,7 @@ public class PengoMain {
 		fish.setSize(Game.grid().new Dimension(1, 1));
 		model.add(fish);
 
-		ShapeAvatar fishAvatar = new ShapeAvatar(
-				fish,
-				ShapeAvatar.Shape.OVAL,
-				255,
-				0,
-				180,
-				255);
+		ShapeAvatar fishAvatar = new ShapeAvatar(fish, ShapeAvatar.Shape.OVAL, 255, 0, 180, 255);
 
 		fish.setAvatar(fishAvatar);
 		fishAvatar.setView(view);
