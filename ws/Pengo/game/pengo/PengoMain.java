@@ -41,7 +41,7 @@ public class PengoMain {
 		double mapW = game.width_cm;
 		double mapH = game.height_cm;
 
-		ViewPort viewPort = new ViewPort(mapW / 2, mapH / 2, mapW, mapH);
+		ViewPort viewPort = new ViewPort(mapW, mapH, mapW, mapH);
 		View view = new View(model, viewPort);
 		model.setEnemySpawnListener(enemy -> {
 			EnemyAvatar avatar = new EnemyAvatar(enemy);

@@ -13,7 +13,7 @@ public class Enemy extends Entity {
 	private long spawnAnimationRemaining;
 	private boolean draggedByIce;
 	private boolean crushedByIce;
-
+	private IceBlock breakingThroughBlock;
 	private boolean dead;
 
 	public Enemy() {
@@ -25,6 +25,7 @@ public class Enemy extends Entity {
 		this.dying = false;
 		this.dyingRemaining = 0;
 		this.spawnAnimationRemaining = 800;
+		this.breakingThroughBlock = null;
 		this.draggedByIce = false;
 		this.crushedByIce = false;
 	}
@@ -191,6 +192,9 @@ public class Enemy extends Entity {
 		}
 
 		super.tick(elapsed);
+		if (breakingThroughBlock != null && breakingThroughBlock.model() == null) {
+			breakingThroughBlock = null;
+		}
 	}
 
 	@Override
@@ -198,7 +202,9 @@ public class Enemy extends Entity {
 		if (entity instanceof Enemy) {
 			return false;
 		}
-
+		if (entity == breakingThroughBlock && breakingThroughBlock.hp() <= 0) {
+			return false;
+		}
 		return super.intersects(entity);
 	}
 
@@ -263,5 +269,17 @@ public class Enemy extends Entity {
 				&& !spawning()
 				&& !draggedByIce
 				&& !crushedByIce;
+	}
+
+	public void beginBreakingThrough(IceBlock block) {
+		breakingThroughBlock = block;
+	}
+
+	public void stopBreakingThrough() {
+		breakingThroughBlock = null;
+	}
+
+	public boolean breakingThrough() {
+		return breakingThroughBlock != null;
 	}
 }

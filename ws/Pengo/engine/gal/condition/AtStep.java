@@ -59,7 +59,17 @@ public class AtStep extends GALCondition {
 					angle = e.orientation();
 				}
 			} else {
-				angle = direction.toAngle();
+				if (direction == Direction.N) {
+					angle = 270;
+				} else if (direction == Direction.S) {
+					angle = 90;
+				} else if (direction == Direction.E) {
+					angle = 0;
+				} else if (direction == Direction.W) {
+					angle = 180;
+				} else {
+					angle = direction.toAngle();
+				}
 			}
 			int dx = 0;
 			int dy = 0;
