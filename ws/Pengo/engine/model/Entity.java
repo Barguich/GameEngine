@@ -12,12 +12,6 @@ import collision.Box;
 import gal_engine.Bot;
 import geometry.Grid;
 import geometry.ISU;
-import pengo.model.Enemy;
-import pengo.model.FishBonus;
-import pengo.model.GoldBlock;
-import pengo.model.IceBlock;
-import pengo.model.PengoModel;
-import pengo.model.PengoPlayer;
 import view.Avatar;
 
 public class Entity {
@@ -336,42 +330,12 @@ public class Entity {
 		}
 	}
 
-	// Réaction générale lorsqu'une collision est détectée
+	// Réaction générale lorsqu'une collision est détectée.
 	public void collision(Entity e) {
 		stop();
 
 		if (e == null) {
 			return;
-		}
-
-		// Joueur contre ennemi : perte de vie
-		if (this instanceof PengoPlayer && e instanceof Enemy) {
-			if (model instanceof PengoModel) {
-				((PengoModel) model).loseLife();
-			}
-		}
-
-		// Ennemi contre bloc doré : l'ennemi est gelé
-		if (this instanceof Enemy && e instanceof GoldBlock) {
-			((Enemy) this).freeze(5000);
-		}
-
-		// Joueur contre bonus poisson : application du bonus
-		if (this instanceof PengoPlayer && e instanceof FishBonus) {
-			((FishBonus) e).consume((PengoPlayer) this);
-		}
-
-		// Bloc de glace glissant contre ennemi : l'ennemi est tué
-		if (this instanceof IceBlock && e instanceof Enemy) {
-			IceBlock block = (IceBlock) this;
-
-			if (block.sliding()) {
-				((Enemy) e).kill();
-
-				if (model instanceof PengoModel) {
-					((PengoModel) model).addScore(100);
-				}
-			}
 		}
 
 		// Transmission de l'information de collision au comportement
@@ -486,5 +450,12 @@ public class Entity {
 
 	public String name() {
 		return name;
+	}
+
+	// Multiplicateur de vitesse appliqué aux déplacements.
+	// Valeur neutre par défaut côté moteur ; un jeu peut le surcharger
+	// (ex. bonus de vitesse) sans que le moteur connaisse les types concrets.
+	public double speedMultiplier() {
+		return 1.0;
 	}
 }
