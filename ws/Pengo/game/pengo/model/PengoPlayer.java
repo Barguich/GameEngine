@@ -32,7 +32,7 @@ public class PengoPlayer extends Entity {
 		this.slowRecoveryRemaining = 0;
 	}
 
-	@Override
+	
 
 	public double speedMultiplier() {
 		double m = 1.0;
@@ -59,11 +59,12 @@ public class PengoPlayer extends Entity {
 	}
 
 	public void cancelGridMove() {
-		movingOneCell = false;
-		originCell = null;
-		targetCell = null;
-		pendingFishBonus = null;
-		stop();
+	    movingOneCell = false;
+	    originCell = null;
+	    targetCell = null;
+	    pendingFishBonus = null;
+	    crossingBrokenIce = false;
+	    stop();
 	}
 
 	public int lives() {
@@ -147,7 +148,7 @@ public class PengoPlayer extends Entity {
 
 		bounding = new Bounding();
 
-		double radius = Math.min(size.x(), size.y()) * 0.42;
+		double radius = Math.min(size.x(), size.y()) * 0.44;
 		bounding.add(new Circle(center, radius));
 	}
 
@@ -305,18 +306,18 @@ public class PengoPlayer extends Entity {
 	}
 
 	public void cancelGridMoveAndSnapBack() {
-		if (originCell != null) {
-			setPosition(originCell);
-			setBounding();
-		}
+	    if (originCell != null) {
+	        setPosition(originCell);
+	        setBounding();
+	    }
 
-		movingOneCell = false;
-		originCell = null;
-		targetCell = null;
-		pendingFishBonus = null;
-		stop();
+	    movingOneCell = false;
+	    originCell = null;
+	    targetCell = null;
+	    pendingFishBonus = null;
+	    crossingBrokenIce = false;
+	    stop();
 	}
-
 	private void finishGridMoveOnTarget() {
 		if (targetCell != null) {
 			setPosition(targetCell);

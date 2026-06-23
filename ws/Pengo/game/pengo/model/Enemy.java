@@ -196,13 +196,23 @@ public class Enemy extends Entity {
 
 	@Override
 	public boolean intersects(Entity entity) {
-		if (entity instanceof Enemy) {
-			return false;
-		}
+	    if (dead || dying || draggedByIce || crushedByIce) {
+	        return false;
+	    }
 
-		return super.intersects(entity);
+	    if (entity instanceof Enemy) {
+	        Enemy other = (Enemy) entity;
+
+	        if (other.dead()
+	                || other.dying()
+	                || other.draggedByIce()
+	                || other.crushedByIce()) {
+	            return false;
+	        }
+	    }
+
+	    return super.intersects(entity);
 	}
-
 
 	@Override
 	public void collision(Entity e) {
@@ -255,7 +265,7 @@ public class Enemy extends Entity {
 		}
 
 
-		double radius = Math.min(size.x(), size.y()) * 0.35;
+		double radius = Math.min(size.x(), size.y()) * 0.42;
 
 		bounding.add(new Circle(center, radius));
 	}
