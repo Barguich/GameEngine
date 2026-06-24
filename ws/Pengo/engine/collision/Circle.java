@@ -21,7 +21,7 @@ public class Circle extends Shape implements iShape {
 	// est inférieure à la somme de leurs rayons
 	public boolean intersects(Circle circle) {
 		double d = circle.center.distanceTo(this.center);
-		return d <= circle.radius + this.radius;
+		return d < circle.radius + this.radius;
 	}
 
 	// Permet le double dispatch pour choisir le bon test d'intersection

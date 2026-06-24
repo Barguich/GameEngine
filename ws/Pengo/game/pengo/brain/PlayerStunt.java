@@ -135,6 +135,13 @@ public class PlayerStunt extends Stunt {
 
 		if (e instanceof Enemy) {
 			Enemy enemy = (Enemy) e;
+
+			if (enemy.eatableByPlayer()) {
+				pm.eatFrozenEnemy(enemy);
+				finishOnTarget();
+				return;
+			}
+
 			if (enemy.harmlessForPlayer()) {
 				cancelAndSnapBack();
 				return;
@@ -217,5 +224,9 @@ public class PlayerStunt extends Stunt {
 		originCell = null;
 		pendingFishBonus = null;
 		entity.stop();
+	}
+
+	public void reset(){
+		cclean();
 	}
 }

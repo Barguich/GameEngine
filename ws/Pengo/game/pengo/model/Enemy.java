@@ -42,7 +42,11 @@ public class Enemy extends Entity {
 	}
 
 	public boolean harmlessForPlayer() {
-		return dead || dying || draggedByIce || crushedByIce || passedOut ||frozen;
+		return dead || dying || draggedByIce || crushedByIce || passedOut || frozen;
+	}
+
+	public boolean eatableByPlayer() {
+		return frozen || passedOut;
 	}
 
 	public long frozenAnimationClock() {
@@ -52,6 +56,7 @@ public class Enemy extends Entity {
 	public long walkAnimationClock() {
 		return walkAnimationClock;
 	}
+
 	public void passOut(long duration) {
 		passedOut = true;
 		passedOutRemaining = duration;
@@ -221,6 +226,9 @@ public class Enemy extends Entity {
 			if (passedOutRemaining <= 0) {
 				passedOut = false;
 				passedOutRemaining = 0;
+			} else {
+				stop();
+				return;
 			}
 		}
 
@@ -240,7 +248,7 @@ public class Enemy extends Entity {
 
 	@Override
 	public boolean intersects(Entity entity) {
-		if (dead || dying || draggedByIce || crushedByIce) {
+		if (dead || dying || draggedByIce || crushedByIce || passedOut) {
 			return false;
 		}
 
@@ -292,7 +300,7 @@ public class Enemy extends Entity {
 			return;
 		}
 
-		bounding = new Bounding();
+		bounding = new collision.Bounding();
 
 		if (dead || dying || draggedByIce || crushedByIce) {
 			return;
@@ -301,7 +309,7 @@ public class Enemy extends Entity {
 		double w = size.x();
 		double h = size.y();
 
-		bounding.add(new Rect(center, center.isu().new Dimension(w, h), orientation_degree));
+		bounding.add(collision.Hitbox.shrunkRect(center, size, orientation_degree));
 	}
 
 	public boolean canRunBot() {
