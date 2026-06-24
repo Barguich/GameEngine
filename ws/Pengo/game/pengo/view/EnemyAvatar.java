@@ -27,15 +27,7 @@ public class EnemyAvatar extends Avatar {
 		}
 
 		Enemy enemy = (Enemy) entity;
-		int frame = pickFrame(enemy);
-
-		String path;
-		if (frame == -1) {
-			path = DIR + "sprite_enemie_freeze_blue.png";
-		} else {
-			path = DIR + "sprite_enemie_" + frame + ".png";
-		}
-
+		String path = pickImagePath(enemy);
 		BufferedImage img = Sprites.get(g, path);
 
 		double cm = Game.game().cmPerCell;
@@ -93,6 +85,60 @@ public class EnemyAvatar extends Avatar {
 				return 12;
 			default:
 				return 8;
+		}
+	}
+	private static String pickImagePath(Enemy enemy) {
+		if (enemy.crushAnimation()) {
+			return crushImagePath(enemy);
+		}
+
+		int frame = pickFrame(enemy);
+
+		if (frame == -1) {
+			return DIR + "sprite_enemie_freeze_blue.png";
+		}
+
+		return DIR + "sprite_enemie_" + frame + ".png";
+	}
+	private static String crushImagePath(Enemy enemy) {
+		int frame = enemy.crushFrame();
+
+		if (frame < 0) {
+			frame = 0;
+		}
+
+		if (frame > 1) {
+			frame = 1;
+		}
+
+		int direction = enemy.crushDirection();
+
+		/*
+		 * 0   = IceBlock va vers la droite
+		 * 90  = IceBlock va vers le bas
+		 * 180 = IceBlock va vers la gauche
+		 * 270 = IceBlock va vers le haut
+		 */
+
+		switch (direction) {
+			case 0:
+				// écrasé vers la droite
+				return DIR + "sprite_enemie_" + (34 + frame) + ".png";
+
+			case 180:
+				// écrasé vers la gauche
+				return DIR + "sprite_enemie_" + (38 + frame) + ".png";
+
+			case 90:
+				// écrasé vers le bas
+				return DIR + "sprite_enemie_" + (36 + frame) + ".png";
+
+			case 270:
+				// écrasé vers le haut
+				return DIR + "sprite_enemie_" + (32 + frame) + ".png";
+
+			default:
+				return DIR + "sprite_enemie_32.png";
 		}
 	}
 }

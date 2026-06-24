@@ -1213,23 +1213,41 @@ public class PengoModel extends Model {
 
 		System.out.println("CRUSH " + crushedEnemies.size() + " ENEMY/ENEMIES BY ICE");
 
+		//tous les ennemis écrasés doivent jouer leur animation
+		 //sur la même case : la case de l'ennemi le plus devant.
+		 
+		Grid.Position crushPosition = copyPosition(finalIcePosition);
+
 		for (Enemy enemy : crushedEnemies) {
 			if (enemy == null) {
 				continue;
 			}
 
-			enemy.markCrushedByIce();
-			remove(enemy);
+			if (enemy.crushedByIce() || enemy.dead()) {
+				continue;
+			}
+
+			
+			if (crushPosition != null) {
+				enemy.setPosition(crushPosition);
+				enemy.setBounding();
+			}
+
+			//on lance l'animation dans la direction du IceBlock.
+			 
+			enemy.markCrushedByIce(ice.direction());
+
 			addScore(config.scoreCrush());
 		}
 
-		// on arrête le bloc et on vide la liste des ennemis transportés.
-
+		//on arrête le bloc après avoir préparé les animations.
+		
 		ice.stopSlide();
-		// Le IceBlock prend la place de l'ennemi le plus devant.
 
-		if (finalIcePosition != null) {
-			ice.setPosition(finalIcePosition);
+		//le IceBlock prend aussi la position finale.
+		
+		if (crushPosition != null) {
+			ice.setPosition(crushPosition);
 			ice.setBounding();
 		}
 	}

@@ -20,6 +20,11 @@ public class Enemy extends Entity {
 	private long walkAnimationClock = 0;
 	private boolean passedOut;
 	private long passedOutRemaining;
+	//champs pour lanimation de l'ecrasement de lenemie
+	private boolean crushAnimation;
+	private long crushAnimationRemaining;
+	private int crushFrame;
+	private int crushDirection;
 
 	public Enemy() {
 		super("Enemy");
@@ -35,6 +40,25 @@ public class Enemy extends Entity {
 		this.crushedByIce = false;
 		this.passedOut = false;
 		this.passedOutRemaining = 0;
+		this.crushAnimation = false;
+		this.crushAnimationRemaining = 0;
+		this.crushFrame = 0;
+		this.crushDirection = 0;
+	}
+	//getter d'animation
+	public boolean crushAnimation() {
+	    return crushAnimation;
+	}
+	public int crushDirection() {
+		return crushDirection;
+	}
+
+	public int crushFrame() {
+	    return crushFrame;
+	}
+
+	public long crushAnimationRemaining() {
+	    return crushAnimationRemaining;
 	}
 
 	public boolean crushedByIce() {
@@ -67,14 +91,29 @@ public class Enemy extends Entity {
 		return passedOut;
 	}
 
-	public void markCrushedByIce() {
+	public void markCrushedByIce(int direction) {
+		if (crushedByIce || dead) {
+			return;
+		}
+
 		crushedByIce = true;
 		draggedByIce = false;
 		frozen = false;
 		frozenRemaining = 0;
-		stop();
+		passedOut = false;
+		passedOutRemaining = 0;
 
-		System.out.println("ENEMY MARKED CRUSHED BY ICE");
+		crushDirection = direction;
+
+		crushAnimation = true;
+		crushAnimationRemaining = 350;
+		crushFrame = 0;
+
+		stop();
+		setBot(null);
+		setBounding();
+
+		System.out.println("ENEMY CRUSH ANIMATION START direction = " + direction);
 	}
 
 	public boolean draggedByIce() {
@@ -184,6 +223,31 @@ public class Enemy extends Entity {
 			if (spawnAnimationRemaining < 0) {
 				spawnAnimationRemaining = 0;
 			}
+		}
+		//animation de dying ennemy
+		if (crushAnimation) {
+		    crushAnimationRemaining -= elapsed;
+
+		    if (crushAnimationRemaining > 240) {
+		        crushFrame = 0;
+		    } else if (crushAnimationRemaining > 120) {
+		        crushFrame = 1;
+		    } else {
+		        crushFrame = 2;
+		    }
+
+		    if (crushAnimationRemaining <= 0) {
+		        crushAnimation = false;
+		        crushAnimationRemaining = 0;
+		        crushFrame = 2;
+		        dead = true;
+
+		        if (model != null) {
+		            model.remove(this);
+		        }
+		    }
+
+		    return;
 		}
 		if (dying) {
 			dyingRemaining -= elapsed;
