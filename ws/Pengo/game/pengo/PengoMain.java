@@ -191,7 +191,7 @@ public class PengoMain {
 		addWall(model, view, 16, 10);
 		Enemy frozenEnemy = addEnemy(model, view, 12, 8, false);
 		frozenEnemy.freeze(5_000);
-
+ 
 		/*
 		 * ========================================================== SCENARIO 6 :
 		 * Alignement de 3 DiamondBlock

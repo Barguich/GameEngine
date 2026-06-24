@@ -19,4 +19,4 @@ public final class Hitbox {
         ISU.Dimension inset = center.isu().new Dimension(size.x() * INSET, size.y() * INSET);
         return new Rect(center, inset, angle_degree);
     }
-}
+} 

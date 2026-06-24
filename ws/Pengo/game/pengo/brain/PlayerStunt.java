@@ -12,7 +12,7 @@ import pengo.model.IceBlock;
 import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
 import pengo.model.Wall;
-
+ 
 public class PlayerStunt extends Stunt {
 
 	private double speed_cm_s = 15.0;

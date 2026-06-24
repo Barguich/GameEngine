@@ -251,7 +251,7 @@ public class Enemy extends Entity {
 		if (dead || dying || draggedByIce || crushedByIce || passedOut) {
 			return false;
 		}
-
+ 
 		if (entity == breakingThroughBlock && breakingThroughBlock.hp() <= 0) {
 			return false;
 		}

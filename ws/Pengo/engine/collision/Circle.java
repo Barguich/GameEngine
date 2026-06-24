@@ -23,7 +23,7 @@ public class Circle extends Shape implements iShape {
 		double d = circle.center.distanceTo(this.center);
 		return d < circle.radius + this.radius;
 	}
-
+ 
 	// Permet le double dispatch pour choisir le bon test d'intersection
 	public boolean intersects(iShape shape) {
 		return shape.intersects(this);

@@ -155,7 +155,7 @@ public class IceBlock extends Entity {
 	public boolean destructibleByEnemy() {
 		return true;
 	}
-
+ 
 	public boolean destroyByEnemy() {
 		if (broken) {
 			return false;

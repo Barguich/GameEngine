@@ -85,4 +85,4 @@ public class Box {
 	public String toString() {
 		return "Box[" + xmin + "," + ymin + " -> " + xmax + "," + ymax + "]";
 	}
-}
+} 

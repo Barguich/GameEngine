@@ -37,7 +37,7 @@ public class Wall extends Entity {
 	public int vibrationOffset() {
 		if (!isVibrating())
 			return 0;
-
+ 
 		return (vibrationFrame % 2 == 0) ? 3 : -3;
 	}
 
