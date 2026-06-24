@@ -551,20 +551,20 @@ public class PengoModel extends Model {
 		int y = player.position().y();
 
 		switch (player.orientation()) {
-			case 0:
-				x++;
-				break;
-			case 90:
-				y++;
-				break;
-			case 180:
-				x--;
-				break;
-			case 270:
-				y--;
-				break;
-			default:
-				return;
+		case 0:
+			x++;
+			break;
+		case 90:
+			y++;
+			break;
+		case 180:
+			x--;
+			break;
+		case 270:
+			y--;
+			break;
+		default:
+			return;
 		}
 
 		Entity e = firstAt(grid().new Position(x, y));
@@ -583,20 +583,20 @@ public class PengoModel extends Model {
 		int y = e.position().y();
 
 		switch (direction) {
-			case 0:
-				x++;
-				break;
-			case 90:
-				y++;
-				break;
-			case 180:
-				x--;
-				break;
-			case 270:
-				y--;
-				break;
-			default:
-				break;
+		case 0:
+			x++;
+			break;
+		case 90:
+			y++;
+			break;
+		case 180:
+			x--;
+			break;
+		case 270:
+			y--;
+			break;
+		default:
+			break;
 		}
 
 		return grid().new Position(x, y);
@@ -616,16 +616,16 @@ public class PengoModel extends Model {
 		int y = e.position().y();
 
 		switch (direction) {
-			case 0:
-				return x + 1 >= grid().width();
-			case 90:
-				return y + 1 >= grid().height();
-			case 180:
-				return x - 1 < 0;
-			case 270:
-				return y - 1 < 0;
-			default:
-				return false;
+		case 0:
+			return x + 1 >= grid().width();
+		case 90:
+			return y + 1 >= grid().height();
+		case 180:
+			return x - 1 < 0;
+		case 270:
+			return y - 1 < 0;
+		default:
+			return false;
 		}
 	}
 
@@ -954,9 +954,27 @@ public class PengoModel extends Model {
 
 		if (front instanceof IceBlock) {
 			IceBlock block = (IceBlock) front;
+
+			// HP = 1 : Pengo peut traverser, mais ne pousse pas
+			if (block.passableByPlayer()) {
+				player.crossIceBlock(block);
+				return true;
+			}
+
+			if (block.hp() <= 0 || block.broken()) {
+				return true;
+			}
+
+			// HP = 2 : Pengo ne traverse pas et ne pousse pas
+			if (block.hp() == 2 || block.cracked()) {
+				return false;
+			}
+
+			// HP = 3 : Pengo peut pousser
 			if (allowPush && !block.sliding()) {
 				block.startSlide(direction);
 			}
+
 			return false;
 		}
 
@@ -992,16 +1010,16 @@ public class PengoModel extends Model {
 		int ty = target.position().y();
 
 		switch (direction) {
-			case 0:
-				return ty == fy && tx > fx;
-			case 90:
-				return tx == fx && ty > fy;
-			case 180:
-				return ty == fy && tx < fx;
-			case 270:
-				return tx == fx && ty < fy;
-			default:
-				return false;
+		case 0:
+			return ty == fy && tx > fx;
+		case 90:
+			return tx == fx && ty > fy;
+		case 180:
+			return ty == fy && tx < fx;
+		case 270:
+			return tx == fx && ty < fy;
+		default:
+			return false;
 		}
 	}
 
@@ -1243,15 +1261,10 @@ public class PengoModel extends Model {
 		}
 	}
 
-	/*
-	 * Tire une case libre au hasard à l'intérieur de la zone jouable (hors
-	 * bordures). Renvoie null si aucune case libre n'est trouvée.
-	 */
 	private Grid.Position randomFreeCell() {
 		int w = grid().width();
 		int h = grid().height();
 
-		// On évite les bordures (rangée/colonne 0 et w-1/h-1).
 		int minX = 1;
 		int maxX = w - 2;
 		int minY = 1;
@@ -1261,21 +1274,10 @@ public class PengoModel extends Model {
 			return null;
 		}
 
-		// Quelques tirages aléatoires, puis balayage complet en dernier recours.
-		java.util.concurrent.ThreadLocalRandom rng = java.util.concurrent.ThreadLocalRandom.current();
-
-		for (int attempt = 0; attempt < 30; attempt++) {
-			int x = rng.nextInt(minX, maxX + 1);
-			int y = rng.nextInt(minY, maxY + 1);
-			Grid.Position p = grid().new Position(x, y);
-			if (isFree(p)) {
-				return p;
-			}
-		}
-
 		for (int y = minY; y <= maxY; y++) {
 			for (int x = minX; x <= maxX; x++) {
 				Grid.Position p = grid().new Position(x, y);
+
 				if (isFree(p)) {
 					return p;
 				}
