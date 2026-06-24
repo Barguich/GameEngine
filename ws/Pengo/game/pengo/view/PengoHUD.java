@@ -19,6 +19,9 @@ public class PengoHUD implements Overlay {
 
 	@Override
 	public void paint(Canvas canvas, Graphics g) {
+		if (model.player() == null) {
+			return;
+		}
 
 		int scale = DebugOverlay.uiScale(canvas);
 		int x = 12 * scale;

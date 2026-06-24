@@ -9,16 +9,17 @@ import model.Entity;
 import model.Model;
 
 public class PengoModel extends Model {
+	private String selectedMapFile;
 
 	public enum GameState {
-		PLAYING, PAUSED, GAME_OVER, WON
+		CHOIX_MAP, PLAYING, PAUSED, GAME_OVER, WON
 	}
 
 	public interface StateListener {
 		void onStateChanged(GameState state);
 	}
 
-	private GameState state = GameState.PLAYING;
+	private GameState state = GameState.CHOIX_MAP;
 	private StateListener stateListener;
 
 	private PengoPlayer player;
@@ -68,6 +69,7 @@ public class PengoModel extends Model {
 
 		won = false;
 		lost = false;
+		this.selectedMapFile = null;
 
 		resolvingIceEnemyCollision = false;
 
@@ -124,6 +126,13 @@ public class PengoModel extends Model {
 	public boolean running() {
 		return state == GameState.PLAYING;
 	}
+	public void chooseMap(String mapFile) {
+		this.selectedMapFile = mapFile;
+		reset();
+	}
+	public String selectedMapFile() {
+		return selectedMapFile;
+	}
 
 	public boolean menuVisible() {
 		return state != GameState.PLAYING;
@@ -140,6 +149,7 @@ public class PengoModel extends Model {
 			setState(GameState.PLAYING);
 		}
 	}
+	
 
 	public void togglePause() {
 		if (state == GameState.PLAYING) {
@@ -944,11 +954,13 @@ public class PengoModel extends Model {
 		if (player == null || player.position() == null) {
 			return false;
 		}
+		player.turnTo(direction);
 		if (lost() || won() || menuVisible()) {
 			return false;
 		}
 
 		Grid.Position next = nextPosition(player, direction);
+		
 		if (next == null) {
 			return false;
 		}
@@ -1091,6 +1103,10 @@ public class PengoModel extends Model {
 
 	@Override
 	protected boolean collisionBlocks(Entity mover, Entity other) {
+
+		if (mover instanceof Enemy || other instanceof Enemy) {
+			return false;
+		}
 		// Pengo / Enemy est géré manuellement par PengoModel.
 		// On ne veut pas que le simple contact des bounding boxes tue Pengo.
 		if (isPengoEnemyPair(mover, other)) {
