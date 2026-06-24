@@ -90,11 +90,17 @@ public class Model {
 	public List<Entity> collisions(Entity e) {
 		List<Entity> result = new ArrayList<Entity>();
 
-		if (e == null)
-			return result;
-
 		for (Entity other : entities) {
-			if (other != e && e.intersects(other)) {
+
+			if (other == e) {
+				continue;
+			}
+
+			if (!collisionBlocks(e, other)) {
+				continue;
+			}
+
+			if (e.intersects(other)) {
 				result.add(other);
 			}
 		}
@@ -132,6 +138,10 @@ public class Model {
 		return list.get(0);
 	}
 
+	protected boolean collisionBlocks(Entity mover, Entity other) {
+		return true;
+	}
+
 	// Mise à jour globale du modèle à chaque tick du jeu
 	public void tick(long elapsed) {
 		if (elapsed < 0)
@@ -160,4 +170,5 @@ public class Model {
 			remove(e);
 		}
 	}
+
 }

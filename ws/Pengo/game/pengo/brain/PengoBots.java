@@ -7,11 +7,7 @@ import gal_engine.GALBot;
 import gal_engine.GALStunt;
 import model.Entity;
 import parser.Parser;
-import pengo.model.DiamondBlock;
 import pengo.model.Enemy;
-import pengo.model.FishBonus;
-import pengo.model.GoldBlock;
-import pengo.model.IceBlock;
 import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
 import pengo.view.EnemyAvatar;
@@ -64,18 +60,10 @@ public final class PengoBots {
 		// ── Catégories ────────────────────────────────────────────────────
 		if (e instanceof PengoPlayer) {
 			e.setCategory(Category.PLAYER);
-		} else if (e instanceof Enemy) {
-			e.setCategory(Category.M);
-		} else if (e instanceof GoldBlock) {
-			e.setCategory(Category.G);
-		} else if (e instanceof DiamondBlock) {
-			e.setCategory(Category.O);
-		} else if (e instanceof IceBlock) {
-			e.setCategory(Category.K); // K = IceBlock (bloquant, poussable)
-		} else if (e instanceof FishBonus) {
-			e.setCategory(Category.G);
-		} else {
-			e.setCategory(Category.O);
+			PlayerStunt stunt = new PlayerStunt(model, (PengoPlayer) e);
+			PlayerBot bot = new PlayerBot((PengoPlayer) e, stunt);
+			e.setStunt(stunt);
+			e.setBot(bot);
 		}
 
 		// ── Bot GAL pour les ennemis ──────────────────────────────────────

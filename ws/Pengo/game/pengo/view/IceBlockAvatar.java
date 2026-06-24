@@ -3,22 +3,27 @@ package pengo.view;
 import engine.Game;
 import model.Entity;
 import oop.graphics.BufferedImage;
+
 import oop.graphics.Graphics;
+import pengo.model.DiamondBlock;
+import pengo.model.GoldBlock;
 import pengo.model.IceBlock;
 import view.Avatar;
 
 /**
- * Rendu d'un IceBlock selon hp et anim de cassure.
- * Identique au comportement du mock, juste déplacé proprement côté game.
+ * Rendu d'un IceBlock selon hp et anim de cassure. Identique au comportement du
+ * mock, juste déplacé proprement côté game.
  */
-public class IceBlockAvatar extends Avatar {
 
+public class IceBlockAvatar extends Avatar {
+	
 	public IceBlockAvatar(Entity entity) {
 		super(entity);
 	}
 
 	@Override
 	public void paint(Graphics g, int xPix, int yPix, double scale) {
+
 		if (!(entity instanceof IceBlock)) {
 			return;
 		}
@@ -28,13 +33,23 @@ public class IceBlockAvatar extends Avatar {
 
 		BufferedImage img = Sprites.get(g, path);
 
-		double cm = Game.game().cmPerCell;
-		int side = (int) Math.round(cm * scale);
+		if (entity.size() == null) {
+			return;
+		}
+
+		int side = (int) Math.round(entity.size().x() * scale);
 
 		g.drawImage(img, xPix - side / 2, yPix - side / 2, side, side);
 	}
 
 	private static String pickPath(IceBlock ice) {
+		if (ice instanceof DiamondBlock) {
+			return "Asset/bloc/diamond_bloc.png";
+		}
+
+		if (ice instanceof GoldBlock) {
+			return "Asset/bloc/gold_bloc.png";
+		}
 		if (ice.breakingAnimation()) {
 			int base;
 			if (ice.hp() == 2) {

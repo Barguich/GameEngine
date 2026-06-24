@@ -2,6 +2,7 @@ package pengo.model;
 
 import collision.Bounding;
 import collision.Circle;
+import collision.Rect;
 import model.Entity;
 
 public class Enemy extends Entity {
@@ -17,6 +18,8 @@ public class Enemy extends Entity {
 	private boolean dead;
 	private long frozenAnimationClock = 0;
 	private long walkAnimationClock = 0;
+	private boolean passedOut;
+	private long passedOutRemaining;
 
 	public Enemy() {
 		super("Enemy");
@@ -30,6 +33,8 @@ public class Enemy extends Entity {
 		this.breakingThroughBlock = null;
 		this.draggedByIce = false;
 		this.crushedByIce = false;
+		this.passedOut = false;
+		this.passedOutRemaining = 0;
 	}
 
 	public boolean crushedByIce() {
@@ -37,7 +42,7 @@ public class Enemy extends Entity {
 	}
 
 	public boolean harmlessForPlayer() {
-		return dead || dying || draggedByIce || crushedByIce;
+		return dead || dying || draggedByIce || crushedByIce || passedOut ||frozen;
 	}
 
 	public long frozenAnimationClock() {
@@ -46,6 +51,15 @@ public class Enemy extends Entity {
 
 	public long walkAnimationClock() {
 		return walkAnimationClock;
+	}
+	public void passOut(long duration) {
+		passedOut = true;
+		passedOutRemaining = duration;
+		stop();
+	}
+
+	public boolean passedOut() {
+		return passedOut;
 	}
 
 	public void markCrushedByIce() {
@@ -201,6 +215,14 @@ public class Enemy extends Entity {
 			stop();
 			return;
 		}
+		if (passedOut) {
+			passedOutRemaining -= elapsed;
+
+			if (passedOutRemaining <= 0) {
+				passedOut = false;
+				passedOutRemaining = 0;
+			}
+		}
 
 		// Horloge d'animation de marche : accumule pendant un déplacement,
 		// se remet à 0 dès que SnoBee est arrêté (mur, etc.) — pose stable.
@@ -218,12 +240,14 @@ public class Enemy extends Entity {
 
 	@Override
 	public boolean intersects(Entity entity) {
-		if (entity instanceof Enemy) {
+		if (dead || dying || draggedByIce || crushedByIce) {
 			return false;
 		}
+
 		if (entity == breakingThroughBlock && breakingThroughBlock.hp() <= 0) {
 			return false;
 		}
+
 		return super.intersects(entity);
 	}
 
@@ -270,24 +294,20 @@ public class Enemy extends Entity {
 
 		bounding = new Bounding();
 
-		// quand l'ennemi est transporté par un IceBlock,
-		// il ne doit plus bloquer physiquement le moteur.
-
 		if (dead || dying || draggedByIce || crushedByIce) {
 			return;
 		}
 
-		double radius = Math.min(size.x(), size.y()) * 0.35;
-		bounding.add(new Circle(center, radius));
+		double w = size.x();
+		double h = size.y();
+
+		bounding.add(new Rect(center, center.isu().new Dimension(w, h), orientation_degree));
 	}
 
 	public boolean canRunBot() {
-		return !dead
-				&& !dying
-				&& !frozen
-				&& !spawning()
-				&& !draggedByIce
-				&& !crushedByIce;
+
+		return !dead && !dying && !frozen && !spawning() && !draggedByIce && !crushedByIce;
+
 	}
 
 	public void beginBreakingThrough(IceBlock block) {

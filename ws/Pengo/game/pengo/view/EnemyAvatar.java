@@ -1,13 +1,16 @@
 package pengo.view;
 
+
 import engine.Game;
 import model.Entity;
 import oop.graphics.BufferedImage;
 import oop.graphics.Graphics;
 import pengo.model.Enemy;
+
 import view.Avatar;
 
 public class EnemyAvatar extends Avatar {
+
 
 	private static final String DIR = "Asset/ennemie/";
 
@@ -17,12 +20,14 @@ public class EnemyAvatar extends Avatar {
 	private static final long FROZEN_FRAME_MS = 250;
 	private static final long BOUNCE_FRAME_MS = 200;
 
+
 	public EnemyAvatar(Entity entity) {
 		super(entity);
 	}
 
 	@Override
 	public void paint(Graphics g, int xPix, int yPix, double scale) {
+
 		if (!(entity instanceof Enemy)) {
 			return;
 		}
@@ -54,6 +59,9 @@ public class EnemyAvatar extends Avatar {
 
 		if (enemy.dying()) {
 			return 6;
+		}
+		if (enemy.passedOut()) {
+			return 7;
 		}
 
 		if (enemy.frozen()) {

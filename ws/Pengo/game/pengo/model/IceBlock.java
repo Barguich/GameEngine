@@ -360,14 +360,7 @@ public class IceBlock extends Entity {
 		}
 
 		bounding = new Bounding();
-
-		// Hitbox réduite : sinon le IceBlock touche trop facilement les murs/blocs
-		// autour et se bloque.
-
-		double w = size.x() * 0.78;
-		double h = size.y() * 0.78;
-
-		bounding.add(new Rect(center, center.isu().new Dimension(w, h), orientation_degree));
+		bounding.add(new Rect(center, size, orientation_degree));
 	}
 
 	public void finishCrushAt(Grid.Position position) {
@@ -392,4 +385,10 @@ public class IceBlock extends Entity {
 		direction = 0;
 	}
 
+
+	public boolean passableByPlayer() {
+		return hp == 1 && !broken && !sliding && !breakingAnimation;
+	}
+
 }
+

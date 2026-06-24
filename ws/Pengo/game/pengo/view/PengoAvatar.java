@@ -1,10 +1,12 @@
 package pengo.view;
 
+
 import engine.Game;
 import model.Entity;
 import oop.graphics.BufferedImage;
 import oop.graphics.Graphics;
 import pengo.model.PengoPlayer;
+
 import view.Avatar;
 
 public class PengoAvatar extends Avatar {
@@ -12,12 +14,14 @@ public class PengoAvatar extends Avatar {
 	private static final String DIR = "Asset/pingu/";
 	private static final long FRAME_DURATION_MS = 40;
 
+
 	public PengoAvatar(Entity entity) {
 		super(entity);
 	}
 
 	@Override
 	public void paint(Graphics g, int xPix, int yPix, double scale) {
+
 		if (!(entity instanceof PengoPlayer)) {
 			return;
 		}
@@ -52,3 +56,4 @@ public class PengoAvatar extends Avatar {
 		}
 	}
 }
+
