@@ -30,7 +30,7 @@ import ast.AST;
 public final class PengoBots {
 
 	private static final double SPEED_FACTOR = 1.0;
-	
+
 	private PengoBots() {
 	}
 
@@ -52,17 +52,42 @@ public final class PengoBots {
 		if (e == null)
 			return;
 
-		// ── Catégories ────────────────────────────────────────────────────────
-		if (e instanceof PengoPlayer) {
+		// Catégories
+		if (e instanceof PengoPlayer player) {
 			e.setCategory(Category.PLAYER);
-		} else if (e instanceof DiamondBlock) {
-			e.setCategory(Category.D);
+
+			PlayerStunt stunt = new PlayerStunt(model, player);
+			PlayerBot bot = new PlayerBot(player, stunt);
+
+			player.setStunt(stunt);
+			player.setBot(bot);
+
+		} else if (e instanceof DiamondBlock diamond) {
+			diamond.setCategory(Category.D);
+			GALStunt stunt = new GALStunt(model, diamond);
+			diamond.setStunt(stunt);
+
+			Automaton aut = loadDiamondAutomaton();
+			if (aut == null) {
+				System.err.println(
+						"[PengoBots] DiamondBlocks.gal non chargé pour " + diamond);
+				return;
+			}
+
+			GALBot bot = new GALBot(diamond);
+			bot.stunt(stunt);
+			bot.set(aut);
+			diamond.setBot(bot);
+
 		} else if (e instanceof GoldBlock) {
 			e.setCategory(Category.G);
+
 		} else if (e instanceof IceBlock) {
 			e.setCategory(Category.K);
+
 		} else if (e instanceof Wall) {
 			e.setCategory(Category.O);
+
 		} else if (e instanceof Enemy) {
 			e.setCategory(Category.A);
 		}
@@ -124,6 +149,35 @@ public final class PengoBots {
 		}
 
 		System.err.println("[PengoBots] Aucun SnoBees.gal trouvé.");
+		return null;
+	}
+
+	private static Automaton loadDiamondAutomaton() {
+		String[] candidates = {
+				"Pengo/gal/demo/test/DiamondBlocks.gal",
+				"gal/demo/test/DiamondBlocks.gal",
+				"demo/test/DiamondBlocks.gal"
+		};
+
+		for (String path : candidates) {
+			try {
+				AST ast = Parser.from_file(path);
+				GALVisitor visitor = new GALVisitor();
+
+				@SuppressWarnings("unchecked")
+				List<Automaton> automata = (List<Automaton>) ast.accept(visitor);
+
+				if (!automata.isEmpty()) {
+					System.out.println(
+							"[PengoBots] Automate Diamond chargé : " + path);
+					return automata.get(0);
+				}
+			} catch (Exception ex) {
+				System.out.println(
+						"[PengoBots] Diamond non trouvé : " + path
+								+ " (" + ex.getClass().getSimpleName() + ")");
+			}
+		}
 		return null;
 	}
 }

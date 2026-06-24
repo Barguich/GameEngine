@@ -551,20 +551,20 @@ public class PengoModel extends Model {
 		int y = player.position().y();
 
 		switch (player.orientation()) {
-		case 0:
-			x++;
-			break;
-		case 90:
-			y++;
-			break;
-		case 180:
-			x--;
-			break;
-		case 270:
-			y--;
-			break;
-		default:
-			return;
+			case 0:
+				x++;
+				break;
+			case 90:
+				y++;
+				break;
+			case 180:
+				x--;
+				break;
+			case 270:
+				y--;
+				break;
+			default:
+				return;
 		}
 
 		Entity e = firstAt(grid().new Position(x, y));
@@ -583,20 +583,20 @@ public class PengoModel extends Model {
 		int y = e.position().y();
 
 		switch (direction) {
-		case 0:
-			x++;
-			break;
-		case 90:
-			y++;
-			break;
-		case 180:
-			x--;
-			break;
-		case 270:
-			y--;
-			break;
-		default:
-			break;
+			case 0:
+				x++;
+				break;
+			case 90:
+				y++;
+				break;
+			case 180:
+				x--;
+				break;
+			case 270:
+				y--;
+				break;
+			default:
+				break;
 		}
 
 		return grid().new Position(x, y);
@@ -616,16 +616,16 @@ public class PengoModel extends Model {
 		int y = e.position().y();
 
 		switch (direction) {
-		case 0:
-			return x + 1 >= grid().width();
-		case 90:
-			return y + 1 >= grid().height();
-		case 180:
-			return x - 1 < 0;
-		case 270:
-			return y - 1 < 0;
-		default:
-			return false;
+			case 0:
+				return x + 1 >= grid().width();
+			case 90:
+				return y + 1 >= grid().height();
+			case 180:
+				return x - 1 < 0;
+			case 270:
+				return y - 1 < 0;
+			default:
+				return false;
 		}
 	}
 
@@ -1010,16 +1010,16 @@ public class PengoModel extends Model {
 		int ty = target.position().y();
 
 		switch (direction) {
-		case 0:
-			return ty == fy && tx > fx;
-		case 90:
-			return tx == fx && ty > fy;
-		case 180:
-			return ty == fy && tx < fx;
-		case 270:
-			return tx == fx && ty < fy;
-		default:
-			return false;
+			case 0:
+				return ty == fy && tx > fx;
+			case 90:
+				return tx == fx && ty > fy;
+			case 180:
+				return ty == fy && tx < fx;
+			case 270:
+				return tx == fx && ty < fy;
+			default:
+				return false;
 		}
 	}
 
@@ -1312,6 +1312,9 @@ public class PengoModel extends Model {
 		}
 		won = true;
 		setState(GameState.WON);
+		for (Entity entity : entities()) {
+			entity.stop();
+		}
 	}
 
 	@Override
