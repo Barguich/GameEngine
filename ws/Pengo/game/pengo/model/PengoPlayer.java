@@ -11,7 +11,10 @@ public class PengoPlayer extends Entity {
 
 	private boolean speedBoost;
 	private long speedBoostRemaining;
-
+	
+	private boolean iceSlow;
+	private long iceSlowRemaining;
+	private IceBlock crossedIceBlock;
 	private long walkAnimationClock;
 
 	public PengoPlayer() {
@@ -21,11 +24,24 @@ public class PengoPlayer extends Entity {
 		this.speedBoost = false;
 		this.speedBoostRemaining = 0;
 		this.walkAnimationClock = 0;
+		this.iceSlow = false;
+		this.iceSlowRemaining = 0;
+		this.crossedIceBlock = null;
 	}
 
 	@Override
 	public double speedMultiplier() {
-		return speedBoost ? 2.0 : 1.0;
+		double m = 1.0;
+
+		if (speedBoost) {
+			m *= 2.0;
+		}
+
+		if (iceSlow) {
+			m *= 0.45;
+		}
+
+		return m;
 	}
 
 	public void attack() {
@@ -89,6 +105,36 @@ public class PengoPlayer extends Entity {
 				speedBoostRemaining = 0;
 			}
 		}
+		if (iceSlow) {
+			iceSlowRemaining -= elapsed;
+
+			if (iceSlowRemaining <= 0) {
+				iceSlow = false;
+				iceSlowRemaining = 0;
+			}
+		}
+
+		if (crossedIceBlock != null && crossedIceBlock.position() != null) {
+			double cell = step().x();
+
+			if (distanceCenterToCenter(crossedIceBlock) > cell * 0.6) {
+				crossedIceBlock.damage();
+				crossedIceBlock = null;
+			}
+		}
+	}
+	public void slowAfterIcePassage(long duration) {
+		iceSlow = true;
+		iceSlowRemaining = duration;
+	}
+
+	public void crossIceBlock(IceBlock block) {
+		if (block == null) {
+			return;
+		}
+
+		crossedIceBlock = block;
+		slowAfterIcePassage(2000);
 	}
 
 	@Override
