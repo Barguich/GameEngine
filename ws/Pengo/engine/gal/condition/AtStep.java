@@ -99,6 +99,10 @@ public class AtStep extends GALCondition {
 			target.translate(grid.new Vector(dx * nbStep, dy * nbStep));
 
 		}
+		if (target.x() < 0 || target.x() >= grid.width()
+				|| target.y() < 0 || target.y() >= grid.height()) {
+			return false;
+		}
 		Grid.Cell cell = grid.cellAt(target);
 		return checkCategory(e, cell.entities());
 	}

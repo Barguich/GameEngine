@@ -329,4 +329,10 @@ public class Enemy extends Entity {
 	public boolean breakingThrough() {
 		return breakingThroughBlock != null;
 	}
+
+	@Override
+	public boolean canShareCellWith(Entity other) {
+		return other instanceof Enemy;
+	}
+
 }

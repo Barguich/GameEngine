@@ -34,26 +34,12 @@ public class Hit extends GALAction {
 
 		// Frappe la première entité destructible trouvée (pas l'entité elle-même)
 		for (Entity victim : occupants) {
-			if (victim == e)
-				continue;
-
-			// Les blocs destructibles par l'ennemi (IceBlock et sous-classes
-			// comme BlockRespawn). On s'appuie sur destructibleByEnemy() pour
-			// exclure les blocs spéciaux (Diamond, Gold).
-			if (victim instanceof IceBlock
-					&& ((IceBlock) victim).destructibleByEnemy()) {
-				return ((IceBlock) victim).destroyByEnemy();
+			if (victim != e && victim.receiveGalHit(e)) {
+				if (e.stunt() instanceof GALStunt stunt) {
+					stunt.startWaiting(750);
+				}
+				return true;
 			}
-
-			IceBlock block = (IceBlock) victim;
-			if (!block.destroyByEnemy()) {
-				return false;
-			}
-			if (e.stunt() instanceof GALStunt) {
-				((GALStunt) e.stunt()).startWaiting(750);
-			}
-
-			return true;
 		}
 		return false;
 	}

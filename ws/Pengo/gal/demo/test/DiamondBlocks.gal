@@ -1,0 +1,26 @@
+Diamond(Check){
+  * (Check)
+
+  // Le diamant est à gauche des deux autres
+  | Step(E,D) & Step(E,2,D) ? Wizz :(Won)
+
+  // Le diamant est à droite des deux autres
+  | Step(W,D) & Step(W,2,D) ? Wizz :(Won)
+
+  // Le diamant est au-dessus des deux autres
+  | Step(S,D) & Step(S,2,D) ? Wizz :(Won)
+
+  // Le diamant est en dessous des deux autres
+  | Step(N,D) & Step(N,2,D) ? Wizz :(Won)
+
+  // Le diamant est au milieu horizontalement
+  | Step(W,D) & Step(E,D) ? Wizz :(Won)
+
+  // Le diamant est au milieu verticalement
+  | Step(N,D) & Step(S,D) ? Wizz :(Won)
+
+  | True ? :(Check)
+
+  * (Won)
+  | True ? :(Won)
+}

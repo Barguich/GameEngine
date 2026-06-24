@@ -171,4 +171,7 @@ public class Model {
 		}
 	}
 
+	public boolean got(Entity observer, int value) {
+		return false;
+	}
 }

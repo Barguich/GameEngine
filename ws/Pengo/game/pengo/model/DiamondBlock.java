@@ -17,4 +17,13 @@ public class DiamondBlock extends IceBlock {
     public boolean destructibleByEnemy() {
         return false;
     }
+
+    @Override
+    public boolean wizz() {
+        if (model instanceof PengoModel pm) {
+            pm.winByDiamondAlignment();
+            return true;
+        }
+        return false;
+    }
 }
