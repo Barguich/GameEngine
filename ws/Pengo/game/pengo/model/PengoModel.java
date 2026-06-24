@@ -126,10 +126,12 @@ public class PengoModel extends Model {
 	public boolean running() {
 		return state == GameState.PLAYING;
 	}
+
 	public void chooseMap(String mapFile) {
 		this.selectedMapFile = mapFile;
 		reset();
 	}
+
 	public String selectedMapFile() {
 		return selectedMapFile;
 	}
@@ -149,7 +151,6 @@ public class PengoModel extends Model {
 			setState(GameState.PLAYING);
 		}
 	}
-	
 
 	public void togglePause() {
 		if (state == GameState.PLAYING) {
@@ -960,7 +961,7 @@ public class PengoModel extends Model {
 		}
 
 		Grid.Position next = nextPosition(player, direction);
-		
+
 		if (next == null) {
 			return false;
 		}
@@ -1009,9 +1010,16 @@ public class PengoModel extends Model {
 
 		if (front instanceof Enemy) {
 			Enemy enemy = (Enemy) front;
-			if (enemy.eatableByPlayer() || enemy.harmlessForPlayer()) {
+
+			if (enemy.eatableByPlayer()) {
+				eatFrozenEnemy(enemy);
 				return true;
 			}
+
+			if (enemy.harmlessForPlayer()) {
+				return true;
+			}
+
 			loseLife();
 			return false;
 		}

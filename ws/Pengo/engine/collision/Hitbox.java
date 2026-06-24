@@ -10,7 +10,6 @@ import geometry.ISU;
  */
 public final class Hitbox {
 
-    /** Fraction de la taille conservée (0.90 => 5% de marge de chaque côté). */
     public static final double INSET = 0.90;
 
     private Hitbox() {}
