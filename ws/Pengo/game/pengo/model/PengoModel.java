@@ -1091,6 +1091,10 @@ public class PengoModel extends Model {
 
 	@Override
 	protected boolean collisionBlocks(Entity mover, Entity other) {
+
+		if (mover instanceof Enemy || other instanceof Enemy) {
+			return false;
+		}
 		// Pengo / Enemy est géré manuellement par PengoModel.
 		// On ne veut pas que le simple contact des bounding boxes tue Pengo.
 		if (isPengoEnemyPair(mover, other)) {
