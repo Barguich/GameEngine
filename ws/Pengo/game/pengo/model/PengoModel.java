@@ -1311,4 +1311,9 @@ public class PengoModel extends Model {
 		won = true;
 		setState(GameState.WON);
 	}
+
+	@Override
+	public boolean got(Entity observer, int maximum) {
+		return enemiesRemaining() <= maximum;
+	}
 }

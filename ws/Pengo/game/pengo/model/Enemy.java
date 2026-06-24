@@ -42,7 +42,7 @@ public class Enemy extends Entity {
 	}
 
 	public boolean harmlessForPlayer() {
-		return dead || dying || draggedByIce || crushedByIce || passedOut ||frozen;
+		return dead || dying || draggedByIce || crushedByIce || passedOut || frozen;
 	}
 
 	public long frozenAnimationClock() {
@@ -52,6 +52,7 @@ public class Enemy extends Entity {
 	public long walkAnimationClock() {
 		return walkAnimationClock;
 	}
+
 	public void passOut(long duration) {
 		passedOut = true;
 		passedOutRemaining = duration;
@@ -321,4 +322,10 @@ public class Enemy extends Entity {
 	public boolean breakingThrough() {
 		return breakingThroughBlock != null;
 	}
+
+	@Override
+	public boolean canShareCellWith(Entity other) {
+		return other instanceof Enemy;
+	}
+
 }

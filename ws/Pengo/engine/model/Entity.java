@@ -468,4 +468,16 @@ public class Entity {
 	public boolean wizz() {
 		return false;
 	}
+
+	public boolean canRunBot() {
+		return true;
+	}
+
+	public boolean canShareCellWith(Entity other) {
+		return false;
+	}
+
+	public boolean receiveGalHit(Entity attacker) {
+		return false;
+	}
 }

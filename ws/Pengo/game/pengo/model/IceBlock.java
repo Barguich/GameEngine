@@ -385,10 +385,13 @@ public class IceBlock extends Entity {
 		direction = 0;
 	}
 
-
 	public boolean passableByPlayer() {
 		return hp == 1 && !broken && !sliding && !breakingAnimation;
 	}
 
-}
+	@Override
+	public boolean receiveGalHit(Entity attacker) {
+		return destructibleByEnemy() && destroyByEnemy();
+	}
 
+}
