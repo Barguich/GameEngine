@@ -1,9 +1,9 @@
 package pengo;
 
-import java.awt.Frame;
+
 import java.io.IOException;
 
-import javax.swing.JOptionPane;
+
 
 import engine.Game;
 import model.Entity;
@@ -41,74 +41,37 @@ import view.ViewPort;
 public class PengoMain {
 
 	public static void main(String[] args) {
-		Frame frame = new Frame();
 
-		Object choice = JOptionPane.showInputDialog(
-			frame,
-			"Choisir une map",
-			"Pengo",
-			JOptionPane.QUESTION_MESSAGE,
-			null,
-			new String[] {
-				"Classic",
-				"Torus",
-				"Big ViewPort"
-			},
-			"Classic"
-		);
-
-		if (choice == null) {
-			System.exit(0);
-		}
-
-		String mapFile;
-
-		if ("Torus".equals(choice)) {
-			mapFile = "Asset/rsrc/maps/pengo_torus.txt";
-		} else if ("Big ViewPort".equals(choice)) {
-			mapFile = "Asset/rsrc/maps/pengo_big_viewport.txt";
-		} else {
-			mapFile = "Asset/rsrc/maps/pengo_classic.txt";
-		}
-
-		String[] map;
+		String[] baseMap;
 		try {
-			map = PengoMapLoader.readMap(mapFile);
+			baseMap = PengoMapLoader.readMap("Asset/rsrc/maps/pengo_big_viewport.txt");
 		} catch (IOException e) {
 			throw new RuntimeException("Impossible de lire la map", e);
 		}
-		int mapHeight = map.length;
-		int mapWidth = map[0].length();
+
+		int mapHeight = baseMap.length;
+		int mapWidth = baseMap[0].length();
 
 		Game game = new Game(mapWidth, mapHeight);
-		if ("Torus".equals(choice)) {
-			game.torusOnXaxis = true;
-			game.torusOnYaxis = true;
-		}
 		PengoConfig config = new PengoConfig();
 		PengoModel model = new PengoModel(Game.grid(), config);
 
 		double mapW = game.width_cm;
 		double mapH = game.height_cm;
-		double viewW = mapW;
-		double viewH = mapH;
 
-		if ("Big ViewPort".equals(choice)) {
-			viewW = 20 * game.cmPerCell;
-			viewH = 13 * game.cmPerCell;
-		}
+		double viewW = 20 * game.cmPerCell;
+		double viewH = 13 * game.cmPerCell;
 
 		ViewPort viewPort = new ViewPort(viewW, viewH, mapW, mapH);
-
-
 		View view = new View(model, viewPort);
+
 		model.setEnemySpawnListener(enemy -> {
 			EnemyAvatar avatar = new EnemyAvatar(enemy);
 			enemy.setAvatar(avatar);
 			avatar.setView(view);
-
 			PengoBots.configureEntity(model, enemy);
 		});
+
 		view.debug().setEnabled(true);
 
 		view.addRenderHook(new EntityRenderHook() {
@@ -127,17 +90,22 @@ public class PengoMain {
 			}
 		});
 
-		// Overlays plein écran : HUD d'abord, menu par-dessus.
 		view.addOverlay(new PengoHUD(model, view.debug()));
 		view.addOverlay(new PengoMenuOverlay(model, view.menu()));
 
 		model.setSceneBuilder(() -> {
-			buildSceneFromMap(model, view, map);
-			PengoBots.configure(model);
-		});
+			if (model.selectedMapFile() == null) {
+				return;
+			}
 
-		buildSceneFromMap(model, view, map);
-		PengoBots.configure(model);
+			try {
+				String[] selectedMap = PengoMapLoader.readMap(model.selectedMapFile());
+				buildSceneFromMap(model, view, selectedMap);
+				PengoBots.configure(model);
+			} catch (IOException e) {
+				throw new RuntimeException("Impossible de lire la map", e);
+			}
+		});
 
 		int winW = (int) (viewW * game.pixelPerCm);
 		int winH = (int) (viewH * game.pixelPerCm);
@@ -239,7 +207,7 @@ public class PengoMain {
 		addWall(model, view, 16, 10);
 		Enemy frozenEnemy = addEnemy(model, view, 12, 8, false);
 		frozenEnemy.freeze(5_000);
- 
+
 		/*
 		 * ========================================================== SCENARIO 6 :
 		 * Alignement de 3 DiamondBlock

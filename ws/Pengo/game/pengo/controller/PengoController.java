@@ -18,6 +18,9 @@ public class PengoController implements Canvas.KeyListener {
 	private static final String RESUME = "Reprendre";
 	private static final String RESTART = "Recommencer";
 	private static final String QUIT = "Quitter";
+	private static final String MAP_CLASSIC = "Classic";
+	private static final String MAP_TORUS = "Torus";
+	private static final String MAP_BIG = "Big ViewPort";
 
 	private final PengoModel model;
 	private final View view;
@@ -68,21 +71,21 @@ public class PengoController implements Canvas.KeyListener {
 		}
 
 		switch (keyCode) {
-			case VirtualKeyCodes.VK_SPACE:
-				PengoPlayer p = model.player();
-				if (p != null) {
-					damageBlockInFront(p);
-				}
-				break;
+		case VirtualKeyCodes.VK_SPACE:
+			PengoPlayer p = model.player();
+			if (p != null) {
+				damageBlockInFront(p);
+			}
+			break;
 
-			case VirtualKeyCodes.VK_R:
-				// Reset recrée le joueur + un nouveau PlayerBot (buffer vide).
-				model.reset();
-				refreshMenu();
-				break;
+		case VirtualKeyCodes.VK_R:
+			// Reset recrée le joueur + un nouveau PlayerBot (buffer vide).
+			model.reset();
+			refreshMenu();
+			break;
 
-			default:
-				break;
+		default:
+			break;
 		}
 	}
 
@@ -104,20 +107,20 @@ public class PengoController implements Canvas.KeyListener {
 
 	private int directionFor(int keyCode) {
 		switch (keyCode) {
-			case VirtualKeyCodes.VK_UP:
-			case VirtualKeyCodes.VK_Z:
-				return 270;
-			case VirtualKeyCodes.VK_DOWN:
-			case VirtualKeyCodes.VK_S:
-				return 90;
-			case VirtualKeyCodes.VK_LEFT:
-			case VirtualKeyCodes.VK_Q:
-				return 180;
-			case VirtualKeyCodes.VK_RIGHT:
-			case VirtualKeyCodes.VK_D:
-				return 0;
-			default:
-				return -1;
+		case VirtualKeyCodes.VK_UP:
+		case VirtualKeyCodes.VK_Z:
+			return 270;
+		case VirtualKeyCodes.VK_DOWN:
+		case VirtualKeyCodes.VK_S:
+			return 90;
+		case VirtualKeyCodes.VK_LEFT:
+		case VirtualKeyCodes.VK_Q:
+			return 180;
+		case VirtualKeyCodes.VK_RIGHT:
+		case VirtualKeyCodes.VK_D:
+			return 0;
+		default:
+			return -1;
 		}
 	}
 
@@ -126,20 +129,24 @@ public class PengoController implements Canvas.KeyListener {
 		String[] items;
 
 		switch (model.state()) {
-			case PAUSED:
-				title = "PAUSE";
-				items = new String[] { RESUME, RESTART, QUIT };
-				break;
-			case WON:
-				title = "VICTOIRE !";
-				items = new String[] { RESTART, QUIT };
-				break;
-			case GAME_OVER:
-				title = "GAME OVER";
-				items = new String[] { RESTART, QUIT };
-				break;
-			default:
-				return;
+		case PAUSED:
+			title = "PAUSE";
+			items = new String[] { RESUME, RESTART, QUIT };
+			break;
+		case WON:
+			title = "VICTOIRE !";
+			items = new String[] { RESTART, QUIT };
+			break;
+		case GAME_OVER:
+			title = "GAME OVER";
+			items = new String[] { RESTART, QUIT };
+			break;
+		case CHOIX_MAP:
+			title = "CHOISIR UNE MAP";
+			items = new String[] { MAP_CLASSIC, MAP_TORUS, MAP_BIG };
+			break;
+		default:
+			return;
 		}
 		view.menu().set(title, items, 0);
 	}
@@ -148,44 +155,55 @@ public class PengoController implements Canvas.KeyListener {
 		MenuOverlay menu = view.menu();
 
 		switch (keyCode) {
-			case VirtualKeyCodes.VK_UP:
-			case VirtualKeyCodes.VK_Z:
-				menu.move(-1);
-				break;
-			case VirtualKeyCodes.VK_DOWN:
-			case VirtualKeyCodes.VK_S:
-				menu.move(1);
-				break;
-			case VirtualKeyCodes.VK_ENTER:
-			case VirtualKeyCodes.VK_SPACE:
-				activateMenuItem(menu.items()[menu.selected()]);
-				break;
-			case VirtualKeyCodes.VK_Q:
-				System.exit(0);
-				break;
-			case VirtualKeyCodes.VK_R:
-				model.reset();
-				refreshMenu();
-				break;
-			default:
-				break;
+		case VirtualKeyCodes.VK_UP:
+		case VirtualKeyCodes.VK_Z:
+			menu.move(-1);
+			break;
+		case VirtualKeyCodes.VK_DOWN:
+		case VirtualKeyCodes.VK_S:
+			menu.move(1);
+			break;
+		case VirtualKeyCodes.VK_ENTER:
+		case VirtualKeyCodes.VK_SPACE:
+			activateMenuItem(menu.items()[menu.selected()]);
+			break;
+		case VirtualKeyCodes.VK_Q:
+			System.exit(0);
+			break;
+		case VirtualKeyCodes.VK_R:
+			model.reset();
+			refreshMenu();
+			break;
+		default:
+			break;
 		}
 	}
 
 	private void activateMenuItem(String item) {
 		switch (item) {
-			case RESUME:
-				model.resume();
-				break;
-			case RESTART:
-				model.reset();
-				refreshMenu();
-				break;
-			case QUIT:
-				System.exit(0);
-				break;
-			default:
-				break;
+		case RESUME:
+			model.resume();
+			break;
+		case RESTART:
+			model.reset();
+			refreshMenu();
+			break;
+		case QUIT:
+			System.exit(0);
+			break;
+		case MAP_CLASSIC:
+			model.chooseMap("Asset/rsrc/maps/pengo_classic.txt");
+			break;
+
+		case MAP_TORUS:
+			model.chooseMap("Asset/rsrc/maps/pengo_torus.txt");
+			break;
+
+		case MAP_BIG:
+			model.chooseMap("Asset/rsrc/maps/pengo_big_viewport.txt");
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -197,20 +215,20 @@ public class PengoController implements Canvas.KeyListener {
 		int y = player.position().y();
 
 		switch (player.orientation()) {
-			case 0:
-				x++;
-				break;
-			case 90:
-				y++;
-				break;
-			case 180:
-				x--;
-				break;
-			case 270:
-				y--;
-				break;
-			default:
-				return;
+		case 0:
+			x++;
+			break;
+		case 90:
+			y++;
+			break;
+		case 180:
+			x--;
+			break;
+		case 270:
+			y--;
+			break;
+		default:
+			return;
 		}
 
 		Entity e = model.firstAt(Game.grid().new Position(x, y));
