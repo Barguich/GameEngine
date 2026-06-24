@@ -944,6 +944,7 @@ public class PengoModel extends Model {
 		if (player == null || player.position() == null) {
 			return false;
 		}
+		player.turnTo(direction);
 		if (lost() || won() || menuVisible()) {
 			return false;
 		}

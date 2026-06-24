@@ -60,13 +60,18 @@ public class PengoController implements Canvas.KeyListener {
 
 		int dir = directionFor(keyCode);
 		if (dir >= 0) {
-			PlayerBot bot = playerBot();
-			if (bot != null) {
-				bot.pressDirection(dir);
-			}
-			return;
-		}
+		    PengoPlayer p = model.player();
+		    if (p != null) {
+		        p.turnTo(dir);
+		    }
 
+		    PlayerBot bot = playerBot();
+		    if (bot != null) {
+		        bot.pressDirection(dir);
+		    }
+
+		    return;
+		}
 		switch (keyCode) {
 			case VirtualKeyCodes.VK_SPACE:
 				PengoPlayer p = model.player();
