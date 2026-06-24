@@ -1,6 +1,9 @@
 package pengo;
 
+import java.awt.Frame;
 import java.io.IOException;
+
+import javax.swing.JOptionPane;
 
 import engine.Game;
 import model.Entity;
@@ -38,20 +41,65 @@ import view.ViewPort;
 public class PengoMain {
 
 	public static void main(String[] args) {
+		Frame frame = new Frame();
+
+		Object choice = JOptionPane.showInputDialog(
+			frame,
+			"Choisir une map",
+			"Pengo",
+			JOptionPane.QUESTION_MESSAGE,
+			null,
+			new String[] {
+				"Classic",
+				"Torus",
+				"Big ViewPort"
+			},
+			"Classic"
+		);
+
+		if (choice == null) {
+			System.exit(0);
+		}
+
+		String mapFile;
+
+		if ("Torus".equals(choice)) {
+			mapFile = "Asset/rsrc/maps/pengo_torus.txt";
+		} else if ("Big ViewPort".equals(choice)) {
+			mapFile = "Asset/rsrc/maps/pengo_big_viewport.txt";
+		} else {
+			mapFile = "Asset/rsrc/maps/pengo_classic.txt";
+		}
+
 		String[] map;
 		try {
-			map = PengoMapLoader.readMap("Asset/rsrc/maps/lvl1.txt");
+			map = PengoMapLoader.readMap(mapFile);
 		} catch (IOException e) {
 			throw new RuntimeException("Impossible de lire la map", e);
 		}
-		Game game = new Game(20, 13);
+		int mapHeight = map.length;
+		int mapWidth = map[0].length();
+
+		Game game = new Game(mapWidth, mapHeight);
+		if ("Torus".equals(choice)) {
+			game.torusOnXaxis = true;
+			game.torusOnYaxis = true;
+		}
 		PengoConfig config = new PengoConfig();
 		PengoModel model = new PengoModel(Game.grid(), config);
 
 		double mapW = game.width_cm;
 		double mapH = game.height_cm;
+		double viewW = mapW;
+		double viewH = mapH;
 
-		ViewPort viewPort = new ViewPort(mapW, mapH, mapW, mapH);
+		if ("Big ViewPort".equals(choice)) {
+			viewW = 20 * game.cmPerCell;
+			viewH = 13 * game.cmPerCell;
+		}
+
+		ViewPort viewPort = new ViewPort(viewW, viewH, mapW, mapH);
+
 
 		View view = new View(model, viewPort);
 		model.setEnemySpawnListener(enemy -> {
@@ -91,8 +139,8 @@ public class PengoMain {
 		buildSceneFromMap(model, view, map);
 		PengoBots.configure(model);
 
-		int winW = (int) (mapW * game.pixelPerCm);
-		int winH = (int) (mapH * game.pixelPerCm);
+		int winW = (int) (viewW * game.pixelPerCm);
+		int winH = (int) (viewH * game.pixelPerCm);
 
 		Runtime.boot(new java.awt.Dimension(winW, winH), (oop.tasks.Runnable) () -> {
 			Canvas canvas = (Canvas) Task.task().find("canvas");
