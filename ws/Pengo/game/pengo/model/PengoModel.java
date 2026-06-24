@@ -978,7 +978,7 @@ public class PengoModel extends Model {
 			}
 
 			// HP = 3 : Pengo peut pousser
-			if (allowPush && !block.sliding()) {
+			if (block.hp() == 3 && !block.sliding()) {
 				block.startSlide(direction);
 			}
 
