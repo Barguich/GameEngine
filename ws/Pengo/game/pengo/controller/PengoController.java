@@ -1,10 +1,11 @@
 package pengo.controller;
 
 import engine.Game;
-import geometry.ISU;
+import gal_engine.Bot;
 import model.Entity;
 import oop.graphics.Canvas;
 import oop.graphics.VirtualKeyCodes;
+import pengo.brain.PlayerBot;
 import pengo.model.DiamondBlock;
 import pengo.model.IceBlock;
 import pengo.model.PengoModel;
@@ -14,10 +15,6 @@ import view.View;
 
 public class PengoController implements Canvas.KeyListener {
 
-	// Vitesse de déplacement du joueur en cm/s
-	private static final double SPEED_CM_S = 15.0;
-
-	// Options du menu
 	private static final String RESUME = "Reprendre";
 	private static final String RESTART = "Recommencer";
 	private static final String QUIT = "Quitter";
@@ -29,68 +26,57 @@ public class PengoController implements Canvas.KeyListener {
 		this.model = model;
 		this.view = view;
 
-		// Le menu est reconstruit quand l'état du jeu change
 		model.setStateListener(state -> refreshMenu());
-
 		refreshMenu();
+	}
+
+	private PlayerBot playerBot() {
+		PengoPlayer p = model.player();
+		if (p == null)
+			return null;
+		Bot b = p.bot();
+		if (b instanceof PlayerBot)
+			return (PlayerBot) b;
+		return null;
 	}
 
 	@Override
 	public void pressed(Canvas canvas, int keyCode, char keyChar) {
 
-		// Échap permet de mettre le jeu en pause ou de reprendre
 		if (keyCode == VirtualKeyCodes.VK_ESCAPE) {
 			model.togglePause();
 			refreshMenu();
 			return;
 		}
 
-		// Si le menu est visible, les touches servent à le contrôler
 		if (model.menuVisible()) {
 			handleMenuKey(keyCode);
 			return;
 		}
 
-		// Si le jeu n'est pas en cours, on ignore les entrées clavier
 		if (!model.running()) {
 			return;
 		}
 
-		PengoPlayer player = model.player();
-
-		if (player == null) {
+		int dir = directionFor(keyCode);
+		if (dir >= 0) {
+			PlayerBot bot = playerBot();
+			if (bot != null) {
+				bot.pressDirection(dir);
+			}
 			return;
 		}
 
-		ISU isu = Game.isu();
-		double s = SPEED_CM_S * player.speedMultiplier();
-
 		switch (keyCode) {
-			case VirtualKeyCodes.VK_UP:
-			case VirtualKeyCodes.VK_Z:
-				player.startGridMove(270, s);
-				break;
-
-			case VirtualKeyCodes.VK_DOWN:
-			case VirtualKeyCodes.VK_S:
-				player.startGridMove(90, s);
-				break;
-
-			case VirtualKeyCodes.VK_LEFT:
-			case VirtualKeyCodes.VK_Q:
-				player.startGridMove(180, s);
-				break;
-
-			case VirtualKeyCodes.VK_RIGHT:
-			case VirtualKeyCodes.VK_D:
-				player.startGridMove(0, s);
-				break;
-
 			case VirtualKeyCodes.VK_SPACE:
-				damageBlockInFront(player);
+				PengoPlayer p = model.player();
+				if (p != null) {
+					damageBlockInFront(p);
+				}
 				break;
 
 			case VirtualKeyCodes.VK_R:
+				// Reset recrée le joueur + un nouveau PlayerBot (buffer vide).
 				model.reset();
 				refreshMenu();
 				break;
@@ -102,15 +88,39 @@ public class PengoController implements Canvas.KeyListener {
 
 	@Override
 	public void released(Canvas canvas, int keyCode, char keyChar) {
-		// Rien à faire au relâchement des touches
+		int dir = directionFor(keyCode);
+		if (dir < 0)
+			return;
+
+		PlayerBot bot = playerBot();
+		if (bot != null) {
+			bot.releaseDirection(dir);
+		}
 	}
 
 	@Override
 	public void typed(Canvas canvas, char keyChar) {
-		// Les actions sont traitées dans pressed()
 	}
 
-	// Met à jour le menu selon l'état courant du jeu
+	private int directionFor(int keyCode) {
+		switch (keyCode) {
+			case VirtualKeyCodes.VK_UP:
+			case VirtualKeyCodes.VK_Z:
+				return 270;
+			case VirtualKeyCodes.VK_DOWN:
+			case VirtualKeyCodes.VK_S:
+				return 90;
+			case VirtualKeyCodes.VK_LEFT:
+			case VirtualKeyCodes.VK_Q:
+				return 180;
+			case VirtualKeyCodes.VK_RIGHT:
+			case VirtualKeyCodes.VK_D:
+				return 0;
+			default:
+				return -1;
+		}
+	}
+
 	private void refreshMenu() {
 		String title;
 		String[] items;
@@ -120,25 +130,20 @@ public class PengoController implements Canvas.KeyListener {
 				title = "PAUSE";
 				items = new String[] { RESUME, RESTART, QUIT };
 				break;
-
 			case WON:
 				title = "VICTOIRE !";
 				items = new String[] { RESTART, QUIT };
 				break;
-
 			case GAME_OVER:
 				title = "GAME OVER";
 				items = new String[] { RESTART, QUIT };
 				break;
-
 			default:
 				return;
 		}
-
 		view.menu().set(title, items, 0);
 	}
 
-	// Gestion des touches lorsque le menu est affiché
 	private void handleMenuKey(int keyCode) {
 		MenuOverlay menu = view.menu();
 
@@ -147,62 +152,50 @@ public class PengoController implements Canvas.KeyListener {
 			case VirtualKeyCodes.VK_Z:
 				menu.move(-1);
 				break;
-
 			case VirtualKeyCodes.VK_DOWN:
 			case VirtualKeyCodes.VK_S:
 				menu.move(1);
 				break;
-
 			case VirtualKeyCodes.VK_ENTER:
 			case VirtualKeyCodes.VK_SPACE:
 				activateMenuItem(menu.items()[menu.selected()]);
 				break;
-
 			case VirtualKeyCodes.VK_Q:
 				System.exit(0);
 				break;
-
 			case VirtualKeyCodes.VK_R:
 				model.reset();
 				refreshMenu();
 				break;
-
 			default:
 				break;
 		}
 	}
 
-	// Exécute l'action correspondant à l'option sélectionnée
 	private void activateMenuItem(String item) {
 		switch (item) {
 			case RESUME:
 				model.resume();
 				break;
-
 			case RESTART:
 				model.reset();
 				refreshMenu();
 				break;
-
 			case QUIT:
 				System.exit(0);
 				break;
-
 			default:
 				break;
 		}
 	}
 
-	// Abîme le bloc de glace situé devant le joueur
 	private void damageBlockInFront(PengoPlayer player) {
-		if (player == null || player.position() == null) {
+		if (player == null || player.position() == null)
 			return;
-		}
 
 		int x = player.position().x();
 		int y = player.position().y();
 
-		// On cherche la case devant le joueur selon son orientation
 		switch (player.orientation()) {
 			case 0:
 				x++;
@@ -221,8 +214,6 @@ public class PengoController implements Canvas.KeyListener {
 		}
 
 		Entity e = model.firstAt(Game.grid().new Position(x, y));
-
-		// Les DiamondBlock ne sont pas destructibles
 		if (e instanceof IceBlock && !(e instanceof DiamondBlock)) {
 			((IceBlock) e).damage();
 		}

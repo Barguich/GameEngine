@@ -30,7 +30,6 @@ import pengo.view.IceBlockAvatar;
 import pengo.view.PengoAvatar;
 import view.EntityRenderHook;
 import view.Painter;
-import view.ShapeAvatar;
 import view.View;
 import view.ViewPort;
 
