@@ -1,9 +1,6 @@
 package pengo;
 
-
 import java.io.IOException;
-
-
 
 import engine.Game;
 import model.Entity;
