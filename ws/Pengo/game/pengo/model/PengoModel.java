@@ -41,7 +41,6 @@ public class PengoModel extends Model {
 
 	private Runnable sceneBuilder;
 	private Consumer<Enemy> enemySpawnListener;
-	private Consumer<BlockRespawn> blockRespawnListener;
 
 	// Respawns de blocs en attente : chacun réapparaît quand son délai expire.
 	private final List<PendingRespawn> pendingRespawns = new ArrayList<>();
@@ -465,6 +464,10 @@ public class PengoModel extends Model {
 				player.setPosition(grid().new Position(p[0], p[1]));
 				player.setBounding();
 				player.stop();
+
+				if (player.bot() instanceof pengo.brain.PlayerBot pb) {
+					pb.playerStunt().reset();
+				}
 				return;
 			}
 		}
@@ -540,6 +543,15 @@ public class PengoModel extends Model {
 
 		enemy.kill();
 		addScore(config.scoreWall());
+	}
+
+	/** Pengo marche sur un ennemi gelé : il le mange. */
+	public void eatFrozenEnemy(Enemy enemy) {
+		if (enemy == null || !enemy.eatableByPlayer()) {
+			return;
+		}
+		enemy.kill(); // déclenche l'animation dying puis remove()
+		addScore(config.scoreWall()); // ou un score dédié scoreEat() si tu en ajoutes un
 	}
 
 	public void damageBlockInFront(PengoPlayer player) {
@@ -971,8 +983,13 @@ public class PengoModel extends Model {
 			}
 
 			// HP = 3 : Pengo peut pousser
-			if (allowPush && !block.sliding()) {
-				block.startSlide(direction);
+			if (block.hp() == 3 && !block.sliding()) {
+				Grid.Position behind = nextPosition(block, direction);
+				boolean canSlide = behind != null
+						&& firstSolidAt(behind, block, player) == null;
+				if (canSlide) {
+					block.startSlide(direction);
+				}
 			}
 
 			return false;
@@ -980,7 +997,7 @@ public class PengoModel extends Model {
 
 		if (front instanceof Enemy) {
 			Enemy enemy = (Enemy) front;
-			if (enemy.harmlessForPlayer()) {
+			if (enemy.eatableByPlayer() || enemy.harmlessForPlayer()) {
 				return true;
 			}
 			loseLife();
@@ -1213,10 +1230,6 @@ public class PengoModel extends Model {
 		this.enemySpawnListener = listener;
 	}
 
-	public void setBlockRespawnListener(Consumer<BlockRespawn> listener) {
-		this.blockRespawnListener = listener;
-	}
-
 	public void scheduleBlockRespawn(Grid.Position position, long delay) {
 		if (position == null || delay <= 0) {
 			return;
@@ -1249,15 +1262,6 @@ public class PengoModel extends Model {
 		Grid.Position target = randomFreeCell();
 		if (target == null) {
 			target = position;
-		}
-
-		BlockRespawn block = new BlockRespawn();
-		block.setPosition(target.copy());
-		block.setSize(grid().new Dimension(1, 1));
-		add(block);
-
-		if (blockRespawnListener != null) {
-			blockRespawnListener.accept(block);
 		}
 	}
 

@@ -47,7 +47,7 @@ public class Wall extends Entity {
 			return;
 		}
 
-		bounding = new Bounding();
-		bounding.add(new Rect(center, size, orientation_degree));
+		bounding = new collision.Bounding();
+		bounding.add(collision.Hitbox.shrunkRect(center, size, orientation_degree));
 	}
 }

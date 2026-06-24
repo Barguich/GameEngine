@@ -18,7 +18,8 @@ public class IceBlock extends Entity {
 	private boolean breakingAnimation;
 	private long breakingAnimationRemaining;
 	private long breakingAnimationDuration;
-	public static final long ENEMY_BREAK_DURATION_MS = 1_000;
+	public static final long ENEMY_BREAK_DURATION_MS = 300;
+	public static final long PLAYER_HIT_DURATION_MS  = 150; // était 300 — aligné sur l'ennemi
 	private int breakingFrame;
 	private List<Enemy> draggedEnemies; // liste des ennemies a emporter lors de sliding
 	private boolean containsSnoBee;
@@ -182,7 +183,7 @@ public class IceBlock extends Entity {
 		System.out.println("ICEBLOCK DAMAGE, hp = " + hp);
 
 		breakingAnimation = true;
-		breakingAnimationDuration = 300;
+		breakingAnimationDuration = PLAYER_HIT_DURATION_MS;
 		breakingAnimationRemaining = breakingAnimationDuration;
 		breakingFrame = 0;
 	}
@@ -359,8 +360,8 @@ public class IceBlock extends Entity {
 			return;
 		}
 
-		bounding = new Bounding();
-		bounding.add(new Rect(center, size, orientation_degree));
+		bounding = new collision.Bounding();
+		bounding.add(collision.Hitbox.shrunkRect(center, size, orientation_degree));
 	}
 
 	public void finishCrushAt(Grid.Position position) {

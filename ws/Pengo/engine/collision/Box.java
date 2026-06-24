@@ -53,15 +53,16 @@ public class Box {
 
 	// Vérifie si deux boîtes englobantes se chevauchent
 	public boolean overlaps(Box other) {
-
 		if (other == null) {
 			return false;
 		}
 
-		return this.xmax > other.xmin()
-				&& this.xmin < other.xmax()
-				&& this.ymax > other.ymin()
-				&& this.ymin < other.ymax();
+		final double EPS = 1e-6;
+
+		return this.xmax > other.xmin() + EPS
+				&& this.xmin < other.xmax() - EPS
+				&& this.ymax > other.ymin() + EPS
+				&& this.ymin < other.ymax() - EPS;
 	}
 
 	// Construit la plus petite boîte contenant b1 et b2
