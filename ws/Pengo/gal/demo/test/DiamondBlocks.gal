@@ -1,0 +1,13 @@
+Diamond(Check){
+  * (Check)
+  | Step(E,D) & Step(E,2,D) ? Wizz :(Won)
+  | Step(W,D) & Step(W,2,D) ? Wizz :(Won)
+  | Step(N,D) & Step(N,2,D) ? Wizz :(Won)
+  | Step(S,D) & Step(S,2,D) ? Wizz :(Won)
+  | Step(E,D) & Step(W,D) ? Wizz :(Won)
+  | Step(N,D) & Step(S,D) ? Wizz :(Won)
+  | True ? :(Check)
+
+  * (Won)
+  | True ? :(Won)
+}

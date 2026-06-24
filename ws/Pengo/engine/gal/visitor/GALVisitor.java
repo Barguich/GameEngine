@@ -142,6 +142,10 @@ public class GALVisitor implements iVisitor {
 			return new EnemiesLeft((Integer) params.get(0));
 		}
 
+		if (name.equals("Wizz")) {
+			return new Wizz();
+		}
+
 		if (name.equals("True")) {
 			return new True();
 		}

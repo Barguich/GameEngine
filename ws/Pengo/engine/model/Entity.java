@@ -464,4 +464,8 @@ public class Entity {
 	public double speedMultiplier() {
 		return 1.0;
 	}
+
+	public boolean wizz() {
+		return false;
+	}
 }
