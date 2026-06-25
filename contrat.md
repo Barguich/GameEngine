@@ -87,6 +87,9 @@ Effets :
 
 Le score dépend de la manière dont un ennemi est éliminé, ainsi que du nombre d'ennemis éliminés simultanément.
 
+Un ennemi écrasé contre un mur rapporte 100 points.
+Un ennemi écrasé par un bloc de glace rapporte 400 points.
+Lorsque plusieurs ennemis sont éliminés simultanément, un bonus de score est accordé afin de récompenser cette action.
 
 # 3. Difficultés techniques et solutions envisagées
 
