@@ -193,9 +193,8 @@ public class DeplacementTest {
 
         assertTrue(block.intersects(player));
     }
-
     @Test
-    void attackBotMovesTowardPlayer() {
+    void attackBotTurnsTowardPlayer() {
         Game game = new Game(20, 15);
         PengoModel model = new PengoModel(game.grid());
 
@@ -216,11 +215,13 @@ public class DeplacementTest {
         enemy.setStunt(enemyStunt);
 
         enemyBot.think();
-        model.tick(1000);
 
-        assertEquals(4, enemy.position().x());
+        assertEquals(
+            180,
+            enemy.orientation(),
+            "L'ennemi doit regarder vers la gauche pour aller vers Pengo"
+        );
     }
-
     @Test
     void modelAddEntity() {
         Game game = new Game(10, 10);
