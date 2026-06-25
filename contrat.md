@@ -98,14 +98,16 @@ Les blocs de glace ne se déplacent pas comme le joueur. Lorsqu'un bloc est pous
 
 ### Solution envisagée
 
-Créer un comportement spécifique pour les blocs en mouvement. Le bloc conserve une direction et avance à chaque tick jusqu'à ce qu'une condition d'arrêt soit détectée. Si le bloc rencontre un ennemi durant son glissement, il l'emporte avec lui (implémenté en Java).
+Chaque bloc de glace possède un état `sliding`, une direction de déplacement et une vitesse.
 
-[#MP]
-- vous ne décrivez pas la solution technique mais vous détaillez l'effet attendu.
-- la solution technique 
-  - soit un automate GAL avec la condition Pushed? et l'action Push
-  - soit un moteur physique (restez simple) avec vitesse et transmission de la vitesse en cas de collision
+Lorsqu'un joueur pousse un bloc, l'état `sliding` passe à vrai et la direction de poussée est mémorisée. À chaque appel de `tick`, le modèle calcule la prochaine case dans cette direction.
 
+- Si la case est libre, le bloc continue son déplacement.
+- Si la case contient un ennemi, celui-ci est déplacé avec le bloc.
+- Si la case contient un mur ou un autre bloc, le déplacement s'arrête.
+- Si un ennemi est coincé entre le bloc et un obstacle, il est éliminé.
+
+Cette logique est implémentée dans `IceBlock` et `PengoModel`.
 ### [x/?] Démo
 
 Le joueur pousse un bloc vers la droite : 
@@ -147,8 +149,6 @@ Un bloc spécial disparaît et un ennemi apparaît à sa place.
 
 ## 3.4 [x] Gestion des bonus temporaires
 
-#MP: ce n'est pas cohérent de remettre ici en optionnel une partie du contrat qui n'était pas optionnelle plus haut. 
-
 ### Difficulté
 
 Les bonus ne doivent pas être permanents. Le Gold Block gèle un ennemi pendant un temps limité et le Fish Bonus augmente temporairement la vitesse du joueur.
@@ -179,6 +179,17 @@ Utiliser plusieurs comportements de Bot :
 - Bot mort / inactif.
 
 Certains comportements sont décrits en GAL afin de pouvoir les modifier sans toucher au code Java.
+
+La condition `Closest` recherche le joueur dans un rayon donné autour de l'ennemi. Lorsqu'elle est vérifiée, la direction du joueur est calculée puis utilisée dans une transition GAL afin de poursuivre le joueur.
+
+Exemple :
+
+```gal
+Closest(@, d) ? Move(d)
+```
+
+Lorsque le joueur n'est plus détecté, les autres transitions reprennent le contrôle et l'ennemi revient à son comportement de patrouille.
+
 
 ### [x] Démo
 
@@ -323,12 +334,18 @@ Le joueur perd si :
 
 - [ ] **Fixe**
 
-- [x] **Par configuration**
-  - Explications : 
-    - La carte est décrite sous forme d'une matrice avec différents coefficients pour définir un obstacle, un ennemi, la position initiale du personnage, etc.
-    - [#MP: pas cohérent avec le paragraphe «Taille de la map modifiable»]
-  - **Démo : commune à «Taille de la map modifiable»** 
-    - Modifier quelques coefficients pour montrer le changement.
+- * [x] **Par configuration**
+
+  * Explications :
+
+    * Les niveaux sont décrits dans des fichiers texte ASCII.
+    * Chaque caractère représente une entité du jeu (mur, bloc de glace, joueur, ennemi, bonus, etc.).
+    * Lors du chargement, le fichier est parcouru caractère par caractère afin de construire dynamiquement le niveau.
+    * Les dimensions de la carte ainsi que le contenu du niveau sont entièrement déterminés par le fichier de configuration.
+  * **Démo :**
+
+    * Modifier le fichier de niveau pour ajouter ou supprimer des entités.
+    * Relancer le jeu et observer les modifications de la carte.
 
 - [ ] **Aléatoire**
 
@@ -382,14 +399,15 @@ Le joueur perd si :
 - [x] **Changement d'avatar**
   - Explications : L'image d'une entité peut changer selon son état, ce qui permet de montrer visuellement un bonus, un gel ou une destruction.
   - **Démo :** 
-    - Le joueur ramasse un Fish Bonus ; un effet visuel montre que sa vitesse est doublée.
-    - [#MP: est-ce un changement d'avatar ou juste une modification de sa variable vitesse ?]
-
+    -Les ennemis possèdent plusieurs apparences sélectionnées dynamiquement selon leur état :
+    - état normal ;
+    - état gelé ;
+    - état passed out ;
+    - état de destruction.
+    La sélection du sprite est réalisée dans `EnemyAvatar`.
 - [x] **Changement de Bot / FSM**
   - Explications : Les ennemis peuvent changer de comportement selon la situation : patrouille, poursuite, fuite, immobilisation. Leur agressivité augmente en fonction du nombre d'ennemis restants.
-  - [#MP: Solution technique à préciser] : 
-    - qui détecte que l'ennemi est proche du joueur ? 
-    - faut-il changer de Bot/FSM ? Pas forcément : Si closest a un rayon de perception limitée (ce qui est généralement le cas), la transition Closest(@,d) ? Move(d) donnera le comportement attendu dès que le joueur est dans le rayon de perception de l'ennemi, sans avoir à changer de bot.  
+ Les ennemis utilisent un comportement de patrouille et de poursuite reposant sur la condition `Closest`. Lorsqu'un joueur est détecté à proximité, l'ennemi adapte sa direction pour se rapprocher de lui.
   - **Démo :** 
     - Un ennemi passe d'un comportement de patrouille à un comportement de poursuite lorsqu'il détecte le joueur.
 
@@ -424,17 +442,17 @@ Le joueur perd si :
 ### Bot
 
 - [x] **Bot en Java**
-  - Explications : Certains comportements simples sont programmés directement en Java.
-  - Démo : Un ennemi utilise une classe Bot Java pour se déplacer ou poursuivre le joueur.
-  - [#MP: il faudrait que ce comportement soit programmé en GAL ou au moins en FSM Java avec closest].
-
+  - Explications : Certains comportements simples restent programmés directement en Java, notamment les comportements utilitaires liés au déplacement, à l'arrêt temporaire, ou aux états particuliers d'un ennemi.
+  - Démo : Un ennemi peut être immobilisé lorsqu'il est gelé ou lorsqu'il passe dans l'état `passedOut`.
+  
 - [ ] **Bot en FSM Java**
 
-- [x] **Bot en GAL + parser** *(optionnel)*
-  - Explications : Certains comportements [#MP: pas assez précis] peuvent être décrits dans un fichier GAL puis chargés par le jeu.
-  - **Démo : Modifier un fichier GAL pour changer le comportement d'un ennemi sans modifier directement les classes Java.**
-
-
+[x] **Bot en GAL + parser**
+  - Explications : Certains comportements des ennemis sont décrits dans des fichiers `.gal`.  
+    Le parser GAL charge ces fichiers au lancement du jeu et construit les automates correspondants.  
+    Une transition GAL peut par exemple utiliser une condition de détection du joueur, comme `Closest`, puis déclencher une action de déplacement.
+  - Démo : Modifier une transition dans un fichier `.gal`, relancer le jeu, puis observer que le comportement de l'ennemi change sans modifier les classes Java.
+  
 ### Démo : modification du comportement des entités
 
 - [ ] **En changeant de classe Bot**
@@ -452,14 +470,15 @@ Le joueur perd si :
 
 ## Partie Controlleur
 
-- [o] **Une action à la fois pour le joueur**
-  - Explications : 
-    - Certaines actions sont exclusives [#MP: lesquelles ?]. 
-    - Par exemple, le joueur ne peut pas pousser deux blocs en même temps. [#MP: ce n'est pas le sujet.]
-    - Le joueur tente une action incompatible ; seule l'action prioritaire est exécutée.
-      - [#MP: pour être incompatibles il faut au moins 2 actions]
-      - [#MP: s'il y a des actions incompatibles ce n'est pas la bonne section pour en partler]
-  - **Démo: déplacement ou frappe mais pas les deux**
+* [o] **Une action à la fois pour le joueur**
+
+  * Explications :
+
+    * À chaque tick, le contrôleur lit les entrées clavier et produit au plus une action prioritaire.
+    * Les actions de déplacement utilisent les touches directionnelles tandis que l'action de frappe utilise une touche dédiée.
+    * Si plusieurs entrées sont détectées simultanément, le contrôleur applique une règle de priorité afin de ne transmettre qu'une seule action au modèle.
+    * Cette approche évite les conflits d'exécution et garantit un comportement déterministe du joueur.
+  * **Démo :** appuyer simultanément sur plusieurs touches et montrer qu'une seule action est exécutée pendant le tick courant.
 
 + [o] **actions multiples indépendantes pour le joueur**
   + Explications: déplacement + action de frapper 

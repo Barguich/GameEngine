@@ -355,24 +355,24 @@ public class PengoModel extends Model {
 	}
 
 	public void checkVictory() {
-	    if (lost || won) {
-	        return;
-	    }
+		if (lost || won) {
+			return;
+		}
 
-	    // Victoire si 3 DiamondBlocks sont alignés.
-	    if (diamondBlocksAligned()) {
-	        won = true;
-	        setState(GameState.WON);
-	        System.out.println("YOU WIN - DIAMOND ALIGNMENT");
-	        return;
-	    }
+		// Victoire si 3 DiamondBlocks sont alignés.
+		if (diamondBlocksAligned()) {
+			won = true;
+			setState(GameState.WON);
+			System.out.println("YOU WIN - DIAMOND ALIGNMENT");
+			return;
+		}
 
-	    // Victoire si tous les ennemis sont morts.
-	    if (allEnemiesDead()) {
-	        won = true;
-	        setState(GameState.WON);
-	        System.out.println("YOU WIN - ALL ENEMIES DEAD");
-	    }
+		// Victoire si tous les ennemis sont morts.
+		if (allEnemiesDead()) {
+			won = true;
+			setState(GameState.WON);
+			System.out.println("YOU WIN - ALL ENEMIES DEAD");
+		}
 	}
 
 	private boolean allEnemiesDead() {
@@ -475,28 +475,80 @@ public class PengoModel extends Model {
 		int[][] positions = { { 2, 2 }, { 2, 3 }, { 3, 2 }, { 3, 3 }, { 1, 2 } };
 
 		for (int[] p : positions) {
-			boolean safe = true;
+			Grid.Position candidate = grid().new Position(p[0], p[1]);
 
-			for (Entity e : entities()) {
-				if (e instanceof Enemy && e.position() != null) {
-					if (e.position().x() == p[0] && e.position().y() == p[1]) {
-						safe = false;
-						break;
-					}
-				}
-			}
-
-			if (safe) {
-				player.setPosition(grid().new Position(p[0], p[1]));
-				player.setBounding();
-				player.stop();
-
-				if (player.bot() instanceof pengo.brain.PlayerBot pb) {
-					pb.playerStunt().reset();
-				}
+			if (isSafeRespawnCell(candidate)) {
+				doRespawnAt(candidate);
 				return;
 			}
 		}
+
+		// Aucune des positions prédéfinies n'est libre : on cherche la case
+		// libre la plus proche en élargissant la recherche autour du premier point.
+		Grid.Position fallback = nearestFreeRespawnCell(positions[0][0], positions[0][1]);
+
+		if (fallback != null) {
+			doRespawnAt(fallback);
+		}
+	}
+
+	// Une case est sûre pour réapparaître si elle n'est occupée ni par un
+	// obstacle solide (mur, glace, diamond, gold...) ni par un ennemi.
+	private boolean isSafeRespawnCell(Grid.Position p) {
+		if (p == null) {
+			return false;
+		}
+
+		for (Entity e : entities()) {
+			if (e.position() == null) {
+				continue;
+			}
+
+			if (e.position().x() != p.x() || e.position().y() != p.y()) {
+				continue;
+			}
+
+			if (e instanceof Wall || e instanceof IceBlock || e instanceof Enemy) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private void doRespawnAt(Grid.Position p) {
+		player.setPosition(p);
+		player.setBounding();
+		player.stop();
+
+		if (player.bot() instanceof pengo.brain.PlayerBot pb) {
+			pb.playerStunt().reset();
+		}
+	}
+
+	// Recherche en cercles concentriques autour du point de départ pour
+	// trouver la case libre la plus proche (sécurité si toutes les positions
+	// prédéfinies sont occupées).
+	private Grid.Position nearestFreeRespawnCell(int startX, int startY) {
+		int maxRadius = Math.max(grid().width(), grid().height());
+
+		for (int radius = 0; radius <= maxRadius; radius++) {
+			for (int dx = -radius; dx <= radius; dx++) {
+				for (int dy = -radius; dy <= radius; dy++) {
+					if (Math.max(Math.abs(dx), Math.abs(dy)) != radius) {
+						continue;
+					}
+
+					Grid.Position candidate = grid().new Position(startX + dx, startY + dy);
+
+					if (isSafeRespawnCell(candidate)) {
+						return candidate;
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 
 	public void startWallVibration(Entity source, long duration) {
