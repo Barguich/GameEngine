@@ -26,10 +26,6 @@ public class FishBonusAvatar extends Avatar {
 		// facteur pour agrandir le sprite dans sa bounding box
 		int drawSide = (int) Math.round(baseSide * 1.8);
 
-		g.drawImage(img,
-				xPix - drawSide / 2,
-				yPix - drawSide / 2,
-				drawSide,
-				drawSide);
+		g.drawImage(img, xPix - drawSide / 2, yPix - drawSide / 2, drawSide, drawSide);
 	}
 }

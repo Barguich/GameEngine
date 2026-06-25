@@ -51,8 +51,8 @@ public class Axis {
 	/**
 	 * @return
 	 *         <UL>
-	 *         <LI>length module perimeter <I>&in; [0 , perimeter[</I>
-	 *         if onTorus</LI>
+	 *         <LI>length module perimeter <I>&in; [0 , perimeter[</I> if
+	 *         onTorus</LI>
 	 *         <LI>length if !onTorus</LI>
 	 *         </UL>
 	 * @apiNote normalize _real length_ according to the geometry
@@ -85,8 +85,7 @@ public class Axis {
 	 */
 	public double distance(double position1, double position2) {
 		if (Log.FINER)
-			Log.logger.log(Level.FINER,
-					"Distance: p1={0} p2={1} perimeter={2} torus={3}",
+			Log.logger.log(Level.FINER, "Distance: p1={0} p2={1} perimeter={2} torus={3}",
 					new Object[] { position1, position2, perimeter, onTorus });
 
 		double dist = Math.abs(position1 - position2);

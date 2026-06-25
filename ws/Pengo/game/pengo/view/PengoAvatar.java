@@ -1,6 +1,5 @@
 package pengo.view;
 
-
 import engine.Game;
 import model.Entity;
 import oop.graphics.BufferedImage;
@@ -13,7 +12,6 @@ public class PengoAvatar extends Avatar {
 
 	private static final String DIR = "Asset/pingu/";
 	private static final long FRAME_DURATION_MS = 40;
-
 
 	public PengoAvatar(Entity entity) {
 		super(entity);
@@ -43,17 +41,16 @@ public class PengoAvatar extends Avatar {
 
 	private static int walkBase(int orientation) {
 		switch (orientation) {
-			case 0:
-				return 6; // Right
-			case 90:
-				return 0; // Front
-			case 180:
-				return 2; // Left
-			case 270:
-				return 4; // Back
-			default:
-				return 0;
+		case 0:
+			return 6; // Right
+		case 90:
+			return 0; // Front
+		case 180:
+			return 2; // Left
+		case 270:
+			return 4; // Back
+		default:
+			return 0;
 		}
 	}
 }
-

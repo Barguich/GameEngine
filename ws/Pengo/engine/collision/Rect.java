@@ -5,6 +5,19 @@ import geometry.ISU;
 import geometry.Point;
 import geometry.Vector;
 
+/**
+ * Représentation d'un rectangle de collision.
+ *
+ * Cette forme est utilisée pour la majorité des entités du jeu (murs, blocs de
+ * glace, bonus, etc.).
+ *
+ * Le rectangle possède : - une position (centre), - une taille, - une
+ * orientation.
+ *
+ * Les collisions sont gérées avec les cercles et les autres rectangles, y
+ * compris dans un monde torique.
+ */
+
 public class Rect extends Shape implements iShape {
 
 	// Demi-dimensions du rectangle
@@ -35,7 +48,13 @@ public class Rect extends Shape implements iShape {
 		return shape.intersects(this);
 	}
 
-	// Test de collision entre un rectangle et un cercle
+	/**
+	 * Teste la collision entre ce rectangle et un cercle.
+	 *
+	 * Le moteur commence par tester les formes réelles, puis les copies virtuelles
+	 * éventuellement nécessaires lorsque le monde est torique.
+	 */
+
 	public boolean intersects(Circle circle) {
 
 		// Test direct sans copie virtuelle
@@ -136,11 +155,14 @@ public class Rect extends Shape implements iShape {
 		return new RectCircleIntersection(this, virtualCircleCenter, circle.radius, rectDx, rectDy).intersects();
 	}
 
-	/*
-	 * Collision Rectangle/Cercle :
-	 * on place le cercle dans le repère local du rectangle.
-	 * Cela permet de ramener le problème à un rectangle non tourné,
-	 * puis de chercher le point du rectangle le plus proche du cercle.
+	/**
+	 * Classe interne responsable du calcul de collision Rectangle / Cercle.
+	 *
+	 * L'idée est de placer le cercle dans le repère local du rectangle afin de
+	 * ramener le problème à un rectangle non tourné.
+	 *
+	 * Cette approche évite de devoir gérer directement toutes les orientations
+	 * possibles du rectangle.
 	 */
 	class RectCircleIntersection {
 
@@ -160,7 +182,12 @@ public class Rect extends Shape implements iShape {
 			remedy();
 		}
 
-		// Transforme le centre du cercle dans le repère local du rectangle
+		/**
+		 * Transforme les coordonnées du cercle dans le repère local du rectangle.
+		 *
+		 * Après cette transformation, le rectangle peut être considéré comme non
+		 * tourné, ce qui simplifie fortement le calcul de collision.
+		 */
 		void remedy() {
 			Point rectCenter = new Point(outer.center.x() + rectDx, outer.center.y() + rectDy);
 			Vector fromRectToCircle = rectCenter.vectorToward(center);
@@ -175,7 +202,12 @@ public class Rect extends Shape implements iShape {
 			return d <= radius;
 		}
 
-		// Point du rectangle le plus proche du centre du cercle
+		/**
+		 * Recherche le point du rectangle le plus proche du centre du cercle.
+		 *
+		 * Ce point est utilisé pour calculer la distance minimale entre les deux
+		 * formes.
+		 */
 		Point closestRectpoint() {
 			double x = clamp(center.x(), -outer.halfWidth, outer.halfWidth);
 			double y = clamp(center.y(), -outer.halfHeight, outer.halfHeight);
@@ -194,7 +226,13 @@ public class Rect extends Shape implements iShape {
 		}
 	}
 
-	// Test de collision entre deux rectangles
+	/**
+	 * Teste la collision entre deux rectangles.
+	 *
+	 * Le moteur gère également le cas où certaines parties des rectangles
+	 * traversent les frontières du monde torique grâce aux copies virtuelles.
+	 */
+
 	public boolean intersects(Rect rect) {
 
 		// Test direct
@@ -349,7 +387,12 @@ public class Rect extends Shape implements iShape {
 		return new Point[] { topRight, topLeft, bottomLeft, bottomRight };
 	}
 
-	// Boîte englobante utilisée pour les tests rapides de collision
+	/**
+	 * Calcule la boîte englobante du rectangle.
+	 *
+	 * Cette boîte est utilisée lors de la phase large de détection des collisions
+	 * afin d'éliminer rapidement les entités manifestement éloignées.
+	 */
 	@Override
 	public Box box() {
 		Point[] corners = cornersAt(0, 0);
@@ -370,10 +413,17 @@ public class Rect extends Shape implements iShape {
 	}
 }
 
-/*
- * Collision Rectangle/Rectangle.
- * Si les rectangles ne sont pas tournés, on utilise un test AABB simple.
- * Sinon, on utilise le théorème des axes séparateurs (SAT).
+/**
+ * Algorithme de collision Rectangle / Rectangle.
+ *
+ * Deux cas sont distingués :
+ *
+ * 1) Rectangles non tournés : utilisation d'un test AABB rapide.
+ *
+ * 2) Rectangles tournés : utilisation du théorème des axes séparateurs (SAT).
+ *
+ * Cette optimisation permet de conserver de bonnes performances dans les cas
+ * les plus fréquents.
  */
 class RectRectIntersection {
 
@@ -427,15 +477,19 @@ class RectRectIntersection {
 		return true;
 	}
 
-	// Test AABB pour deux rectangles alignés sur les axes
+	/**
+	 * Cas optimisé lorsque les deux rectangles sont alignés avec les axes du monde.
+	 *
+	 * Un simple test sur les distances horizontales et verticales suffit alors pour
+	 * déterminer la collision.
+	 */
 	private boolean intersectsAABB() {
 		double cx1 = r1.center.x();
 		double cy1 = r1.center.y();
 		double cx2 = r2.center.x() + r2dx;
 		double cy2 = r2.center.y() + r2dy;
 
-		return Math.abs(cx1 - cx2) < r1.halfWidth + r2.halfWidth
-				&& Math.abs(cy1 - cy2) < r1.halfHeight + r2.halfHeight;
+		return Math.abs(cx1 - cx2) < r1.halfWidth + r2.halfWidth && Math.abs(cy1 - cy2) < r1.halfHeight + r2.halfHeight;
 	}
 
 	// Vérifie si deux projections se chevauchent sur un axe

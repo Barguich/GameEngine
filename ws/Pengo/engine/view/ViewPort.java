@@ -5,13 +5,11 @@ import oop.graphics.Canvas;
 import oop.graphics.Graphics;
 
 /**
- * Caméra du moteur : fenêtre rectangulaire du monde projetée sur le
- * canvas. Convertit les coordonnées monde.
+ * Caméra du moteur : fenêtre rectangulaire du monde projetée sur le canvas.
+ * Convertit les coordonnées monde.
  *
  * @apiNote la zone de la map est figée à la construction et borne le
- *          déplacement
- *          de la caméra. La caméra ne sort jamais de la
- *          map.
+ *          déplacement de la caméra. La caméra ne sort jamais de la map.
  */
 
 public class ViewPort {
@@ -24,7 +22,7 @@ public class ViewPort {
 
 	// Dimensions de la map — pour le clamping (contrainte Non-Tore)
 	private double mapWidth_cm;
-	private  double mapHeight_cm;
+	private double mapHeight_cm;
 
 	public ViewPort(double width_cm, double height_cm) {
 		this.height_cm = height_cm;
@@ -56,13 +54,13 @@ public class ViewPort {
 
 	/**
 	 * Suivi élastique : le joueur peut bouger dans une zone morte (dead-zone)
-	 * centrée sur le viewport sans déclencher de déplacement de la caméra.
-	 * La caméra ne se décale que de la quantité dont {@code target} dépasse
-	 * cette zone.
+	 * centrée sur le viewport sans déclencher de déplacement de la caméra. La
+	 * caméra ne se décale que de la quantité dont {@code target} dépasse cette
+	 * zone.
 	 *
-	 * @param target      position à suivre (centre du joueur), en ISU
-	 * @param marginX_cm  demi-largeur de la dead-zone depuis le centre, en cm
-	 * @param marginY_cm  demi-hauteur de la dead-zone depuis le centre, en cm
+	 * @param target     position à suivre (centre du joueur), en ISU
+	 * @param marginX_cm demi-largeur de la dead-zone depuis le centre, en cm
+	 * @param marginY_cm demi-hauteur de la dead-zone depuis le centre, en cm
 	 */
 	public void followElastic(ISU.Coord target, double marginX_cm, double marginY_cm) {
 		// Position du joueur relative au coin courant de la caméra.
@@ -101,9 +99,10 @@ public class ViewPort {
 	private double clampY(double y) {
 		return Math.max(0, Math.min(y, mapHeight_cm - height_cm));
 	}
+
 	/**
-	 *  applique la taille réelle de la nouvelle map (en cm) pour
-	 * le clamping, sans toucher à la taille visible de la fenêtre (width_cm/height_cm).
+	 * applique la taille réelle de la nouvelle map (en cm) pour le clamping, sans
+	 * toucher à la taille visible de la fenêtre (width_cm/height_cm).
 	 * Recentre/reclamp la caméra dans les nouvelles bornes.
 	 */
 	public void resizeMap(double mapWidth_cm, double mapHeight_cm) {
@@ -133,14 +132,13 @@ public class ViewPort {
 	}
 
 	/**
-	 * Teste si une coordonnée ISU est dans le viewport.
-	 * Utile pour le culling — ne rendre que les entités visibles.
+	 * Teste si une coordonnée ISU est dans le viewport. Utile pour le culling — ne
+	 * rendre que les entités visibles.
 	 */
 	public boolean contains(ISU.Coord coord) {
 		double cx = coord.x();
 		double cy = coord.y();
-		return cx >= x_cm && cx <= x_cm + width_cm
-				&& cy >= y_cm && cy <= y_cm + height_cm;
+		return cx >= x_cm && cx <= x_cm + width_cm && cy >= y_cm && cy <= y_cm + height_cm;
 	}
 
 	/** Échelle px/cm — ratio d'aspect préservé (letterbox). */

@@ -12,7 +12,6 @@ public class Circle extends Shape implements iShape {
 		this.radius = radius;
 	}
 
-	// La détection avec un rectangle est déléguée à Rect
 	public boolean intersects(Rect rect) {
 		return rect.intersects(this);
 	}
@@ -23,7 +22,7 @@ public class Circle extends Shape implements iShape {
 		double d = circle.center.distanceTo(this.center);
 		return d < circle.radius + this.radius;
 	}
- 
+
 	// Permet le double dispatch pour choisir le bon test d'intersection
 	public boolean intersects(iShape shape) {
 		return shape.intersects(this);
@@ -35,10 +34,6 @@ public class Circle extends Shape implements iShape {
 		double cx = center.x();
 		double cy = center.y();
 
-		return new Box(
-				cx - radius,
-				cy - radius,
-				cx + radius,
-				cy + radius);
+		return new Box(cx - radius, cy - radius, cx + radius, cy + radius);
 	}
 }

@@ -3,7 +3,6 @@ package view;
 import model.Entity;
 import oop.graphics.Graphics;
 
-
 /**
  * Représentation visuelle d'une {@link Entity}. Chaque entité possède un avatar
  * qui sait se dessiner et déclarer sa forme de collision
@@ -20,14 +19,16 @@ public abstract class Avatar {
 
 	public abstract void paint(Graphics g, int xPix, int yPix, double scale);
 
-
 	/* Effet de tremblement */
-	public void setShake(int dx, int dy){
+	public void setShake(int dx, int dy) {
 		this.ShakeX = dx;
 		this.ShakeY = dy;
 	}
 
-	/** @apiNote encadrent tout mouvement pour assurer l'état du graphics entre les avatars */
+	/**
+	 * @apiNote encadrent tout mouvement pour assurer l'état du graphics entre les
+	 *          avatars
+	 */
 	protected Object saveTransform(Graphics g) {
 		return g.getTransform();
 	}

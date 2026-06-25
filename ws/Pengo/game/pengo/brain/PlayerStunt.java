@@ -12,7 +12,7 @@ import pengo.model.IceBlock;
 import pengo.model.PengoModel;
 import pengo.model.PengoPlayer;
 import pengo.model.Wall;
- 
+
 public class PlayerStunt extends Stunt {
 
 	private double speed_cm_s = 15.0;
@@ -58,24 +58,23 @@ public class PlayerStunt extends Stunt {
 		int x = pp.position().x();
 		int y = pp.position().y();
 		switch (direction) {
-			case 0:
-				x++;
-				break;
-			case 90:
-				y++;
-				break;
-			case 180:
-				x--;
-				break;
-			case 270:
-				y--;
-				break;
-			default:
-				return;
+		case 0:
+			x++;
+			break;
+		case 90:
+			y++;
+			break;
+		case 180:
+			x--;
+			break;
+		case 270:
+			y--;
+			break;
+		default:
+			return;
 		}
 		targetCell = pm.grid().new Position(x, y);
-		originCell = pm.grid().new Position(
-				pp.position().x(), pp.position().y());
+		originCell = pm.grid().new Position(pp.position().x(), pp.position().y());
 
 		pendingFishBonus = null;
 		Entity onTarget = pm.firstAt(targetCell);
@@ -86,18 +85,18 @@ public class PlayerStunt extends Stunt {
 		pp.turnTo(direction);
 		double s = speed_cm_s * pp.speedMultiplier();
 		switch (direction) {
-			case 0:
-				pp.setLinearSpeed(pp.center().isu().new Vector(s, 0));
-				break;
-			case 90:
-				pp.setLinearSpeed(pp.center().isu().new Vector(0, s));
-				break;
-			case 180:
-				pp.setLinearSpeed(pp.center().isu().new Vector(-s, 0));
-				break;
-			case 270:
-				pp.setLinearSpeed(pp.center().isu().new Vector(0, -s));
-				break;
+		case 0:
+			pp.setLinearSpeed(pp.center().isu().new Vector(s, 0));
+			break;
+		case 90:
+			pp.setLinearSpeed(pp.center().isu().new Vector(0, s));
+			break;
+		case 180:
+			pp.setLinearSpeed(pp.center().isu().new Vector(-s, 0));
+			break;
+		case 270:
+			pp.setLinearSpeed(pp.center().isu().new Vector(0, -s));
+			break;
 		}
 		moving = true;
 	}
@@ -109,8 +108,7 @@ public class PlayerStunt extends Stunt {
 		if (entity.position() == null || targetCell == null)
 			return;
 
-		if (entity.position().x() == targetCell.x()
-				&& entity.position().y() == targetCell.y()) {
+		if (entity.position().x() == targetCell.x() && entity.position().y() == targetCell.y()) {
 			finishOnTarget();
 		}
 	}
@@ -211,8 +209,7 @@ public class PlayerStunt extends Stunt {
 	private void stopOnCurrentCell() {
 		if (entity.position() != null) {
 			PengoModel pm = (PengoModel) model;
-			Grid.Position current = pm.grid().new Position(
-					entity.position().x(), entity.position().y());
+			Grid.Position current = pm.grid().new Position(entity.position().x(), entity.position().y());
 			entity.setPosition(current);
 		}
 		cclean();
@@ -226,7 +223,7 @@ public class PlayerStunt extends Stunt {
 		entity.stop();
 	}
 
-	public void reset(){
+	public void reset() {
 		cclean();
 	}
 }
