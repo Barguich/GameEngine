@@ -10,12 +10,8 @@ import oop.graphics.Font;
 import oop.graphics.Graphics;
 
 /**
- * HUD de debug overlay dessiné par-dessus le rendu normal de la scène.
- *
- * <p>
- * Affiche : FPS réel (frames de rendu), durée de la dernière frame, tick rate
- * logique (fourni par View), bounding boxes des entités, et l'action inférée de
- * l'entité suivie.
+ * HUD de debug dessiné par-dessus la scène : FPS, tick rate, bounding boxes et
+ * action inférée de l'entité suivie.
  */
 public class DebugOverlay {
 
@@ -30,7 +26,7 @@ public class DebugOverlay {
 
 	private boolean enabled = false;
 
-	// Couleurs et police résolues paresseusement (besoin d'un Graphics vivant).
+	// Résolus paresseusement (besoin d'un Graphics vivant).
 	private Color hudBg;
 	private Color hudText;
 	private Color bbColor;
@@ -38,7 +34,7 @@ public class DebugOverlay {
 	private int cachedFontSize = -1;
 	private int lastPanelBottom = PANEL_Y;
 
-	// Tick rate logique poussé depuis l'extérieur (mesuré par la boucle Ticker).
+	// Tick logique poussé depuis la boucle Ticker.
 	private double lastTickMs = 0.0;
 	private long tickCount = 0;
 
@@ -54,21 +50,13 @@ public class DebugOverlay {
 		return enabled;
 	}
 
-	/**
-	 * Alimente le HUD avec le temps logique mesuré côté boucle de simulation. À
-	 * appeler depuis le code qui orchestre le tick (ex. via View) à chaque pas de
-	 * modèle. On garde frame (rendu) et tick (logique) séparés : ce sont deux
-	 * horloges distinctes (Painter ~30Hz, Ticker ~60Hz).
-	 */
+	/** Alimente le HUD avec le temps du tick logique (horloge distincte du rendu). */
 	public void recordTick(long elapsedMs) {
 		this.lastTickMs = elapsedMs;
 		this.tickCount++;
 	}
 
-	/**
-	 * À appeler au tout début de View.paint(), avant tout dessin. Avance l'horloge
-	 * de frame (unique mutation tolérée du cycle de rendu).
-	 */
+	/** À appeler au début de View.paint() : avance l'horloge de frame. */
 	public void begin() {
 		if (!enabled) {
 			return;
@@ -76,11 +64,7 @@ public class DebugOverlay {
 		frameClock.onFrame();
 	}
 
-	/**
-	 * Dessine les bounding boxes. À appeler APRÈS le clip du viewport et le rendu
-	 * des entités, mais AVANT de retirer le clip, pour que les BB soient clippées
-	 * comme les sprites.
-	 */
+	/** Dessine les bounding boxes. À appeler pendant que le clip viewport est actif. */
 	public void paintBoundingBoxes(Canvas canvas, Graphics g, ViewPort viewPort, List<Entity> entities) {
 		if (!enabled) {
 			return;
@@ -97,11 +81,7 @@ public class DebugOverlay {
 		}
 	}
 
-	/**
-	 * Dessine le panneau de texte (FPS / tick / action). À appeler EN DERNIER,
-	 * après avoir retiré le clip du viewport, pour que le HUD s'affiche en
-	 * surimpression plein écran et ne soit pas rogné.
-	 */
+	/** Dessine le panneau de texte (FPS / tick / action), clip viewport retiré. */
 	public void paintPanel(Canvas canvas, Graphics g, Entity followed) {
 		if (!enabled) {
 			return;
@@ -152,7 +132,6 @@ public class DebugOverlay {
 	}
 
 	private String safeName(Entity e) {
-		// Entity n'expose pas forcément getName() ; on retombe sur toString().
 		String s = e.toString();
 		return (s == null) ? "?" : s;
 	}
@@ -178,16 +157,8 @@ public class DebugOverlay {
 	}
 
 	/**
-	 * Facteur d'échelle du HUD, proportionnel à la taille du canvas.
-	 *
-	 * <p>
-	 * Contrairement à un scale entier (qui plancher à 1 et fait paraître le panneau
-	 * énorme sur petit écran), on retourne un flottant qui descend en dessous de 1
-	 * quand le canvas est petit : le panneau garde alors la même proportion de
-	 * l'écran et ne cache plus les entités derrière lui.
-	 *
-	 * On borne entre 0.5 (lisibilité minimale) et 2.0 (pour les très grands
-	 * écrans). Référence : 1920px de large = scale 1.0.
+	 * Facteur d'échelle du HUD, proportionnel à la largeur du canvas (1920px = 1.0),
+	 * borné entre 0.5 et 2.0.
 	 */
 	public static float uiScale(Canvas canvas) {
 		float s = canvas.getWidth() / 1920f;

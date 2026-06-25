@@ -60,9 +60,7 @@ public class MenuOverlay {
 	 * après avoir retiré le clip du viewport.
 	 */
 	public void paint(Canvas canvas, Graphics g) {
-		// uiScale est désormais flottant (adaptatif petits/grands écrans) ; on
-		// dérive un facteur entier borné à 1 minimum pour les calculs de mise
-		// en page du menu, qui reste centré et lisible.
+		// Facteur entier (>= 1) pour la mise en page du menu.
 		int scale = Math.max(1, Math.round(DebugOverlay.uiScale(canvas)));
 		resolve(g, scale);
 
