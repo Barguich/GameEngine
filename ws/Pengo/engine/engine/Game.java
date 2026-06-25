@@ -44,6 +44,16 @@ public class Game {
 		this.height_ncell = (int) (h_cm / cmPerCell);
 		init();
 	}
+	public Game(int w_ncell, int h_ncell, boolean torusOnXaxis, boolean torusOnYaxis) {
+		game = this;
+		this.torusOnXaxis = torusOnXaxis;
+		this.torusOnYaxis = torusOnYaxis;
+		this.width_ncell = w_ncell;
+		this.height_ncell = h_ncell;
+		this.width_cm = w_ncell * cmPerCell;
+		this.height_cm = h_ncell * cmPerCell;
+		init();
+	}
 
 	// Initialise les systèmes de coordonnées utilisés par le moteur
 	private void init() {
