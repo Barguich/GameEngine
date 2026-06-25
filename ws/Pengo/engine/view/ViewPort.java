@@ -23,8 +23,8 @@ public class ViewPort {
 	private double height_cm;
 
 	// Dimensions de la map — pour le clamping (contrainte Non-Tore)
-	private final double mapWidth_cm;
-	private final double mapHeight_cm;
+	private double mapWidth_cm;
+	private  double mapHeight_cm;
 
 	public ViewPort(double width_cm, double height_cm) {
 		this.height_cm = height_cm;
@@ -100,6 +100,20 @@ public class ViewPort {
 	/** Borne l'origine Y de la caméra à l'intérieur de la map. */
 	private double clampY(double y) {
 		return Math.max(0, Math.min(y, mapHeight_cm - height_cm));
+	}
+	/**
+	 *  applique la taille réelle de la nouvelle map (en cm) pour
+	 * le clamping, sans toucher à la taille visible de la fenêtre (width_cm/height_cm).
+	 * Recentre/reclamp la caméra dans les nouvelles bornes.
+	 */
+	public void resizeMap(double mapWidth_cm, double mapHeight_cm) {
+		this.mapWidth_cm = mapWidth_cm;
+		this.mapHeight_cm = mapHeight_cm;
+
+		// Si la nouvelle map est plus petite que la fenêtre visible,
+		// on ne peut pas avoir une zone de map négative pour le clamp.
+		this.x_cm = clampX(0);
+		this.y_cm = clampY(0);
 	}
 
 	public double x() {
