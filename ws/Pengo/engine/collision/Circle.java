@@ -12,7 +12,7 @@ public class Circle extends Shape implements iShape {
 		this.radius = radius;
 	}
 
-	// La détection avec un rectangle est déléguée à Rect
+
 	public boolean intersects(Rect rect) {
 		return rect.intersects(this);
 	}
