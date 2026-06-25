@@ -934,10 +934,8 @@ public class PengoModel extends Model {
 			double movementLength = Math.abs(movement.x()) + Math.abs(movement.y());
 			double contactDistance = ice.step().x();
 
-			/*
-			 * Epsilon assez large pour détecter l'ennemi avant que le moteur de collision
-			 * bloque le IceBlock.
-			 */
+			//epsilon assez large pour détecter l'ennemi avant que le moteur de collision bloque le IceBlock.
+			
 			double epsilon = 0.35;
 
 			if (distance <= contactDistance + movementLength + epsilon) {
@@ -1112,33 +1110,74 @@ public class PengoModel extends Model {
 	@Override
 	protected boolean collisionBlocks(Entity mover, Entity other) {
 
-		if (mover instanceof Enemy || other instanceof Enemy) {
-			return false;
-		}
-		// Pengo / Enemy est géré manuellement par PengoModel.
-		// On ne veut pas que le simple contact des bounding boxes tue Pengo.
-		if (isPengoEnemyPair(mover, other)) {
-			return false;
-		}
+	    if (mover == null || other == null) {
+	        return false;
+	    }
 
-		// Pengo est un personnage case-par-case.
-		// Les murs et blocs devant lui sont déjà gérés dans startGridMove().
-		if (isPengoStaticSolidPair(mover, other)) {
-			return false;
-		}
+	    //FishBonus pas bloquant .
+	   
+	    if (mover instanceof FishBonus || other instanceof FishBonus) {
+	        return false;
+	    }
 
-		// Un glaçon qui glisse ne doit pas être bloqué par la box d'un ennemi.
-		// La logique spéciale est dans moveSlidingIceBlock().
-		if (isSlidingIceEnemyPair(mover, other)) {
-			return false;
-		}
-		if (isSlidingIcePengoPair(mover, other)) {
-			return false;
-		}
+	   
+	     //Enemy transporté / mort / écrasé = ghost.Enemy normal = il bloque normalement.
+	    
+	    if (mover instanceof Enemy enemy) {
+	        if (enemy.dead()
+	                || enemy.dying()
+	                || enemy.draggedByIce()
+	                || enemy.crushedByIce()
+	                || enemy.passedOut()) {
+	            return false;
+	        }
+	    }
 
-		return true;
+	    if (other instanceof Enemy enemy) {
+	        if (enemy.dead()
+	                || enemy.dying()
+	                || enemy.draggedByIce()
+	                || enemy.crushedByIce()
+	                || enemy.passedOut()) {
+	            return false;
+	        }
+	    }
+
+	    
+	     //IceBlock qui glisse + Enemy :on ne bloque pas ici, car la logique spéciale est dans moveSlidingIceBlock().
+	     
+	    if (isSlidingIceEnemyPair(mover, other)) {
+	        return false;
+	    }
+
+	  
+	     //IceBlock qui glisse + Pengo :évite les blocages parasites.
+	     
+	    if (isSlidingIcePengoPair(mover, other)) {
+	        return false;
+	    }
+
+	    //Pengo / Enemy est géré manuellement par checkPlayerEnemyHits().
+	     
+	    if (isPengoEnemyPair(mover, other)) {
+	        return false;
+	    }
+
+	    //Pengo est géré case par case dans tryEnterCellForPlayer().
+	    // Donc on ne laisse pas le moteur physique le bloquer ici.
+	     
+	    if (isPengoStaticSolidPair(mover, other)) {
+	        return false;
+	    }
+
+	   
+	     //Tous les autres cas bloquent normalement :
+	     //Enemy normal + IceBlock = bloqué
+	     //Enemy normal + Wall = bloqué
+	     //Enemy normal + Enemy normal = bloqué
+	     
+	    return true;
 	}
-
 	private boolean isSlidingIcePengoPair(Entity a, Entity b) {
 		if (a instanceof IceBlock) {
 			IceBlock ice = (IceBlock) a;

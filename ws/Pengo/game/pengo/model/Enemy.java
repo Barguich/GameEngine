@@ -315,10 +315,12 @@ public class Enemy extends Entity {
 		if (dead || dying || draggedByIce || crushedByIce || passedOut) {
 			return false;
 		}
- 
-		if (entity == breakingThroughBlock && breakingThroughBlock.hp() <= 0) {
-			return false;
-		}
+		//cas spécial : l'ennemi est en train de traverser un bloc détruit.
+		if (entity == breakingThroughBlock
+	            && breakingThroughBlock != null
+	            && breakingThroughBlock.hp() <= 0) {
+	        return false;
+	    }
 
 		return super.intersects(entity);
 	}
@@ -396,7 +398,19 @@ public class Enemy extends Entity {
 
 	@Override
 	public boolean canShareCellWith(Entity other) {
-		return other instanceof Enemy;
+	    //un ennemi normal ne partage pas sa case.
+	     
+	    if (!dead
+	            && !dying
+	            && !draggedByIce
+	            && !crushedByIce
+	            && !passedOut) {
+	        return false;
+	    }
+
+	    //ennemi neutralisé = ghost.
+	    
+	    return true;
 	}
 
 }
