@@ -10,12 +10,12 @@ import gal_engine.State;
 /**
  * Structure de stockage des transitions d'un automate.
  *
- * Les transitions sont regroupées par état source afin
- * d'accélérer leur recherche lors de l'exécution.
+ * Les transitions sont regroupées par état source afin d'accélérer leur
+ * recherche lors de l'exécution.
  *
- * Ainsi, lorsqu'un automate se trouve dans un état donné,
- * il peut récupérer directement les transitions sortantes
- * sans parcourir l'ensemble de l'automate.
+ * Ainsi, lorsqu'un automate se trouve dans un état donné, il peut récupérer
+ * directement les transitions sortantes sans parcourir l'ensemble de
+ * l'automate.
  */
 public class Transitions implements iTransitions {
 
@@ -31,8 +31,8 @@ public class Transitions implements iTransitions {
 	/**
 	 * Ajoute une transition dans la structure.
 	 *
-	 * Si aucune liste n'existe encore pour l'état source,
-	 * elle est créée automatiquement.
+	 * Si aucune liste n'existe encore pour l'état source, elle est créée
+	 * automatiquement.
 	 */
 	public void add(Transition t) {
 		State source = t.source();
@@ -48,11 +48,11 @@ public class Transitions implements iTransitions {
 	}
 
 	/**
-	 * Retourne toutes les transitions dont l'état source
-	 * correspond à l'état demandé.
+	 * Retourne toutes les transitions dont l'état source correspond à l'état
+	 * demandé.
 	 *
-	 * Une liste vide est retournée lorsqu'aucune transition
-	 * n'est définie pour cet état.
+	 * Une liste vide est retournée lorsqu'aucune transition n'est définie pour cet
+	 * état.
 	 */
 	public List<Transition> get(State state) {
 		List<Transition> list = transitions.get(state);

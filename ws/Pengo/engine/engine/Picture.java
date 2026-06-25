@@ -7,12 +7,11 @@ import geometry.ISU;
 /**
  * Représentation de la projection graphique du monde.
  *
- * Cette classe assure la conversion entre les coordonnées
- * physiques du moteur (en centimètres) et les coordonnées
- * utilisées pour l'affichage (en pixels).
+ * Cette classe assure la conversion entre les coordonnées physiques du moteur
+ * (en centimètres) et les coordonnées utilisées pour l'affichage (en pixels).
  *
- * Elle joue le rôle d'intermédiaire entre le modèle du jeu
- * et la couche graphique.
+ * Elle joue le rôle d'intermédiaire entre le modèle du jeu et la couche
+ * graphique.
  */
 public class Picture {
 
@@ -34,8 +33,8 @@ public class Picture {
 	}
 
 	/**
-	 * Convertit une distance exprimée dans le repère
-	 * physique du moteur (cm) vers une distance écran (pixels).
+	 * Convertit une distance exprimée dans le repère physique du moteur (cm) vers
+	 * une distance écran (pixels).
 	 */
 	public int toPixelLength(double length_cm) {
 		return (int) Math.round(length_cm * game.pixelPerCm);
@@ -56,8 +55,7 @@ public class Picture {
 	}
 
 	/**
-	 * Conversion complète d'une coordonnée du monde
-	 * vers une position écran.
+	 * Conversion complète d'une coordonnée du monde vers une position écran.
 	 */
 	public Pixel toPixel(ISU.Coord coord) {
 		return new Pixel(toPixelX(coord.x()), toPixelY(coord.y()));
@@ -78,8 +76,8 @@ public class Picture {
 	/**
 	 * Représentation d'un point écran.
 	 *
-	 * Cette classe est utilisée après projection
-	 * des coordonnées du monde dans le repère graphique.
+	 * Cette classe est utilisée après projection des coordonnées du monde dans le
+	 * repère graphique.
 	 */
 	public class Pixel {
 

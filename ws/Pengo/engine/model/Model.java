@@ -22,13 +22,15 @@ public class Model {
 	public Grid grid() {
 		return grid;
 	}
-	//  permet de remplacer la grille quand la map change de taille
+
+	// permet de remplacer la grille quand la map change de taille
 	public void setGrid(Grid grid) {
 		if (grid == null) {
 			return;
 		}
 		this.grid = grid;
 	}
+
 	public List<Entity> entities() {
 		return entities;
 	}

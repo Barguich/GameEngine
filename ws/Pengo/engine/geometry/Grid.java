@@ -54,8 +54,7 @@ public class Grid {
 		int y = yAxis.normalize(p.y());
 
 		if (Log.FINER)
-			Log.logger.log(Level.FINER, "cellAt: pos({0},{1}) -> cell[{2}][{3}]",
-					new Object[] { p.x(), p.y(), x, y });
+			Log.logger.log(Level.FINER, "cellAt: pos({0},{1}) -> cell[{2}][{3}]", new Object[] { p.x(), p.y(), x, y });
 
 		return this.grid[x][y];
 	}
@@ -201,8 +200,7 @@ public class Grid {
 			y_ncell = yAxis.normalize(y_ncell + v.y());
 
 			if (Log.FINER)
-				Log.logger.log(Level.FINER,
-						"translate: +({0},{1}) -> ({2},{3})",
+				Log.logger.log(Level.FINER, "translate: +({0},{1}) -> ({2},{3})",
 						new Object[] { v.x(), v.y(), x_ncell, y_ncell });
 		}
 
@@ -232,8 +230,7 @@ public class Grid {
 
 		// Conversion vers le repère continu en cm
 		public ISU.Coord toISUCoord() {
-			return isu.new Coord(this.x_ncell * Game.game().cmPerCell,
-					this.y_ncell * Game.game().cmPerCell);
+			return isu.new Coord(this.x_ncell * Game.game().cmPerCell, this.y_ncell * Game.game().cmPerCell);
 		}
 
 		// Conversion vers le centre de la cellule en cm

@@ -8,11 +8,11 @@ import view.Avatar;
 /**
  * Avatar graphique des murs.
  *
- * Cette classe ne contient aucune logique de jeu :
- * elle se contente d'afficher l'image associée à un mur.
+ * Cette classe ne contient aucune logique de jeu : elle se contente d'afficher
+ * l'image associée à un mur.
  *
- * Les collisions, vibrations et interactions sont gérées
- * par la classe Wall côté modèle.
+ * Les collisions, vibrations et interactions sont gérées par la classe Wall
+ * côté modèle.
  */
 public class WallAvatar extends Avatar {
 
@@ -35,17 +35,12 @@ public class WallAvatar extends Avatar {
 		BufferedImage img = Sprites.get(g, WALL_PATH);
 
 		/*
-		 * Conversion de la taille du mur en pixels.
-		 * Un mur occupe généralement une case complète.
+		 * Conversion de la taille du mur en pixels. Un mur occupe généralement une case
+		 * complète.
 		 */
 		int side = (int) Math.round(entity.size().x() * scale);
 
 		// Dessin centré sur la position de l'entité.
-		g.drawImage(
-				img,
-				xPix - side / 2,
-				yPix - side / 2,
-				side,
-				side);
+		g.drawImage(img, xPix - side / 2, yPix - side / 2, side, side);
 	}
 }

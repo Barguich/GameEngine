@@ -100,28 +100,28 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		Direction absDir = resolveAbsolute(direction);
 
 		switch (absDir.name()) {
-			case "N":
-				entity.turnTo(270);
-				entity.setLinearSpeed(isu.new Vector(0, -speed));
-				break;
+		case "N":
+			entity.turnTo(270);
+			entity.setLinearSpeed(isu.new Vector(0, -speed));
+			break;
 
-			case "S":
-				entity.turnTo(90);
-				entity.setLinearSpeed(isu.new Vector(0, speed));
-				break;
+		case "S":
+			entity.turnTo(90);
+			entity.setLinearSpeed(isu.new Vector(0, speed));
+			break;
 
-			case "E":
-				entity.turnTo(0);
-				entity.setLinearSpeed(isu.new Vector(speed, 0));
-				break;
+		case "E":
+			entity.turnTo(0);
+			entity.setLinearSpeed(isu.new Vector(speed, 0));
+			break;
 
-			case "W":
-				entity.turnTo(180);
-				entity.setLinearSpeed(isu.new Vector(-speed, 0));
-				break;
+		case "W":
+			entity.turnTo(180);
+			entity.setLinearSpeed(isu.new Vector(-speed, 0));
+			break;
 
-			default:
-				return false;
+		default:
+			return false;
 		}
 
 		action_ms = duration_ms;
@@ -137,22 +137,22 @@ public class GALStunt extends Stunt implements iAllGALActions {
 		int absAngle = (entity.orientation() + relativeAngle(dir) + 360) % 360;
 
 		switch (absAngle) {
-			case 0:
+		case 0:
+			return Direction.E;
+		case 90:
+			return Direction.S;
+		case 180:
+			return Direction.W;
+		case 270:
+			return Direction.N;
+		default:
+			if (absAngle < 45 || absAngle >= 315)
 				return Direction.E;
-			case 90:
+			if (absAngle < 135)
 				return Direction.S;
-			case 180:
+			if (absAngle < 225)
 				return Direction.W;
-			case 270:
-				return Direction.N;
-			default:
-				if (absAngle < 45 || absAngle >= 315)
-					return Direction.E;
-				if (absAngle < 135)
-					return Direction.S;
-				if (absAngle < 225)
-					return Direction.W;
-				return Direction.N;
+			return Direction.N;
 		}
 	}
 

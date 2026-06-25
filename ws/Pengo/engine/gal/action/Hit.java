@@ -39,11 +39,11 @@ public class Hit extends GALAction {
 		}
 
 		/*
-		 * L'action Hit s'applique à la première entité de la case cible
-		 * capable de recevoir un coup GAL.
+		 * L'action Hit s'applique à la première entité de la case cible capable de
+		 * recevoir un coup GAL.
 		 *
-		 * La méthode receiveGalHit(...) permet de laisser chaque entité
-		 * décider elle-même de sa réaction.
+		 * La méthode receiveGalHit(...) permet de laisser chaque entité décider
+		 * elle-même de sa réaction.
 		 */
 		for (Entity victim : occupants) {
 			if (victim != e && victim.receiveGalHit(e)) {
@@ -65,9 +65,8 @@ public class Hit extends GALAction {
 		Grid.Position pos = e.position();
 
 		/*
-		 * Les directions GAL peuvent être relatives à l'entité.
-		 * On commence donc par convertir la direction demandée
-		 * en angle absolu dans le repère du moteur.
+		 * Les directions GAL peuvent être relatives à l'entité. On commence donc par
+		 * convertir la direction demandée en angle absolu dans le repère du moteur.
 		 */
 		int absAngle = resolveAngle(e);
 
@@ -77,26 +76,26 @@ public class Hit extends GALAction {
 		// Convention du moteur :
 		// 0° = Est, 90° = Sud, 180° = Ouest, 270° = Nord.
 		switch (absAngle) {
-			case 0:
-				dx = 1;
-				break;
+		case 0:
+			dx = 1;
+			break;
 
-			case 90:
-				dy = 1;
-				break;
+		case 90:
+			dy = 1;
+			break;
 
-			case 180:
-				dx = -1;
-				break;
+		case 180:
+			dx = -1;
+			break;
 
-			case 270:
-				dy = -1;
-				break;
+		case 270:
+			dy = -1;
+			break;
 
-			default:
-				dx = (int) Math.round(Math.cos(Math.toRadians(absAngle)));
-				dy = -(int) Math.round(Math.sin(Math.toRadians(absAngle)));
-				break;
+		default:
+			dx = (int) Math.round(Math.cos(Math.toRadians(absAngle)));
+			dy = -(int) Math.round(Math.sin(Math.toRadians(absAngle)));
+			break;
 		}
 
 		Grid.Position result = pos.copy();

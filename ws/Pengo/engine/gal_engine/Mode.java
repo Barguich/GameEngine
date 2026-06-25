@@ -6,12 +6,12 @@ import java.util.Map;
 /**
  * Représentation d'un mode utilisé par les automates GAL.
  *
- * Un mode permet de décrire l'état courant d'une entité
- * (Walking, Fighting, Sleeping, etc.) et peut être utilisé
- * dans les conditions et les transitions des automates.
+ * Un mode permet de décrire l'état courant d'une entité (Walking, Fighting,
+ * Sleeping, etc.) et peut être utilisé dans les conditions et les transitions
+ * des automates.
  *
- * Cette classe garantit qu'un même nom de mode correspond
- * toujours à une unique instance grâce à la méthode canonical().
+ * Cette classe garantit qu'un même nom de mode correspond toujours à une unique
+ * instance grâce à la méthode canonical().
  */
 public class Mode {
 
@@ -49,8 +49,7 @@ public class Mode {
 	/**
 	 * Constructeur privé.
 	 *
-	 * Les modes doivent être créés via canonical()
-	 * afin d'éviter les doublons.
+	 * Les modes doivent être créés via canonical() afin d'éviter les doublons.
 	 */
 	private Mode(String name) {
 		this.name = name;
@@ -59,11 +58,10 @@ public class Mode {
 	/**
 	 * Retourne l'instance unique associée au nom demandé.
 	 *
-	 * Si le mode existe déjà, on réutilise l'instance existante.
-	 * Sinon, une nouvelle instance est créée puis mémorisée.
+	 * Si le mode existe déjà, on réutilise l'instance existante. Sinon, une
+	 * nouvelle instance est créée puis mémorisée.
 	 *
-	 * Ce mécanisme simplifie les comparaisons de modes
-	 * dans le moteur d'automates.
+	 * Ce mécanisme simplifie les comparaisons de modes dans le moteur d'automates.
 	 */
 	public static Mode canonical(String name) {
 		Mode mode = modes.get(name);
@@ -81,8 +79,7 @@ public class Mode {
 	}
 
 	/**
-	 * Deux modes sont considérés égaux lorsqu'ils portent
-	 * le même nom logique.
+	 * Deux modes sont considérés égaux lorsqu'ils portent le même nom logique.
 	 */
 	@Override
 	public boolean equals(Object o) {

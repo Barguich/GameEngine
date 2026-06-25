@@ -54,11 +54,11 @@ public class View implements Canvas.PaintListener {
 	public void visible(Canvas canvas) {
 	}
 
-	public void addOverlay(Overlay o){
+	public void addOverlay(Overlay o) {
 		overlays.add(o);
 	}
 
-	public void addRenderHook(EntityRenderHook h){
+	public void addRenderHook(EntityRenderHook h) {
 		renderHooks.add(h);
 	}
 
@@ -114,7 +114,7 @@ public class View implements Canvas.PaintListener {
 			int px = viewPort.toPixelX(canvas, e.center().x());
 			int py = viewPort.toPixelY(canvas, e.center().y());
 
-			for (EntityRenderHook h : renderHooks){
+			for (EntityRenderHook h : renderHooks) {
 				px += h.offsetX(e);
 				py += h.offsetY(e);
 			}
@@ -129,10 +129,10 @@ public class View implements Canvas.PaintListener {
 
 		debug.paintPanel(canvas, g, followed);
 
-		for (Overlay o : overlays){
+		for (Overlay o : overlays) {
 			o.paint(canvas, g);
 		}
-		
+
 	}
 
 	public DebugOverlay debug() {
@@ -146,6 +146,7 @@ public class View implements Canvas.PaintListener {
 	@Override
 	public void revoked(Canvas canvas) {
 	}
+
 	private void drawEntity(Canvas canvas, Graphics g, double scale, Entity e) {
 		if (e == null || e.center() == null || e.avatar() == null) {
 			return;

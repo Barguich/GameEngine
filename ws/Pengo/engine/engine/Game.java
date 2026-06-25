@@ -59,7 +59,7 @@ public class Game {
 
 	// Initialise les deux systèmes de coordonnées :
 	// - Grid : repère discret en cellules
-	// - ISU  : repère continu en centimètres
+	// - ISU : repère continu en centimètres
 	private void init() {
 		isu = new ISU(this);
 		grid = new Grid(this);

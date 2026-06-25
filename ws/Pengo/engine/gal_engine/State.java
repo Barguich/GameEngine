@@ -5,18 +5,14 @@ import java.util.Objects;
 /**
  * Représentation d'un état d'automate GAL.
  *
- * Un état est défini par :
- * - un mode (Walking, Fighting, Sleeping, ...)
- * - un identifiant permettant de distinguer plusieurs états
- *   appartenant au même mode.
+ * Un état est défini par : - un mode (Walking, Fighting, Sleeping, ...) - un
+ * identifiant permettant de distinguer plusieurs états appartenant au même
+ * mode.
  *
- * Exemple :
- * Walking_0
- * Walking_1
- * Fighting_0
+ * Exemple : Walking_0 Walking_1 Fighting_0
  *
- * Cette représentation permet de construire les automates
- * utilisés par les entités du jeu.
+ * Cette représentation permet de construire les automates utilisés par les
+ * entités du jeu.
  */
 public class State {
 
@@ -29,8 +25,8 @@ public class State {
 	/**
 	 * Construit un état à partir d'un nom de mode et d'un identifiant.
 	 *
-	 * Le mode est récupéré via Mode.canonical() afin de réutiliser
-	 * les instances existantes lorsque cela est possible.
+	 * Le mode est récupéré via Mode.canonical() afin de réutiliser les instances
+	 * existantes lorsque cela est possible.
 	 */
 	public State(String mode, int id) {
 		this.mode = Mode.canonical(mode);
@@ -46,8 +42,8 @@ public class State {
 	}
 
 	/**
-	 * Deux états sont égaux lorsqu'ils possèdent
-	 * le même mode et le même identifiant.
+	 * Deux états sont égaux lorsqu'ils possèdent le même mode et le même
+	 * identifiant.
 	 */
 	@Override
 	public boolean equals(Object o) {
@@ -58,14 +54,11 @@ public class State {
 	}
 
 	public boolean equals(State s) {
-		return s != null
-				&& id == s.id
-				&& mode.equals(s.mode);
+		return s != null && id == s.id && mode.equals(s.mode);
 	}
 
 	/**
-	 * Hash cohérent avec equals().
-	 * Permet d'utiliser les états dans les collections
+	 * Hash cohérent avec equals(). Permet d'utiliser les états dans les collections
 	 * de type HashMap ou HashSet.
 	 */
 	@Override
@@ -74,8 +67,7 @@ public class State {
 	}
 
 	/**
-	 * Format d'affichage utilisé dans les traces
-	 * et lors du débogage des automates.
+	 * Format d'affichage utilisé dans les traces et lors du débogage des automates.
 	 *
 	 * Exemple : Walking_0
 	 */

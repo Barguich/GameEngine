@@ -7,7 +7,7 @@ import oop.graphics.Graphics;
 
 /**
  * Menu plein écran dessiné par-dessus la scène (pause / game over / victoire).
-*/
+ */
 public class MenuOverlay {
 
 	private String title = "";
@@ -15,8 +15,8 @@ public class MenuOverlay {
 	private int selected = 0;
 
 	// Couleurs/police résolue.
-	private Color dim;        // voile sombre sur la scène
-	private Color panelBg;    // fond du panneau
+	private Color dim; // voile sombre sur la scène
+	private Color panelBg; // fond du panneau
 	private Color titleColor;
 	private Color itemColor;
 	private Color itemSelected;
@@ -99,8 +99,7 @@ public class MenuOverlay {
 
 			if (i == selected) {
 				g.setColor(selectBar);
-				g.fillRect(panelX + 20 * scale, y - lineH + 12 * scale,
-						panelW - 40 * scale, lineH - 6 * scale);
+				g.fillRect(panelX + 20 * scale, y - lineH + 12 * scale, panelW - 40 * scale, lineH - 6 * scale);
 				g.setColor(itemSelected);
 				g.drawString("> " + items[i], itemX - 24 * scale, y);
 			} else {

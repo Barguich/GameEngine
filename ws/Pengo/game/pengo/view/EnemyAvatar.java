@@ -70,18 +70,19 @@ public class EnemyAvatar extends Avatar {
 
 	private static int bounceBase(int orientation) {
 		switch (orientation) {
-			case 0:
-				return 14;
-			case 90:
-				return 8;
-			case 180:
-				return 10;
-			case 270:
-				return 12;
-			default:
-				return 8;
+		case 0:
+			return 14;
+		case 90:
+			return 8;
+		case 180:
+			return 10;
+		case 270:
+			return 12;
+		default:
+			return 8;
 		}
 	}
+
 	private static String pickImagePath(Enemy enemy) {
 		if (enemy.crushAnimation()) {
 			return crushImagePath(enemy);
@@ -95,6 +96,7 @@ public class EnemyAvatar extends Avatar {
 
 		return DIR + "sprite_enemie_" + frame + ".png";
 	}
+
 	private static String crushImagePath(Enemy enemy) {
 		int frame = enemy.crushFrame();
 
@@ -109,31 +111,29 @@ public class EnemyAvatar extends Avatar {
 		int direction = enemy.crushDirection();
 
 		/*
-		 * 0   = IceBlock va vers la droite
-		 * 90  = IceBlock va vers le bas
-		 * 180 = IceBlock va vers la gauche
-		 * 270 = IceBlock va vers le haut
+		 * 0 = IceBlock va vers la droite 90 = IceBlock va vers le bas 180 = IceBlock va
+		 * vers la gauche 270 = IceBlock va vers le haut
 		 */
 
 		switch (direction) {
-			case 0:
-				// écrasé vers la droite
-				return DIR + "sprite_enemie_" + (34 + frame) + ".png";
+		case 0:
+			// écrasé vers la droite
+			return DIR + "sprite_enemie_" + (34 + frame) + ".png";
 
-			case 180:
-				// écrasé vers la gauche
-				return DIR + "sprite_enemie_" + (38 + frame) + ".png";
+		case 180:
+			// écrasé vers la gauche
+			return DIR + "sprite_enemie_" + (38 + frame) + ".png";
 
-			case 90:
-				// écrasé vers le bas
-				return DIR + "sprite_enemie_" + (36 + frame) + ".png";
+		case 90:
+			// écrasé vers le bas
+			return DIR + "sprite_enemie_" + (36 + frame) + ".png";
 
-			case 270:
-				// écrasé vers le haut
-				return DIR + "sprite_enemie_" + (32 + frame) + ".png";
+		case 270:
+			// écrasé vers le haut
+			return DIR + "sprite_enemie_" + (32 + frame) + ".png";
 
-			default:
-				return DIR + "sprite_enemie_32.png";
+		default:
+			return DIR + "sprite_enemie_32.png";
 		}
 	}
 }

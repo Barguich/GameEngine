@@ -24,8 +24,8 @@ import ast.AST;
 /**
  * Branchement des catégories + automates GAL sur les entités Pengo.
  *
- * NE PAS appeler setMaxLinearSpeed / setMaxAngularSpeed ici.
- * La vitesse est entièrement gérée dans GALStunt via MS_PER_CELL.
+ * NE PAS appeler setMaxLinearSpeed / setMaxAngularSpeed ici. La vitesse est
+ * entièrement gérée dans GALStunt via MS_PER_CELL.
  */
 public final class PengoBots {
 
@@ -69,8 +69,7 @@ public final class PengoBots {
 
 			Automaton aut = loadDiamondAutomaton();
 			if (aut == null) {
-				System.err.println(
-						"[PengoBots] DiamondBlocks.gal non chargé pour " + diamond);
+				System.err.println("[PengoBots] DiamondBlocks.gal non chargé pour " + diamond);
 				return;
 			}
 
@@ -107,8 +106,8 @@ public final class PengoBots {
 
 			Automaton aut = loadEnemyAutomaton();
 			if (aut == null) {
-				System.err.println("[PengoBots] Impossible de charger SnoBees.gal — "
-						+ enemy + " sans comportement GAL.");
+				System.err.println(
+						"[PengoBots] Impossible de charger SnoBees.gal — " + enemy + " sans comportement GAL.");
 				return;
 			}
 
@@ -117,14 +116,12 @@ public final class PengoBots {
 			bot.set(aut);
 			enemy.setBot(bot);
 
-			System.out.println("[PengoBots] SnoBee configuré : " + enemy
-					+ "  automate=" + aut.name());
+			System.out.println("[PengoBots] SnoBee configuré : " + enemy + "  automate=" + aut.name());
 		}
 	}
 
 	private static Automaton loadEnemyAutomaton() {
-		String[] candidates = {
-				"Pengo/gal/demo/test/SnoBees.gal", // depuis ws/
+		String[] candidates = { "Pengo/gal/demo/test/SnoBees.gal", // depuis ws/
 				"gal/demo/test/SnoBees.gal", // depuis ws/Pengo/
 				"demo/test/SnoBees.gal", // depuis bin/
 				"Automata.gal", // racine ws/
@@ -138,13 +135,11 @@ public final class PengoBots {
 				@SuppressWarnings("unchecked")
 				List<Automaton> autos = (List<Automaton>) ast.accept(visitor);
 				if (!autos.isEmpty()) {
-					System.out.println("[PengoBots] GAL chargé : " + path
-							+ " → « " + autos.get(0).name() + " »");
+					System.out.println("[PengoBots] GAL chargé : " + path + " → « " + autos.get(0).name() + " »");
 					return autos.get(0);
 				}
 			} catch (Exception ex) {
-				System.out.println("[PengoBots] Non trouvé : " + path
-						+ " (" + ex.getClass().getSimpleName() + ")");
+				System.out.println("[PengoBots] Non trouvé : " + path + " (" + ex.getClass().getSimpleName() + ")");
 			}
 		}
 
@@ -153,11 +148,8 @@ public final class PengoBots {
 	}
 
 	private static Automaton loadDiamondAutomaton() {
-		String[] candidates = {
-				"Pengo/gal/demo/test/DiamondBlocks.gal",
-				"gal/demo/test/DiamondBlocks.gal",
-				"demo/test/DiamondBlocks.gal"
-		};
+		String[] candidates = { "Pengo/gal/demo/test/DiamondBlocks.gal", "gal/demo/test/DiamondBlocks.gal",
+				"demo/test/DiamondBlocks.gal" };
 
 		for (String path : candidates) {
 			try {
@@ -168,14 +160,12 @@ public final class PengoBots {
 				List<Automaton> automata = (List<Automaton>) ast.accept(visitor);
 
 				if (!automata.isEmpty()) {
-					System.out.println(
-							"[PengoBots] Automate Diamond chargé : " + path);
+					System.out.println("[PengoBots] Automate Diamond chargé : " + path);
 					return automata.get(0);
 				}
 			} catch (Exception ex) {
 				System.out.println(
-						"[PengoBots] Diamond non trouvé : " + path
-								+ " (" + ex.getClass().getSimpleName() + ")");
+						"[PengoBots] Diamond non trouvé : " + path + " (" + ex.getClass().getSimpleName() + ")");
 			}
 		}
 		return null;

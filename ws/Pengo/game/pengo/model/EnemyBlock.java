@@ -7,8 +7,8 @@ import pengo.brain.PengoBots;
 /**
  * Variante d'IceBlock contenant un ennemi.
  *
- * Tant qu'il n'est pas détruit, ce bloc se comporte comme
- * un bloc de glace classique.
+ * Tant qu'il n'est pas détruit, ce bloc se comporte comme un bloc de glace
+ * classique.
  *
  * Lorsqu'il casse, un SnoBee apparaît à son emplacement.
  */
@@ -19,12 +19,10 @@ public class EnemyBlock extends IceBlock {
 	}
 
 	/**
-	 * Détruit le bloc puis fait apparaître un ennemi
-	 * sur la case qu'il occupait.
+	 * Détruit le bloc puis fait apparaître un ennemi sur la case qu'il occupait.
 	 *
-	 * La position est sauvegardée avant l'appel à
-	 * super.breakBlock() car cette méthode retire
-	 * le bloc du modèle.
+	 * La position est sauvegardée avant l'appel à super.breakBlock() car cette
+	 * méthode retire le bloc du modèle.
 	 */
 	@Override
 	public void breakBlock() {
@@ -49,18 +47,15 @@ public class EnemyBlock extends IceBlock {
 		// Création du SnoBee.
 		Enemy enemy = new Enemy();
 
-		enemy.setSize(
-				spawnPos.grid().new Dimension(1, 1));
+		enemy.setSize(spawnPos.grid().new Dimension(1, 1));
 
 		enemy.setPosition(spawnPos);
 
 		m.add(enemy);
 
 		/*
-		 * Si on est dans une partie Pengo,
-		 * on configure également :
-		 * - son automate,
-		 * - son avatar graphique.
+		 * Si on est dans une partie Pengo, on configure également : - son automate, -
+		 * son avatar graphique.
 		 */
 		if (m instanceof PengoModel pm) {
 			PengoBots.configureEntity(pm, enemy);
@@ -73,9 +68,8 @@ public class EnemyBlock extends IceBlock {
 	/**
 	 * Crée une copie indépendante d'une position.
 	 *
-	 * Cela évite de conserver une référence vers
-	 * un objet qui pourrait être modifié après
-	 * la destruction du bloc.
+	 * Cela évite de conserver une référence vers un objet qui pourrait être modifié
+	 * après la destruction du bloc.
 	 */
 	private static Grid.Position copyPos(Grid.Position p) {
 		return p.grid().new Position(p.x(), p.y());

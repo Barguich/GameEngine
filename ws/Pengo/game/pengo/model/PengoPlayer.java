@@ -7,12 +7,9 @@ import model.Entity;
 /**
  * Entité contrôlée par le joueur.
  *
- * Pengo possède ses propres états de gameplay :
- * - nombre de vies ;
- * - score ;
- * - bonus de vitesse ;
- * - ralentissement après passage dans un bloc très abîmé ;
- * - horloge d'animation de marche.
+ * Pengo possède ses propres états de gameplay : - nombre de vies ; - score ; -
+ * bonus de vitesse ; - ralentissement après passage dans un bloc très abîmé ; -
+ * horloge d'animation de marche.
  */
 public class PengoPlayer extends Entity {
 
@@ -146,8 +143,8 @@ public class PengoPlayer extends Entity {
 		}
 
 		/*
-		 * Lorsque Pengo a suffisamment dépassé le bloc traversable,
-		 * on applique les dégâts au bloc.
+		 * Lorsque Pengo a suffisamment dépassé le bloc traversable, on applique les
+		 * dégâts au bloc.
 		 *
 		 * Cela évite de casser le bloc au moment exact où Pengo entre dedans :
 		 * visuellement, on voit d'abord Pengo passer à travers.
@@ -187,8 +184,8 @@ public class PengoPlayer extends Entity {
 		bounding = new Bounding();
 
 		/*
-		 * Pengo utilise une hitbox circulaire plus petite que son sprite.
-		 * Cela rend les déplacements plus souples entre les blocs.
+		 * Pengo utilise une hitbox circulaire plus petite que son sprite. Cela rend les
+		 * déplacements plus souples entre les blocs.
 		 */
 		double radius = Math.min(size.x(), size.y()) * 0.35;
 

@@ -6,8 +6,8 @@ import java.util.Map;
 import oop.graphics.VirtualKeyCodes;
 
 /**
- * @apiNote les touches du langage GAL : lettres a..z, chiffres 0..9,
- *          SPACE, ENTER, et les flèches FU, FD, FR, FL.
+ * @apiNote les touches du langage GAL : lettres a..z, chiffres 0..9, SPACE,
+ *          ENTER, et les flèches FU, FD, FR, FL.
  * @implNote même pattern canonical que Direction/Category : unicité des
  *           instances, comparaison par ==.
  */

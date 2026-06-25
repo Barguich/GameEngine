@@ -13,9 +13,9 @@ import oop.graphics.Graphics;
  * HUD de debug overlay dessiné par-dessus le rendu normal de la scène.
  *
  * <p>
- * Affiche : FPS réel (frames de rendu), durée de la dernière frame, tick
- * rate logique (fourni par View), bounding boxes des entités, et l'action
- * inférée de l'entité suivie.
+ * Affiche : FPS réel (frames de rendu), durée de la dernière frame, tick rate
+ * logique (fourni par View), bounding boxes des entités, et l'action inférée de
+ * l'entité suivie.
  */
 public class DebugOverlay {
 
@@ -55,10 +55,10 @@ public class DebugOverlay {
 	}
 
 	/**
-	 * Alimente le HUD avec le temps logique mesuré côté boucle de simulation.
-	 * À appeler depuis le code qui orchestre le tick (ex. via View) à chaque
-	 * pas de modèle. On garde frame (rendu) et tick (logique) séparés : ce sont
-	 * deux horloges distinctes (Painter ~30Hz, Ticker ~60Hz).
+	 * Alimente le HUD avec le temps logique mesuré côté boucle de simulation. À
+	 * appeler depuis le code qui orchestre le tick (ex. via View) à chaque pas de
+	 * modèle. On garde frame (rendu) et tick (logique) séparés : ce sont deux
+	 * horloges distinctes (Painter ~30Hz, Ticker ~60Hz).
 	 */
 	public void recordTick(long elapsedMs) {
 		this.lastTickMs = elapsedMs;
@@ -66,8 +66,8 @@ public class DebugOverlay {
 	}
 
 	/**
-	 * À appeler au tout début de View.paint(), avant tout dessin.
-	 * Avance l'horloge de frame (unique mutation tolérée du cycle de rendu).
+	 * À appeler au tout début de View.paint(), avant tout dessin. Avance l'horloge
+	 * de frame (unique mutation tolérée du cycle de rendu).
 	 */
 	public void begin() {
 		if (!enabled) {
@@ -77,12 +77,11 @@ public class DebugOverlay {
 	}
 
 	/**
-	 * Dessine les bounding boxes. À appeler APRÈS le clip du viewport et le
-	 * rendu des entités, mais AVANT de retirer le clip, pour que les BB soient
-	 * clippées comme les sprites.
+	 * Dessine les bounding boxes. À appeler APRÈS le clip du viewport et le rendu
+	 * des entités, mais AVANT de retirer le clip, pour que les BB soient clippées
+	 * comme les sprites.
 	 */
-	public void paintBoundingBoxes(Canvas canvas, Graphics g, ViewPort viewPort,
-			List<Entity> entities) {
+	public void paintBoundingBoxes(Canvas canvas, Graphics g, ViewPort viewPort, List<Entity> entities) {
 		if (!enabled) {
 			return;
 		}
@@ -129,20 +128,16 @@ public class DebugOverlay {
 		int tx = panelX + padding;
 		int ty = panelY + padding + lineH - Math.round(4 * scale);
 
-		drawLine(g, tx, ty, 0, lineH, String.format(
-				"FPS   %5.1f  (%.1f ms/frame)",
-				frameClock.fps(), frameClock.lastFrameMs()));
-		drawLine(g, tx, ty, 1, lineH, String.format(
-				"TICK  #%d  (%.0f ms)", tickCount, lastTickMs));
-		drawLine(g, tx, ty, 2, lineH, String.format(
-				"CANVAS %dx%d px", canvas.getWidth(), canvas.getHeight()));
+		drawLine(g, tx, ty, 0, lineH,
+				String.format("FPS   %5.1f  (%.1f ms/frame)", frameClock.fps(), frameClock.lastFrameMs()));
+		drawLine(g, tx, ty, 1, lineH, String.format("TICK  #%d  (%.0f ms)", tickCount, lastTickMs));
+		drawLine(g, tx, ty, 2, lineH, String.format("CANVAS %dx%d px", canvas.getWidth(), canvas.getHeight()));
 
 		String followedName = (followed == null) ? "—" : safeName(followed);
 		drawLine(g, tx, ty, 3, lineH, "FOLLOW " + followedName);
 		drawLine(g, tx, ty, 4, lineH, "ACT   " + ActionInference.describe(followed));
 		lastPanelBottom = panelY + panelH;
 	}
-
 
 	private void drawLine(Graphics g, int x, int yBase, int index, int lineH, String text) {
 		g.drawString(text, x, yBase + index * lineH);
@@ -153,8 +148,7 @@ public class DebugOverlay {
 		int y1 = vp.toPixelY(canvas, box.ymin());
 		int x2 = vp.toPixelX(canvas, box.xmax());
 		int y2 = vp.toPixelY(canvas, box.ymax());
-		g.drawRect(Math.min(x1, x2), Math.min(y1, y2),
-				Math.abs(x2 - x1), Math.abs(y2 - y1));
+		g.drawRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1));
 	}
 
 	private String safeName(Entity e) {
@@ -187,10 +181,10 @@ public class DebugOverlay {
 	 * Facteur d'échelle du HUD, proportionnel à la taille du canvas.
 	 *
 	 * <p>
-	 * Contrairement à un scale entier (qui plancher à 1 et fait paraître le
-	 * panneau énorme sur petit écran), on retourne un flottant qui descend en
-	 * dessous de 1 quand le canvas est petit : le panneau garde alors la même
-	 * proportion de l'écran et ne cache plus les entités derrière lui.
+	 * Contrairement à un scale entier (qui plancher à 1 et fait paraître le panneau
+	 * énorme sur petit écran), on retourne un flottant qui descend en dessous de 1
+	 * quand le canvas est petit : le panneau garde alors la même proportion de
+	 * l'écran et ne cache plus les entités derrière lui.
 	 *
 	 * On borne entre 0.5 (lisibilité minimale) et 2.0 (pour les très grands
 	 * écrans). Référence : 1920px de large = scale 1.0.

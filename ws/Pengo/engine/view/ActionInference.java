@@ -7,8 +7,8 @@ import model.Entity;
  * données publiques (vitesse linéaire, orientation, catégorie).
  *
  * <p>
- * [dette technique] La spec demande d'afficher « l'action » de l'entité.
- * Or {@code Bot} n'expose aucun état d'action courant (think/done/collision
+ * [dette technique] La spec demande d'afficher « l'action » de l'entité. Or
+ * {@code Bot} n'expose aucun état d'action courant (think/done/collision
  * uniquement) et appartient à un coéquipier — on ne peut pas le modifier pour
  * exposer un {@code currentAction()}. On infère donc l'action observable depuis
  * la cinématique de l'entité. C'est une approximation : elle décrit ce que

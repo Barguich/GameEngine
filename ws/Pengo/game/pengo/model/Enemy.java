@@ -345,9 +345,7 @@ public class Enemy extends Entity {
 		}
 
 		// Cas particulier : l'ennemi traverse un bloc déjà détruit.
-		if (entity == breakingThroughBlock
-				&& breakingThroughBlock != null
-				&& breakingThroughBlock.hp() <= 0) {
+		if (entity == breakingThroughBlock && breakingThroughBlock != null && breakingThroughBlock.hp() <= 0) {
 			return false;
 		}
 
@@ -404,12 +402,7 @@ public class Enemy extends Entity {
 
 	// Indique si l'IA peut contrôler cet ennemi.
 	public boolean canRunBot() {
-		return !dead
-				&& !dying
-				&& !frozen
-				&& !spawning()
-				&& !draggedByIce
-				&& !crushedByIce;
+		return !dead && !dying && !frozen && !spawning() && !draggedByIce && !crushedByIce;
 	}
 
 	public void beginBreakingThrough(IceBlock block) {
@@ -427,11 +420,7 @@ public class Enemy extends Entity {
 	@Override
 	public boolean canShareCellWith(Entity other) {
 		// Un ennemi actif occupe réellement sa case.
-		if (!dead
-				&& !dying
-				&& !draggedByIce
-				&& !crushedByIce
-				&& !passedOut) {
+		if (!dead && !dying && !draggedByIce && !crushedByIce && !passedOut) {
 			return false;
 		}
 

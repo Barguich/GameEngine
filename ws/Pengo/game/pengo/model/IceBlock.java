@@ -19,7 +19,7 @@ public class IceBlock extends Entity {
 	private long breakingAnimationRemaining;
 	private long breakingAnimationDuration;
 	public static final long ENEMY_BREAK_DURATION_MS = 300;
-	public static final long PLAYER_HIT_DURATION_MS  = 150; // était 300 — aligné sur l'ennemi
+	public static final long PLAYER_HIT_DURATION_MS = 150; // était 300 — aligné sur l'ennemi
 	private int breakingFrame;
 	private List<Enemy> draggedEnemies; // liste des ennemies a emporter lors de sliding
 	private boolean containsSnoBee;
@@ -87,10 +87,7 @@ public class IceBlock extends Entity {
 		// c'est justement le but quand Pengo lance un bloc dessus.
 		// En revanche, un ennemi mort / en train de mourir / déjà écrasé ne se
 		// transporte pas.
-		boolean carriable = enemy.draggedByIce()
-				|| enemy.passedOut()
-				|| enemy.frozen()
-				|| !enemy.harmlessForPlayer();
+		boolean carriable = enemy.draggedByIce() || enemy.passedOut() || enemy.frozen() || !enemy.harmlessForPlayer();
 
 		if (!carriable) {
 			return;
@@ -168,7 +165,7 @@ public class IceBlock extends Entity {
 	public boolean destructibleByEnemy() {
 		return true;
 	}
- 
+
 	public boolean destroyByEnemy() {
 		if (broken) {
 			return false;
@@ -307,9 +304,7 @@ public class IceBlock extends Entity {
 		if (breakingAnimation) {
 			breakingAnimationRemaining -= elapsed;
 
-			double progress = 1.0
-					- breakingAnimationRemaining
-							/ (double) breakingAnimationDuration;
+			double progress = 1.0 - breakingAnimationRemaining / (double) breakingAnimationDuration;
 			progress = Math.max(0.0, Math.min(1.0, progress));
 			breakingFrame = Math.min(2, (int) (progress * 3));
 

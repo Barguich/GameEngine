@@ -16,7 +16,7 @@ import view.Avatar;
  */
 
 public class IceBlockAvatar extends Avatar {
-	
+
 	public IceBlockAvatar(Entity entity) {
 		super(entity);
 	}

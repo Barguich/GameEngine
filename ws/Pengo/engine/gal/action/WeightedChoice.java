@@ -9,12 +9,10 @@ import model.Entity;
  *
  * Exemple :
  *
- *   70% Move(F)
- *   20% Turn(L)
- *   10% Wait()
+ * 70% Move(F) 20% Turn(L) 10% Wait()
  *
- * Cette action permet d'introduire un comportement moins déterministe
- * dans les automates.
+ * Cette action permet d'introduire un comportement moins déterministe dans les
+ * automates.
  */
 public class WeightedChoice extends GALAction {
 
@@ -42,8 +40,7 @@ public class WeightedChoice extends GALAction {
 	/**
 	 * Sélectionne une action en tenant compte des poids.
 	 *
-	 * Plus le poids d'une action est élevé,
-	 * plus elle a de chances d'être choisie.
+	 * Plus le poids d'une action est élevé, plus elle a de chances d'être choisie.
 	 */
 	private GALAction pick() {
 		int n = actions.size();
@@ -64,18 +61,16 @@ public class WeightedChoice extends GALAction {
 		}
 
 		/*
-		 * Cas de sécurité :
-		 * si tous les poids sont nuls, on effectue
-		 * un choix uniforme parmi les actions.
+		 * Cas de sécurité : si tous les poids sont nuls, on effectue un choix uniforme
+		 * parmi les actions.
 		 */
 		if (total <= 0) {
 			return actions.get((int) (Math.random() * n));
 		}
 
 		/*
-		 * Tirage aléatoire dans l'intervalle [0 ; total].
-		 * Chaque action occupe une portion de cet intervalle
-		 * proportionnelle à son poids.
+		 * Tirage aléatoire dans l'intervalle [0 ; total]. Chaque action occupe une
+		 * portion de cet intervalle proportionnelle à son poids.
 		 */
 		double r = Math.random() * total;
 
@@ -96,9 +91,8 @@ public class WeightedChoice extends GALAction {
 	/**
 	 * Calcule les poids effectifs utilisés pour le tirage.
 	 *
-	 * Si certains pourcentages sont absents (null),
-	 * le pourcentage restant est réparti équitablement
-	 * entre les actions concernées.
+	 * Si certains pourcentages sont absents (null), le pourcentage restant est
+	 * réparti équitablement entre les actions concernées.
 	 */
 	private double[] weights() {
 		int n = actions.size();
@@ -106,8 +100,7 @@ public class WeightedChoice extends GALAction {
 		double[] weights = new double[n];
 
 		/*
-		 * Aucun pourcentage fourni :
-		 * toutes les actions ont la même probabilité.
+		 * Aucun pourcentage fourni : toutes les actions ont la même probabilité.
 		 */
 		if (percents == null || percents.size() != n) {
 			for (int i = 0; i < n; i++) {
@@ -130,20 +123,15 @@ public class WeightedChoice extends GALAction {
 		int implicitCount = n - explicitCount;
 
 		/*
-		 * Répartition automatique du pourcentage restant
-		 * entre les actions ne possédant pas de valeur explicite.
+		 * Répartition automatique du pourcentage restant entre les actions ne possédant
+		 * pas de valeur explicite.
 		 */
-		double implicitShare =
-				(implicitCount > 0)
-				? (100.0 - explicitSum) / implicitCount
-				: 0;
+		double implicitShare = (implicitCount > 0) ? (100.0 - explicitSum) / implicitCount : 0;
 
 		for (int i = 0; i < n; i++) {
 			Integer p = percents.get(i);
 
-			double w = (p != null)
-					? p
-					: implicitShare;
+			double w = (p != null) ? p : implicitShare;
 
 			weights[i] = Math.max(0, w);
 		}

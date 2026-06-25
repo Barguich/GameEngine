@@ -9,12 +9,12 @@ import oop.graphics.Graphics;
 /**
  * Gestionnaire de sprites partagé par tous les avatars.
  *
- * Cette classe implémente un cache d'images :
- * chaque sprite est chargé une seule fois depuis le disque,
- * puis réutilisé pendant toute la durée de la partie.
+ * Cette classe implémente un cache d'images : chaque sprite est chargé une
+ * seule fois depuis le disque, puis réutilisé pendant toute la durée de la
+ * partie.
  *
- * Cela évite des accès disque inutiles à chaque frame
- * et améliore les performances du rendu.
+ * Cela évite des accès disque inutiles à chaque frame et améliore les
+ * performances du rendu.
  */
 public final class Sprites {
 
@@ -28,10 +28,9 @@ public final class Sprites {
 	/**
 	 * Retourne le sprite associé au chemin demandé.
 	 *
-	 * Si l'image n'a jamais été chargée,
-	 * elle est lue depuis le disque puis mémorisée.
-	 * Les appels suivants réutilisent directement
-	 * l'image présente dans le cache.
+	 * Si l'image n'a jamais été chargée, elle est lue depuis le disque puis
+	 * mémorisée. Les appels suivants réutilisent directement l'image présente dans
+	 * le cache.
 	 */
 	public static BufferedImage get(Graphics g, String path) {
 

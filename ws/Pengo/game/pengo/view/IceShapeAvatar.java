@@ -8,8 +8,8 @@ import view.ShapeAvatar;
 
 /**
  * Variante de {@link ShapeAvatar} propre à Pengo : la couleur de la forme
- * dépend des points de vie restants du bloc de glace. Cette logique de jeu
- * vit côté game, le moteur ne connaissant pas le type {@link IceBlock}.
+ * dépend des points de vie restants du bloc de glace. Cette logique de jeu vit
+ * côté game, le moteur ne connaissant pas le type {@link IceBlock}.
  */
 public class IceShapeAvatar extends ShapeAvatar {
 

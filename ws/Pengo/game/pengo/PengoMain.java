@@ -35,18 +35,15 @@ import view.ViewPort;
 /**
  * Point d'entrée de l'application Pengo.
  *
- * Cette classe assemble les différentes parties du jeu :
- * - création du monde et du modèle,
- * - chargement des cartes depuis des fichiers texte,
- * - initialisation de la vue et du viewport,
- * - association des avatars aux entités,
- * - lancement de la boucle de rendu et de simulation.
+ * Cette classe assemble les différentes parties du jeu : - création du monde et
+ * du modèle, - chargement des cartes depuis des fichiers texte, -
+ * initialisation de la vue et du viewport, - association des avatars aux
+ * entités, - lancement de la boucle de rendu et de simulation.
  *
- * Le moteur reste générique : toute la logique spécifique
- * à Pengo est regroupée dans le package pengo.
+ * Le moteur reste générique : toute la logique spécifique à Pengo est regroupée
+ * dans le package pengo.
  */
 public class PengoMain {
-
 
 	public static void main(String[] args) {
 
@@ -126,8 +123,8 @@ public class PengoMain {
 				/**
 				 * Construit une partie à partir d'une carte chargée depuis un fichier.
 				 *
-				 * Les entités sont créées par le PengoMapLoader puis
-				 * chaque entité reçoit l'avatar correspondant à son type.
+				 * Les entités sont créées par le PengoMapLoader puis chaque entité reçoit
+				 * l'avatar correspondant à son type.
 				 */
 				buildSceneFromMap(model, view, selectedMap);
 				PengoBots.configure(model);
@@ -396,12 +393,12 @@ public class PengoMain {
 			view.follow(model.player());
 		}
 	}
+
 	/**
 	 * Associe automatiquement l'avatar adapté au type de l'entité.
 	 *
-	 * Cette méthode centralise la correspondance entre
-	 * modèle et affichage afin d'éviter de disperser
-	 * cette logique dans plusieurs classes.
+	 * Cette méthode centralise la correspondance entre modèle et affichage afin
+	 * d'éviter de disperser cette logique dans plusieurs classes.
 	 */
 
 	private static void attachAvatar(Entity e, View view) {

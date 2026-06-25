@@ -16,8 +16,8 @@ public class FleeBot extends Bot {
 		this.moving = false;
 	}
 
-	
-	  // Choisit une direction permettant de s'éloigner de l'ennemi. Le bot attend la fin du déplacement précédent avant de prendre une nouvelle décision.
+	// Choisit une direction permettant de s'éloigner de l'ennemi. Le bot attend la
+	// fin du déplacement précédent avant de prendre une nouvelle décision.
 
 	@Override
 	public void think() {
@@ -50,14 +50,14 @@ public class FleeBot extends Bot {
 	}
 
 	// Appelée lorsque le déplacement est terminé.
-	 
+
 	@Override
 	public void done() {
 		moving = false;
 	}
 
-	
-	 // Réinitialise le bot après une collision afin qu'il puisse recalculer une nouvelle direction.
+	// Réinitialise le bot après une collision afin qu'il puisse recalculer une
+	// nouvelle direction.
 
 	@Override
 	public void collision(Entity e) {

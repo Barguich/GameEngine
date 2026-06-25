@@ -59,9 +59,7 @@ public class Box {
 
 		final double EPS = 1e-6;
 
-		return this.xmax > other.xmin() + EPS
-				&& this.xmin < other.xmax() - EPS
-				&& this.ymax > other.ymin() + EPS
+		return this.xmax > other.xmin() + EPS && this.xmin < other.xmax() - EPS && this.ymax > other.ymin() + EPS
 				&& this.ymin < other.ymax() - EPS;
 	}
 
@@ -74,10 +72,7 @@ public class Box {
 		if (b2 == null)
 			return b1;
 
-		return new Box(
-				Math.min(b1.xmin, b2.xmin),
-				Math.min(b1.ymin, b2.ymin),
-				Math.max(b1.xmax, b2.xmax),
+		return new Box(Math.min(b1.xmin, b2.xmin), Math.min(b1.ymin, b2.ymin), Math.max(b1.xmax, b2.xmax),
 				Math.max(b1.ymax, b2.ymax));
 	}
 
@@ -85,4 +80,4 @@ public class Box {
 	public String toString() {
 		return "Box[" + xmin + "," + ymin + " -> " + xmax + "," + ymax + "]";
 	}
-} 
+}

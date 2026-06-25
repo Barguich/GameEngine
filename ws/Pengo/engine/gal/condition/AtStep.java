@@ -30,13 +30,12 @@ public class AtStep extends GALCondition {
 
 	// EVAL
 	/**
-	 * @apiNote check if the condition AtStep(...) is satisfied by the given
-	 *          entity
+	 * @apiNote check if the condition AtStep(...) is satisfied by the given entity
 	 * @param e = the entity that does the evaluation
-	 * @implNote AtStep(...) conditions are intensively used and must be
-	 *           efficient: efficiency is perhaps more important than accuracy.
-	 * @implNote There is plenty room for optimization here in collaboration
-	 *           with the Model and the Bot.
+	 * @implNote AtStep(...) conditions are intensively used and must be efficient:
+	 *           efficiency is perhaps more important than accuracy.
+	 * @implNote There is plenty room for optimization here in collaboration with
+	 *           the Model and the Bot.
 	 */
 	public boolean eval(Entity e) {
 		// Grid grid = e.grid();
@@ -74,33 +73,32 @@ public class AtStep extends GALCondition {
 			int dx = 0;
 			int dy = 0;
 			switch (angle) {
-				case 0:
-					dx = 1;
-					dy = 0;
-					break;
-				case 90:
-					dx = 0;
-					dy = 1;
-					break;
-				case 180:
-					dx = -1;
-					dy = 0;
-					break;
-				case 270:
-					dx = 0;
-					dy = -1;
-					break;
-				default:
-					dx = (int) Math.round(Math.cos(Math.toRadians(angle)));
-					dy = -(int) Math.round(Math.sin(Math.toRadians(angle)));
-					break;
+			case 0:
+				dx = 1;
+				dy = 0;
+				break;
+			case 90:
+				dx = 0;
+				dy = 1;
+				break;
+			case 180:
+				dx = -1;
+				dy = 0;
+				break;
+			case 270:
+				dx = 0;
+				dy = -1;
+				break;
+			default:
+				dx = (int) Math.round(Math.cos(Math.toRadians(angle)));
+				dy = -(int) Math.round(Math.sin(Math.toRadians(angle)));
+				break;
 
 			}
 			target.translate(grid.new Vector(dx * nbStep, dy * nbStep));
 
 		}
-		if (target.x() < 0 || target.x() >= grid.width()
-				|| target.y() < 0 || target.y() >= grid.height()) {
+		if (target.x() < 0 || target.x() >= grid.width() || target.y() < 0 || target.y() >= grid.height()) {
 			return false;
 		}
 		Grid.Cell cell = grid.cellAt(target);

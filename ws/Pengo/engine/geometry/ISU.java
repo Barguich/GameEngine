@@ -77,8 +77,7 @@ public class ISU {
 			if (d == null)
 				return false;
 
-			return xAxis.normalize(x_cm) == xAxis.normalize(d.x_cm)
-					&& yAxis.normalize(y_cm) == yAxis.normalize(d.y_cm);
+			return xAxis.normalize(x_cm) == xAxis.normalize(d.x_cm) && yAxis.normalize(y_cm) == yAxis.normalize(d.y_cm);
 		}
 
 		// Crée un vecteur ayant les mêmes composantes que cette dimension
@@ -126,8 +125,7 @@ public class ISU {
 			}
 
 			if (Log.FINER)
-				Log.logger.log(Level.FINER,
-						"mkVectorToward: dx={0} dy={1}", new Object[] { dx, dy });
+				Log.logger.log(Level.FINER, "mkVectorToward: dx={0} dy={1}", new Object[] { dx, dy });
 
 			return new Vector(dx, dy);
 		}
@@ -138,8 +136,7 @@ public class ISU {
 			int y_ncell = (int) Math.floor(y_cm / game.cmPerCell);
 
 			if (Log.FINER)
-				Log.logger.log(Level.FINER,
-						"toGridPosition: ({0},{1})cm -> cell({2},{3})",
+				Log.logger.log(Level.FINER, "toGridPosition: ({0},{1})cm -> cell({2},{3})",
 						new Object[] { x_cm, y_cm, x_ncell, y_ncell });
 
 			return grid.new Position(x_ncell, y_ncell);

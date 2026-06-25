@@ -16,13 +16,12 @@ import gal.condition.*;
  * Visiteur AST → Automaton GAL.
  *
  * FIX choix probabiliste entre actions (ex: "70%Move(F) / 15%Turn(L) /
- * 15%Turn(R)") :
- * - Le pourcentage est attaché à chaque FunCall (funcall.percent()), pas à
- * l'objet GALAction qu'on construit dans build(FunCall...).
- * - On capture donc funcall.percent() dans exit(FunCall) au fil de la visite,
- * dans une liste parallèle pendingPercents.
- * - build(Actions...) consomme ensuite cette liste pour faire le tirage
- * pondéré, puis la vide pour ne pas polluer le prochain groupe d'actions.
+ * 15%Turn(R)") : - Le pourcentage est attaché à chaque FunCall
+ * (funcall.percent()), pas à l'objet GALAction qu'on construit dans
+ * build(FunCall...). - On capture donc funcall.percent() dans exit(FunCall) au
+ * fil de la visite, dans une liste parallèle pendingPercents. -
+ * build(Actions...) consomme ensuite cette liste pour faire le tirage pondéré,
+ * puis la vide pour ne pas polluer le prochain groupe d'actions.
  */
 public class GALVisitor implements iVisitor {
 
@@ -105,10 +104,10 @@ public class GALVisitor implements iVisitor {
 	}
 
 	/**
-	 * Extrait le pourcentage d'un FunCall de façon défensive : selon la version
-	 * du parseur, funcall.percent() peut renvoyer un int, un Integer (null si
-	 * absent), ou une String ("70" / "" si absent). On normalise vers
-	 * Integer (null = pas de pourcentage explicite).
+	 * Extrait le pourcentage d'un FunCall de façon défensive : selon la version du
+	 * parseur, funcall.percent() peut renvoyer un int, un Integer (null si absent),
+	 * ou une String ("70" / "" si absent). On normalise vers Integer (null = pas de
+	 * pourcentage explicite).
 	 */
 	private Integer extractPercent(FunCall funcall) {
 		try {
@@ -136,9 +135,7 @@ public class GALVisitor implements iVisitor {
 
 		// ---- CONDITIONS ------------------------------------------------
 
-		if (name.equals("Got")
-				&& params.size() == 1
-				&& params.get(0) instanceof Integer) {
+		if (name.equals("Got") && params.size() == 1 && params.get(0) instanceof Integer) {
 			return new EnemiesLeft((Integer) params.get(0));
 		}
 
@@ -152,29 +149,19 @@ public class GALVisitor implements iVisitor {
 
 		if (name.equals("Step")) {
 			if (params.size() == 1) {
-				return new AtStep(
-						gal.arguments.Direction.H,
-						(gal.arguments.Category) params.get(0),
-						1);
+				return new AtStep(gal.arguments.Direction.H, (gal.arguments.Category) params.get(0), 1);
 			}
 			if (params.size() == 2) {
 				Object p0 = params.get(0);
 				Object p1 = params.get(1);
 				if (p0 instanceof gal.arguments.Direction) {
-					return new AtStep(
-							(gal.arguments.Direction) p0,
-							(gal.arguments.Category) p1,
-							1);
+					return new AtStep((gal.arguments.Direction) p0, (gal.arguments.Category) p1, 1);
 				} else {
-					return new AtStep(
-							(Integer) p0,
-							(gal.arguments.Category) p1);
+					return new AtStep((Integer) p0, (gal.arguments.Category) p1);
 				}
 			}
 			if (params.size() == 3) {
-				return new AtStep(
-						(gal.arguments.Direction) params.get(0),
-						(gal.arguments.Category) params.get(2),
+				return new AtStep((gal.arguments.Direction) params.get(0), (gal.arguments.Category) params.get(2),
 						(Integer) params.get(1));
 			}
 		}
@@ -191,8 +178,7 @@ public class GALVisitor implements iVisitor {
 					return new Closest((gal.arguments.Category) params.get(0), (Integer) p1);
 			}
 			if (params.size() == 3)
-				return new Closest((gal.arguments.Category) params.get(0),
-						(gal.arguments.Direction) params.get(1),
+				return new Closest((gal.arguments.Category) params.get(0), (gal.arguments.Direction) params.get(1),
 						(Integer) params.get(2));
 		}
 
@@ -227,8 +213,7 @@ public class GALVisitor implements iVisitor {
 		}
 
 		if (name.equals("Hit")) {
-			gal.arguments.Direction dir = params.isEmpty()
-					? gal.arguments.Direction.F
+			gal.arguments.Direction dir = params.isEmpty() ? gal.arguments.Direction.F
 					: (gal.arguments.Direction) params.get(0);
 			return new gal.action.Hit(dir);
 		}
@@ -237,8 +222,7 @@ public class GALVisitor implements iVisitor {
 			return GALAction.NOTHING;
 		}
 
-		System.err.println("[GALVisitor] Action non implémentée : " + name
-				+ " → NOTHING utilisé");
+		System.err.println("[GALVisitor] Action non implémentée : " + name + " → NOTHING utilisé");
 		return GALAction.NOTHING;
 	}
 
@@ -371,17 +355,11 @@ public class GALVisitor implements iVisitor {
 	}
 
 	@Override
-	public Object build(ast.Transition t,
-			Object condition,
-			Object action,
-			Object target) {
+	public Object build(ast.Transition t, Object condition, Object action, Object target) {
 
 		GALAction gAction = (action instanceof GALAction) ? (GALAction) action : null;
 
-		return new RuntimeTransitionData(
-				(iGALCondition) condition,
-				gAction,
-				(gal_engine.State) target);
+		return new RuntimeTransitionData((iGALCondition) condition, gAction, (gal_engine.State) target);
 	}
 
 	// ── Mode ─────────────────────────────────────────────────────────────────
@@ -400,9 +378,7 @@ public class GALVisitor implements iVisitor {
 
 	@Override
 	public Object build(ast.Mode m, Object source, Object behaviour) {
-		return new RuntimeModeData(
-				(gal_engine.State) source,
-				(List<?>) behaviour);
+		return new RuntimeModeData((gal_engine.State) source, (List<?>) behaviour);
 	}
 
 	// ── Behaviour ────────────────────────────────────────────────────────────
@@ -423,9 +399,7 @@ public class GALVisitor implements iVisitor {
 	}
 
 	@Override
-	public Object build(ast.Automaton a,
-			Object initialState,
-			List<Object> modes) {
+	public Object build(ast.Automaton a, Object initialState, List<Object> modes) {
 
 		gal_engine.State init = (gal_engine.State) initialState;
 		Automaton aut = new Automaton(a.name, init);
@@ -436,11 +410,7 @@ public class GALVisitor implements iVisitor {
 				continue;
 			for (Object tr : mode.transitions) {
 				RuntimeTransitionData rt = (RuntimeTransitionData) tr;
-				aut.add(new Transition(
-						mode.source,
-						rt.condition,
-						rt.action,
-						rt.target));
+				aut.add(new Transition(mode.source, rt.condition, rt.action, rt.target));
 			}
 		}
 

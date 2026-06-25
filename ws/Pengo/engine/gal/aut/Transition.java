@@ -53,11 +53,9 @@ public class Transition {
 		if (action != null) {
 			boolean started = action.exec(e);
 
-			System.out.println(
-					"[TRANSITION] " + source() + " -> " + target()
-							+ " condition=" + condition.getClass().getSimpleName()
-							+ " action=" + action.getClass().getSimpleName()
-							+ " started=" + started);
+			System.out.println("[TRANSITION] " + source() + " -> " + target() + " condition="
+					+ condition.getClass().getSimpleName() + " action=" + action.getClass().getSimpleName()
+					+ " started=" + started);
 
 			if (!started) {
 				// L'action n'a pas pu démarrer (entité déjà occupée) :

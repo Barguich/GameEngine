@@ -6,12 +6,11 @@ import java.util.Map;
 /**
  * Représentation des directions manipulées par les automates GAL.
  *
- * Une direction peut être :
- * - absolue : N, S, E, W, NE, NW, SE, SW
- * - relative à l'orientation de l'entité : F, B, L, R, H
+ * Une direction peut être : - absolue : N, S, E, W, NE, NW, SE, SW - relative à
+ * l'orientation de l'entité : F, B, L, R, H
  *
- * Cette classe centralise également les conversions vers
- * les angles utilisés par le moteur.
+ * Cette classe centralise également les conversions vers les angles utilisés
+ * par le moteur.
  */
 public class Direction {
 
@@ -71,8 +70,8 @@ public class Direction {
 	private String name;
 
 	/**
-	 * Lors de la création, la direction est automatiquement
-	 * enregistrée dans la table des directions connues.
+	 * Lors de la création, la direction est automatiquement enregistrée dans la
+	 * table des directions connues.
 	 */
 	public Direction(String name) {
 		this.name = name;
@@ -82,21 +81,17 @@ public class Direction {
 	/**
 	 * Indique si la direction est exprimée dans le repère du monde.
 	 *
-	 * Exemple :
-	 * N signifie toujours le nord du monde,
-	 * quelle que soit l'orientation de l'entité.
+	 * Exemple : N signifie toujours le nord du monde, quelle que soit l'orientation
+	 * de l'entité.
 	 */
 	public boolean isAbsolute() {
-		return this == N || this == S || this == E || this == W
-				|| this == NE || this == NW || this == SE || this == SW;
+		return this == N || this == S || this == E || this == W || this == NE || this == NW || this == SE || this == SW;
 	}
 
 	/**
-	 * Indique si la direction dépend de l'orientation courante
-	 * de l'entité.
+	 * Indique si la direction dépend de l'orientation courante de l'entité.
 	 *
-	 * Exemple :
-	 * F signifie "devant l'entité".
+	 * Exemple : F signifie "devant l'entité".
 	 */
 	public boolean isRelative() {
 		return this == F || this == B || this == L || this == R || this == H;
@@ -105,9 +100,8 @@ public class Direction {
 	/**
 	 * Convertit une direction en angle.
 	 *
-	 * Cette méthode est utilisée par les actions GAL afin de
-	 * convertir les directions du langage vers le système
-	 * d'orientation du moteur.
+	 * Cette méthode est utilisée par les actions GAL afin de convertir les
+	 * directions du langage vers le système d'orientation du moteur.
 	 */
 	public int toAngle() {
 
@@ -151,8 +145,7 @@ public class Direction {
 		if (this == H)
 			return 0;
 
-		throw new IllegalStateException(
-				"Direction " + name + " has no angle");
+		throw new IllegalStateException("Direction " + name + " has no angle");
 	}
 
 	public String name() {

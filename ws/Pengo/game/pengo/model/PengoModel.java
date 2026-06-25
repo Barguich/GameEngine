@@ -628,20 +628,20 @@ public class PengoModel extends Model {
 		int y = player.position().y();
 
 		switch (player.orientation()) {
-			case 0:
-				x++;
-				break;
-			case 90:
-				y++;
-				break;
-			case 180:
-				x--;
-				break;
-			case 270:
-				y--;
-				break;
-			default:
-				return;
+		case 0:
+			x++;
+			break;
+		case 90:
+			y++;
+			break;
+		case 180:
+			x--;
+			break;
+		case 270:
+			y--;
+			break;
+		default:
+			return;
 		}
 
 		Entity e = firstAt(grid().new Position(x, y));
@@ -660,20 +660,20 @@ public class PengoModel extends Model {
 		int y = e.position().y();
 
 		switch (direction) {
-			case 0:
-				x++;
-				break;
-			case 90:
-				y++;
-				break;
-			case 180:
-				x--;
-				break;
-			case 270:
-				y--;
-				break;
-			default:
-				break;
+		case 0:
+			x++;
+			break;
+		case 90:
+			y++;
+			break;
+		case 180:
+			x--;
+			break;
+		case 270:
+			y--;
+			break;
+		default:
+			break;
 		}
 
 		return grid().new Position(x, y);
@@ -693,16 +693,16 @@ public class PengoModel extends Model {
 		int y = e.position().y();
 
 		switch (direction) {
-			case 0:
-				return x + 1 >= grid().width();
-			case 90:
-				return y + 1 >= grid().height();
-			case 180:
-				return x - 1 < 0;
-			case 270:
-				return y - 1 < 0;
-			default:
-				return false;
+		case 0:
+			return x + 1 >= grid().width();
+		case 90:
+			return y + 1 >= grid().height();
+		case 180:
+			return x - 1 < 0;
+		case 270:
+			return y - 1 < 0;
+		default:
+			return false;
 		}
 	}
 
@@ -988,8 +988,9 @@ public class PengoModel extends Model {
 			double movementLength = Math.abs(movement.x()) + Math.abs(movement.y());
 			double contactDistance = ice.step().x();
 
-			//epsilon assez large pour détecter l'ennemi avant que le moteur de collision bloque le IceBlock.
-			
+			// epsilon assez large pour détecter l'ennemi avant que le moteur de collision
+			// bloque le IceBlock.
+
 			double epsilon = 0.35;
 
 			if (distance <= contactDistance + movementLength + epsilon) {
@@ -1030,32 +1031,31 @@ public class PengoModel extends Model {
 		}
 
 		if (front instanceof IceBlock) {
-		    IceBlock block = (IceBlock) front;
+			IceBlock block = (IceBlock) front;
 
-		    if (block.passableByPlayer()) {
-		        player.crossIceBlock(block);
-		        return true;
-		    }
+			if (block.passableByPlayer()) {
+				player.crossIceBlock(block);
+				return true;
+			}
 
-		    if (block.hp() <= 0 || block.broken()) {
-		        return true;
-		    }
+			if (block.hp() <= 0 || block.broken()) {
+				return true;
+			}
 
-		    if (block.hp() == 2 || block.cracked()) {
-		        return false;
-		    }
+			if (block.hp() == 2 || block.cracked()) {
+				return false;
+			}
 
-		    if (block.hp() == 3 && !block.sliding()) {
-		        Grid.Position behind = nextPosition(block, direction);
-		        boolean canSlide = behind != null
-		                && firstSolidAt(behind, block, player) == null;
+			if (block.hp() == 3 && !block.sliding()) {
+				Grid.Position behind = nextPosition(block, direction);
+				boolean canSlide = behind != null && firstSolidAt(behind, block, player) == null;
 
-		        if (canSlide) {
-		            block.startSlide(direction);
-		        }
-		    }
+				if (canSlide) {
+					block.startSlide(direction);
+				}
+			}
 
-		    return false;
+			return false;
 		}
 
 		if (front instanceof Enemy) {
@@ -1097,16 +1097,16 @@ public class PengoModel extends Model {
 		int ty = target.position().y();
 
 		switch (direction) {
-			case 0:
-				return ty == fy && tx > fx;
-			case 90:
-				return tx == fx && ty > fy;
-			case 180:
-				return ty == fy && tx < fx;
-			case 270:
-				return tx == fx && ty < fy;
-			default:
-				return false;
+		case 0:
+			return ty == fy && tx > fx;
+		case 90:
+			return tx == fx && ty > fy;
+		case 180:
+			return ty == fy && tx < fx;
+		case 270:
+			return tx == fx && ty < fy;
+		default:
+			return false;
 		}
 	}
 
@@ -1158,81 +1158,75 @@ public class PengoModel extends Model {
 
 		return e instanceof Wall || e instanceof IceBlock;
 	}
+
 	@Override
 	protected boolean collisionBlocks(Entity mover, Entity other) {
 
-	    if (mover == null || other == null) {
-	        return false;
-	    }
+		if (mover == null || other == null) {
+			return false;
+		}
 
-	    // FishBonus ne bloque personne.
-	    if (mover instanceof FishBonus || other instanceof FishBonus) {
-	        return false;
-	    }
+		// FishBonus ne bloque personne.
+		if (mover instanceof FishBonus || other instanceof FishBonus) {
+			return false;
+		}
 
-	    // Enemy neutralisé = ghost.
-	    if (mover instanceof Enemy enemy) {
-	        if (enemy.dead()
-	                || enemy.dying()
-	                || enemy.draggedByIce()
-	                || enemy.crushedByIce()
-	                || enemy.passedOut()) {
-	            return false;
-	        }
-	    }
+		// Enemy neutralisé = ghost.
+		if (mover instanceof Enemy enemy) {
+			if (enemy.dead() || enemy.dying() || enemy.draggedByIce() || enemy.crushedByIce() || enemy.passedOut()) {
+				return false;
+			}
+		}
 
-	    // Enemy neutralisé = ghost.
-	    if (other instanceof Enemy enemy) {
-	        if (enemy.dead()
-	                || enemy.dying()
-	                || enemy.draggedByIce()
-	                || enemy.crushedByIce()
-	                || enemy.passedOut()) {
-	            return false;
-	        }
-	    }
+		// Enemy neutralisé = ghost.
+		if (other instanceof Enemy enemy) {
+			if (enemy.dead() || enemy.dying() || enemy.draggedByIce() || enemy.crushedByIce() || enemy.passedOut()) {
+				return false;
+			}
+		}
 
-	    // IceBlock glissant + Enemy :
-	    // on ne bloque pas ici, car c'est géré dans moveSlidingIceBlock().
-	    if (isSlidingIceEnemyPair(mover, other)) {
-	        return false;
-	    }
+		// IceBlock glissant + Enemy :
+		// on ne bloque pas ici, car c'est géré dans moveSlidingIceBlock().
+		if (isSlidingIceEnemyPair(mover, other)) {
+			return false;
+		}
 
-	    // IceBlock glissant + Pengo :
-	    // on évite les blocages parasites.
-	    if (isSlidingIcePengoPair(mover, other)) {
-	        return false;
-	    }
+		// IceBlock glissant + Pengo :
+		// on évite les blocages parasites.
+		if (isSlidingIcePengoPair(mover, other)) {
+			return false;
+		}
 
-	    // Pengo + Enemy :
-	    // c'est géré manuellement par checkPlayerEnemyHits().
-	    if (isPengoEnemyPair(mover, other)) {
-	        return false;
-	    }
+		// Pengo + Enemy :
+		// c'est géré manuellement par checkPlayerEnemyHits().
+		if (isPengoEnemyPair(mover, other)) {
+			return false;
+		}
 
-	    // Pengo + Wall :
-	    // ça bloque.
-	    if (mover instanceof PengoPlayer && other instanceof Wall) {
-	        return true;
-	    }
+		// Pengo + Wall :
+		// ça bloque.
+		if (mover instanceof PengoPlayer && other instanceof Wall) {
+			return true;
+		}
 
-	    if (other instanceof PengoPlayer && mover instanceof Wall) {
-	        return true;
-	    }
+		if (other instanceof PengoPlayer && mover instanceof Wall) {
+			return true;
+		}
 
-	    // Pengo + IceBlock :
-	    // Pengo peut traverser seulement les blocs passables.
-	    if (mover instanceof PengoPlayer && other instanceof IceBlock block) {
-	        return !block.passableByPlayer();
-	    }
+		// Pengo + IceBlock :
+		// Pengo peut traverser seulement les blocs passables.
+		if (mover instanceof PengoPlayer && other instanceof IceBlock block) {
+			return !block.passableByPlayer();
+		}
 
-	    if (other instanceof PengoPlayer && mover instanceof IceBlock block) {
-	        return !block.passableByPlayer();
-	    }
+		if (other instanceof PengoPlayer && mover instanceof IceBlock block) {
+			return !block.passableByPlayer();
+		}
 
-	    // Tous les autres cas bloquent normalement.
-	    return true;
+		// Tous les autres cas bloquent normalement.
+		return true;
 	}
+
 	private boolean isSlidingIcePengoPair(Entity a, Entity b) {
 		if (a instanceof IceBlock) {
 			IceBlock ice = (IceBlock) a;
@@ -1315,9 +1309,9 @@ public class PengoModel extends Model {
 
 		System.out.println("CRUSH " + crushedEnemies.size() + " ENEMY/ENEMIES BY ICE");
 
-		//tous les ennemis écrasés doivent jouer leur animation
-		 //sur la même case : la case de l'ennemi le plus devant.
-		 
+		// tous les ennemis écrasés doivent jouer leur animation
+		// sur la même case : la case de l'ennemi le plus devant.
+
 		Grid.Position crushPosition = copyPosition(finalIcePosition);
 
 		for (Enemy enemy : crushedEnemies) {
@@ -1329,25 +1323,24 @@ public class PengoModel extends Model {
 				continue;
 			}
 
-			
 			if (crushPosition != null) {
 				enemy.setPosition(crushPosition);
 				enemy.setBounding();
 			}
 
-			//on lance l'animation dans la direction du IceBlock.
-			 
+			// on lance l'animation dans la direction du IceBlock.
+
 			enemy.markCrushedByIce(ice.direction());
 
 			addScore(config.scoreCrush());
 		}
 
-		//on arrête le bloc après avoir préparé les animations.
-		
+		// on arrête le bloc après avoir préparé les animations.
+
 		ice.stopSlide();
 
-		//le IceBlock prend aussi la position finale.
-		
+		// le IceBlock prend aussi la position finale.
+
 		if (crushPosition != null) {
 			ice.setPosition(crushPosition);
 			ice.setBounding();

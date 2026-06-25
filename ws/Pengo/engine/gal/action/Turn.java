@@ -52,9 +52,9 @@ public class Turn extends GALAction {
 	public boolean exec(Entity e) {
 		if (e == null)
 			return false;
- 
+
 		Stunt s = e.stunt();
- 
+
 		if (s instanceof GALStunt) {
 			// Passe par le Stunt : respecte action_ms, refuse si déjà occupé,
 			// et la rotation est progressive (gérée par tick()).
@@ -62,7 +62,7 @@ public class Turn extends GALAction {
 			System.out.println("[Turn] exec angle=" + angle_deg + " started=" + started);
 			return started;
 		}
- 
+
 		e.turn(angle_deg);
 		return true;
 	}
