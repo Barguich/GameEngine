@@ -29,12 +29,12 @@ public class PengoHUD implements Overlay {
 		int y = debug.panelBottom() + 24 * scale;
 
 		g.setFont(g.getFont("SansSerif", Font.BOLD, 18 * scale));
-		g.setColor(g.getColor(255, 255, 220, 0));
+		g.setColor(g.getColor(0, 100, 255, 0));
 
 		g.drawString("Score : " + model.score(), x, y);
 		g.drawString("Vies : " + model.player().lives(), x, y + lineH);
 		g.drawString("Enemies : " + model.enemiesRemaining(), x, y + 2 * lineH);
-
+		g.drawString("Total entités : " + model.entities().size(), x, y + 3 * lineH);
 	}
 
 }
