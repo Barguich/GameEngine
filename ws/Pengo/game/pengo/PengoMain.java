@@ -37,6 +37,7 @@ import view.ViewPort;
 // en s'appuyant sur le moteur (engine), qui lui ne connaît rien de Pengo.
 public class PengoMain {
 
+
 	public static void main(String[] args) {
 
 		String[] baseMap;
@@ -97,6 +98,20 @@ public class PengoMain {
 
 			try {
 				String[] selectedMap = PengoMapLoader.readMap(model.selectedMapFile());
+
+				int newMapWidth = PengoMapLoader.width(selectedMap);
+				int newMapHeight = PengoMapLoader.height(selectedMap);
+
+				// Recrée Game/Grid/ISU statiques à la taille de la map choisie.
+				new Game(newMapWidth, newMapHeight);
+
+				// Le modèle doit utiliser la nouvelle grille, pas l'ancienne
+				// (sinon le wrap torique reste calé sur l'ancienne taille).
+				model.setGrid(Game.grid());
+
+				// Le viewport doit reclamper sur la taille réelle de la nouvelle map.
+				viewPort.resizeMap(Game.game().width_cm, Game.game().height_cm);
+
 				buildSceneFromMap(model, view, selectedMap);
 				PengoBots.configure(model);
 			} catch (IOException e) {

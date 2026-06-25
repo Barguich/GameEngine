@@ -108,15 +108,15 @@ public class DebugOverlay {
 			return;
 		}
 
-		int scale = uiScale(canvas);
+		float scale = uiScale(canvas);
 		resolveColors(g);
 		resolveFont(g, scale);
 
-		int padding = PADDING * scale;
-		int lineH = LINE_H * scale;
-		int panelX = PANEL_X * scale;
-		int panelY = PANEL_Y * scale;
-		int panelW = PANEL_W * scale;
+		int padding = Math.round(PADDING * scale);
+		int lineH = Math.round(LINE_H * scale);
+		int panelX = Math.round(PANEL_X * scale);
+		int panelY = Math.round(PANEL_Y * scale);
+		int panelW = Math.round(PANEL_W * scale);
 
 		int panelH = padding * 2 + PANEL_LINES * lineH;
 
@@ -127,7 +127,7 @@ public class DebugOverlay {
 		g.setColor(hudText);
 
 		int tx = panelX + padding;
-		int ty = panelY + padding + lineH - 4 * scale;
+		int ty = panelY + padding + lineH - Math.round(4 * scale);
 
 		drawLine(g, tx, ty, 0, lineH, String.format(
 				"FPS   %5.1f  (%.1f ms/frame)",
@@ -175,16 +175,29 @@ public class DebugOverlay {
 		}
 	}
 
-	private void resolveFont(Graphics g, int scale) {
-		int fontSize = 13 * scale;
+	private void resolveFont(Graphics g, float scale) {
+		int fontSize = Math.max(9, Math.round(13 * scale));
 		if (hudFont == null || cachedFontSize != fontSize) {
 			hudFont = g.getFont("Monospaced", Font.PLAIN, fontSize);
 			cachedFontSize = fontSize;
 		}
 	}
 
-	public static int uiScale(Canvas canvas) {
-		return Math.max(1, Math.round(canvas.getWidth() / 1920f));
+	/**
+	 * Facteur d'échelle du HUD, proportionnel à la taille du canvas.
+	 *
+	 * <p>
+	 * Contrairement à un scale entier (qui plancher à 1 et fait paraître le
+	 * panneau énorme sur petit écran), on retourne un flottant qui descend en
+	 * dessous de 1 quand le canvas est petit : le panneau garde alors la même
+	 * proportion de l'écran et ne cache plus les entités derrière lui.
+	 *
+	 * On borne entre 0.5 (lisibilité minimale) et 2.0 (pour les très grands
+	 * écrans). Référence : 1920px de large = scale 1.0.
+	 */
+	public static float uiScale(Canvas canvas) {
+		float s = canvas.getWidth() / 1920f;
+		return Math.max(0.5f, Math.min(2.0f, s));
 	}
 
 	public int panelBottom() {

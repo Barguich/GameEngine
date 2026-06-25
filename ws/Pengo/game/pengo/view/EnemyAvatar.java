@@ -33,12 +33,7 @@ public class EnemyAvatar extends Avatar {
 		double cm = Game.game().cmPerCell;
 		int side = (int) Math.round(cm * scale);
 
-		if (enemy.frozen()) {
-			int frozenSide = (int) (side * 2.3);
-			g.drawImage(img, xPix - frozenSide / 2, yPix - frozenSide / 2, frozenSide, frozenSide);
-		} else {
-			g.drawImage(img, xPix - side / 2, yPix - side / 2, side, side);
-		}
+		g.drawImage(img, xPix - side / 2, yPix - side / 2, side, side);
 	}
 
 	private static int pickFrame(Enemy enemy) {

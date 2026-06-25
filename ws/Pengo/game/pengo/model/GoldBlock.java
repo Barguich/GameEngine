@@ -62,10 +62,6 @@ public class GoldBlock extends IceBlock {
 			return;
 		}
 
-		if (active) {
-			return;
-		}
-
 		// Les ennemis déjà neutralisés ne déclenchent pas l'effet
 		if (enemy.dead() || enemy.dying() || enemy.draggedByIce()) {
 			return;
@@ -75,11 +71,16 @@ public class GoldBlock extends IceBlock {
 		long freeze = model.config().goldFreezeDuration();
 		long doubleScore = model.config().goldDoubleScoreDuration();
 
+		// Chaque ennemi au contact du bloc est gelé, même si plusieurs arrivent
+		// en même temps : on ne bloque pas sur le drapeau `active`.
 		enemy.freeze(freeze);
-		model.activateDoubleScore(doubleScore);
 
-		active = true;
-		activeRemaining = freeze;
+		// Le double score n'est (re)déclenché qu'une fois par recharge du bloc.
+		if (!active) {
+			model.activateDoubleScore(doubleScore);
+			active = true;
+			activeRemaining = freeze;
+		}
 	}
 
 	@Override

@@ -40,6 +40,10 @@ public class PengoModel extends Model {
 
 	private long invincibleRemaining;
 
+	// Ennemis déjà gelés par un GoldBlock tant qu'ils restent à son contact :
+	// ils ne sont re-gelés qu'après s'être éloignés du bloc.
+	private final java.util.Set<Enemy> goldLatchedEnemies = new java.util.HashSet<>();
+
 	private Runnable sceneBuilder;
 	private Consumer<Enemy> enemySpawnListener;
 
@@ -249,6 +253,8 @@ public class PengoModel extends Model {
 		}
 
 		super.tick(elapsed);
+
+		checkGoldBlockFreeze();
 
 		checkPlayerEnemyHits();
 
@@ -518,6 +524,54 @@ public class PengoModel extends Model {
 				}
 			}
 		}
+	}
+
+	// Un ennemi adjacent à un GoldBlock est gelé (devient bleu).
+	// Indépendant de l'IA / GAL : le simple voisinage déclenche le freeze.
+	private void checkGoldBlockFreeze() {
+		for (Entity e : new ArrayList<Entity>(entities())) {
+			if (!(e instanceof Enemy enemy)) {
+				continue;
+			}
+
+			if (enemy.dead() || enemy.dying() || enemy.draggedByIce()) {
+				goldLatchedEnemies.remove(enemy);
+				continue;
+			}
+
+			GoldBlock adjacentGold = null;
+
+			for (Entity g : entities()) {
+				if (g instanceof GoldBlock gold && adjacentCells(enemy, gold)) {
+					adjacentGold = gold;
+					break;
+				}
+			}
+
+			if (adjacentGold == null) {
+				// L'ennemi s'est éloigné : il pourra de nouveau être gelé.
+				goldLatchedEnemies.remove(enemy);
+				continue;
+			}
+
+			// Gèle une seule fois par contact : tant qu'il reste collé au bloc,
+			// on ne le re-gèle pas après l'expiration du freeze.
+			if (!enemy.frozen() && !goldLatchedEnemies.contains(enemy)) {
+				adjacentGold.activate(this, enemy);
+				goldLatchedEnemies.add(enemy);
+			}
+		}
+	}
+
+	private boolean adjacentCells(Entity a, Entity b) {
+		if (a == null || b == null || a.position() == null || b.position() == null) {
+			return false;
+		}
+
+		int dx = Math.abs(a.position().x() - b.position().x());
+		int dy = Math.abs(a.position().y() - b.position().y());
+
+		return dx + dy == 1;
 	}
 
 	private boolean adjacentToWall(Entity enemy, Entity wall) {
