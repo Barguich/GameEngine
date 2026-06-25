@@ -53,8 +53,8 @@ class GALStuntTest {
     }
 
     @Test
-    void actionDuration_initiale_est_positive() {
-        assertTrue(stunt.actionDuration() > 0);
+    void actionDuration_initiale_est_nulle() {
+        assertEquals(0, stunt.actionDuration(), DELTA);
     }
 
     @Test
@@ -143,8 +143,8 @@ class GALStuntTest {
 
         assertTrue(stunt.startTurning(90, 1.0));
 
-        assertEquals(90.0 / 1000.0, entity.angularSpeed(), DELTA);
-        assertEquals(1000, stunt.actionDuration(), DELTA);
+        assertEquals(90, entity.orientation());
+        assertEquals(90.0 / (90.0 / 1000.0), stunt.actionDuration(), DELTA);
     }
 
     @Test
@@ -153,8 +153,8 @@ class GALStuntTest {
 
         assertTrue(stunt.startTurning(-90, 1.0));
 
-        assertEquals(-90.0 / 1000.0, entity.angularSpeed(), DELTA);
-        assertEquals(1000, stunt.actionDuration(), DELTA);
+        assertEquals(270, entity.orientation());
+        assertEquals(90.0 / (90.0 / 1000.0), stunt.actionDuration(), DELTA);
     }
 
     @Test
@@ -163,7 +163,8 @@ class GALStuntTest {
 
         assertTrue(stunt.startTurning(90, 0));
 
-        assertEquals(90.0 / 1000.0, entity.angularSpeed(), DELTA);
+        assertEquals(90, entity.orientation());
+        assertEquals(90.0 / (90.0 / 1000.0), stunt.actionDuration(), DELTA);
     }
 
     @Test
@@ -176,12 +177,21 @@ class GALStuntTest {
     }
 
     @Test
-    void tick_decremente_action_initiale() {
-        double before = stunt.actionDuration();
+    void tick_sans_action_reste_a_zero() {
+        stunt.tick(10);
+
+        assertEquals(0, stunt.actionDuration(), DELTA);
+    }
+
+    @Test
+    void tick_decremente_action_en_cours() {
+        ready();
+
+        stunt.startMoving(Direction.E, 1.0, 100);
 
         stunt.tick(10);
 
-        assertEquals(before - 10, stunt.actionDuration(), DELTA);
+        assertEquals(90, stunt.actionDuration(), DELTA);
     }
 
     @Test
