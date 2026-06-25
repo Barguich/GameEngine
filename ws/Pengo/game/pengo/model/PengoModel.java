@@ -1030,34 +1030,32 @@ public class PengoModel extends Model {
 		}
 
 		if (front instanceof IceBlock) {
-			IceBlock block = (IceBlock) front;
+		    IceBlock block = (IceBlock) front;
 
-			// HP = 1 : Pengo peut traverser, mais ne pousse pas
-			if (block.passableByPlayer()) {
-				player.crossIceBlock(block);
-				return true;
-			}
+		    if (block.passableByPlayer()) {
+		        player.crossIceBlock(block);
+		        return true;
+		    }
 
-			if (block.hp() <= 0 || block.broken()) {
-				return true;
-			}
+		    if (block.hp() <= 0 || block.broken()) {
+		        return true;
+		    }
 
-			// HP = 2 : Pengo ne traverse pas et ne pousse pas
-			if (block.hp() == 2 || block.cracked()) {
-				return false;
-			}
+		    if (block.hp() == 2 || block.cracked()) {
+		        return false;
+		    }
 
-			// HP = 3 : Pengo peut pousser
-			if (block.hp() == 3 && !block.sliding()) {
-				Grid.Position behind = nextPosition(block, direction);
-				boolean canSlide = behind != null
-						&& firstSolidAt(behind, block, player) == null;
-				if (canSlide) {
-					block.startSlide(direction);
-				}
-			}
+		    if (block.hp() == 3 && !block.sliding()) {
+		        Grid.Position behind = nextPosition(block, direction);
+		        boolean canSlide = behind != null
+		                && firstSolidAt(behind, block, player) == null;
 
-			return false;
+		        if (canSlide) {
+		            block.startSlide(direction);
+		        }
+		    }
+
+		    return false;
 		}
 
 		if (front instanceof Enemy) {
@@ -1160,7 +1158,6 @@ public class PengoModel extends Model {
 
 		return e instanceof Wall || e instanceof IceBlock;
 	}
-
 	@Override
 	protected boolean collisionBlocks(Entity mover, Entity other) {
 
@@ -1168,15 +1165,12 @@ public class PengoModel extends Model {
 	        return false;
 	    }
 
-	    //FishBonus pas bloquant .
-	   
+	    // FishBonus ne bloque personne.
 	    if (mover instanceof FishBonus || other instanceof FishBonus) {
 	        return false;
 	    }
 
-	   
-	     //Enemy transporté / mort / écrasé = ghost.Enemy normal = il bloque normalement.
-	    
+	    // Enemy neutralisé = ghost.
 	    if (mover instanceof Enemy enemy) {
 	        if (enemy.dead()
 	                || enemy.dying()
@@ -1187,6 +1181,7 @@ public class PengoModel extends Model {
 	        }
 	    }
 
+	    // Enemy neutralisé = ghost.
 	    if (other instanceof Enemy enemy) {
 	        if (enemy.dead()
 	                || enemy.dying()
@@ -1197,39 +1192,45 @@ public class PengoModel extends Model {
 	        }
 	    }
 
-	    
-	     //IceBlock qui glisse + Enemy :on ne bloque pas ici, car la logique spéciale est dans moveSlidingIceBlock().
-	     
+	    // IceBlock glissant + Enemy :
+	    // on ne bloque pas ici, car c'est géré dans moveSlidingIceBlock().
 	    if (isSlidingIceEnemyPair(mover, other)) {
 	        return false;
 	    }
 
-	  
-	     //IceBlock qui glisse + Pengo :évite les blocages parasites.
-	     
+	    // IceBlock glissant + Pengo :
+	    // on évite les blocages parasites.
 	    if (isSlidingIcePengoPair(mover, other)) {
 	        return false;
 	    }
 
-	    //Pengo / Enemy est géré manuellement par checkPlayerEnemyHits().
-	     
+	    // Pengo + Enemy :
+	    // c'est géré manuellement par checkPlayerEnemyHits().
 	    if (isPengoEnemyPair(mover, other)) {
 	        return false;
 	    }
 
-	    //Pengo est géré case par case dans tryEnterCellForPlayer().
-	    // Donc on ne laisse pas le moteur physique le bloquer ici.
-	     
-	    if (isPengoStaticSolidPair(mover, other)) {
-	        return false;
+	    // Pengo + Wall :
+	    // ça bloque.
+	    if (mover instanceof PengoPlayer && other instanceof Wall) {
+	        return true;
 	    }
 
-	   
-	     //Tous les autres cas bloquent normalement :
-	     //Enemy normal + IceBlock = bloqué
-	     //Enemy normal + Wall = bloqué
-	     //Enemy normal + Enemy normal = bloqué
-	     
+	    if (other instanceof PengoPlayer && mover instanceof Wall) {
+	        return true;
+	    }
+
+	    // Pengo + IceBlock :
+	    // Pengo peut traverser seulement les blocs passables.
+	    if (mover instanceof PengoPlayer && other instanceof IceBlock block) {
+	        return !block.passableByPlayer();
+	    }
+
+	    if (other instanceof PengoPlayer && mover instanceof IceBlock block) {
+	        return !block.passableByPlayer();
+	    }
+
+	    // Tous les autres cas bloquent normalement.
 	    return true;
 	}
 	private boolean isSlidingIcePengoPair(Entity a, Entity b) {
