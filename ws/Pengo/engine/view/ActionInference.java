@@ -26,7 +26,6 @@ final class ActionInference {
 		return role + " · " + motion + " · " + heading + " (" + e.orientation() + "°)";
 	}
 
-	/**  */
 	private static String motionLabel(Entity e) {
 		if (e.linearSpeed() == null) {
 			return "IDLE";

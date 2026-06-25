@@ -20,8 +20,7 @@ public class View implements Canvas.PaintListener {
 	private final List<EntityRenderHook> renderHooks = new ArrayList<>();
 
 	private Entity followed;
-	// Demi-taille de la dead-zone élastique, en fraction du viewport (0 = pas
-	// d'élasticité, caméra strictement centrée).
+	// Dead-zone élastique en fraction du viewport (0 = caméra centrée).
 	private double elasticFractionX = 0.0;
 	private double elasticFractionY = 0.0;
 	private final DebugOverlay debug = new DebugOverlay();
@@ -71,13 +70,10 @@ public class View implements Canvas.PaintListener {
 		}
 
 		if (elasticFractionX > 0 || elasticFractionY > 0) {
-			// Suivi élastique : la caméra ne bouge que lorsque le joueur sort de
-			// la dead-zone centrée.
 			double marginX = viewPort.getWidth_cm() * elasticFractionX;
 			double marginY = viewPort.getHeight_cm() * elasticFractionY;
 			viewPort.followElastic(followed.center(), marginX, marginY);
 		} else {
-			// Suivi strictement centré
 			viewPort.centerOn(followed.center());
 		}
 	}
@@ -87,7 +83,6 @@ public class View implements Canvas.PaintListener {
 	 */
 	@Override
 	public void paint(Canvas canvas, Graphics g) {
-		// Recale la caméra sur l'entité suivie avant de dessiner.
 		update();
 
 		debug.begin();

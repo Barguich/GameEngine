@@ -132,7 +132,6 @@ public class DebugOverlay {
 	}
 
 	private String safeName(Entity e) {
-		// Entity n'expose pas forcément getName() ; on retombe sur toString().
 		String s = e.toString();
 		return (s == null) ? "?" : s;
 	}
@@ -158,16 +157,8 @@ public class DebugOverlay {
 	}
 
 	/**
-	 * Facteur d'échelle du HUD, proportionnel à la taille du canvas.
-	 *
-	 * <p>
-	 * Contrairement à un scale entier (qui plancher à 1 et fait paraître le panneau
-	 * énorme sur petit écran), on retourne un flottant qui descend en dessous de 1
-	 * quand le canvas est petit : le panneau garde alors la même proportion de
-	 * l'écran et ne cache plus les entités derrière lui.
-	 *
-	 * On borne entre 0.5 (lisibilité minimale) et 2.0 (pour les très grands
-	 * écrans). Référence : 1920px de large = scale 1.0.
+	 * Facteur d'échelle du HUD, proportionnel à la largeur du canvas (1920px = 1.0),
+	 * borné entre 0.5 et 2.0.
 	 */
 	public static float uiScale(Canvas canvas) {
 		float s = canvas.getWidth() / 1920f;

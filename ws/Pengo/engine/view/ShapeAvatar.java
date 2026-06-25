@@ -40,11 +40,7 @@ public class ShapeAvatar extends Avatar {
 		flashUntil = System.currentTimeMillis() + 300;
 	}
 
-	/**
-	 * @implNote couleurs résolues paresseusement : {@code getColor} exige un
-	 *           Graphics vivant, indisponible au constructeur. Rotation appliquée
-	 *           autour du centre via translate puis rotate.
-	 */
+	/** @implNote couleur résolue paresseusement (getColor exige un Graphics vivant). */
 	@Override
 	public void paint(Graphics g, int xPix, int yPix, double scale) {
 		if (color == null) {
@@ -78,9 +74,8 @@ public class ShapeAvatar extends Avatar {
 	}
 
 	/**
-	 * Couleur de fond de la forme hors flash. Le moteur renvoie la couleur fixe
-	 * fournie au constructeur ; un jeu peut surcharger cette méthode pour faire
-	 * varier la couleur selon l'état de son entité (sans coupler le moteur au jeu).
+	 * Couleur de la forme hors flash. Surchargeable par un jeu pour varier la
+	 * couleur selon l'état de l'entité.
 	 */
 	protected Color resolveBaseColor(Graphics g) {
 		return color;

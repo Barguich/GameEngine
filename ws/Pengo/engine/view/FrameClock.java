@@ -1,13 +1,6 @@
 package view;
 
-/**
- * Horloge de rendu : mesure le FPS réel observé entre deux frames.
- *
- * <p>C'est le seul endroit du package view qui accumule de l'état temporel
- * mutable. On l'isole ici plutôt que dans View pour que View.paint() reste
- * structurellement un orchestrateur de rendu sans logique d'état.
- *
- */
+/** Horloge de rendu : mesure le FPS réel observé entre deux frames. */
 final class FrameClock {
 
 	/** Facteur de lissage EMA : 0.1 = réactif mais stable à l'œil. */
@@ -17,10 +10,7 @@ final class FrameClock {
 	private double smoothedFps = 0.0;
 	private double lastFrameMs = 0.0;
 
-	/**
-	 * À appeler une seule fois par frame, au tout début du rendu.
-	 * Calcule le delta depuis la frame précédente et met à jour le FPS lissé.
-	 */
+	/** À appeler une fois par frame : met à jour le FPS lissé. */
 	void onFrame() {
 		long now = System.nanoTime();
 

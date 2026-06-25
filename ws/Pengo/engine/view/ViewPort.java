@@ -53,27 +53,22 @@ public class ViewPort {
 	}
 
 	/**
-	 * Suivi élastique : le joueur peut bouger dans une zone morte (dead-zone)
-	 * centrée sur le viewport sans déclencher de déplacement de la caméra. La
-	 * caméra ne se décale que de la quantité dont {@code target} dépasse cette
-	 * zone.
+	 * Suivi élastique : la caméra ne se décale que de la quantité dont
+	 * {@code target} dépasse la dead-zone centrée.
 	 *
-	 * @param target     position à suivre (centre du joueur), en ISU
-	 * @param marginX_cm demi-largeur de la dead-zone depuis le centre, en cm
-	 * @param marginY_cm demi-hauteur de la dead-zone depuis le centre, en cm
+	 * @param target     position à suivre, en ISU
+	 * @param marginX_cm demi-largeur de la dead-zone, en cm
+	 * @param marginY_cm demi-hauteur de la dead-zone, en cm
 	 */
 	public void followElastic(ISU.Coord target, double marginX_cm, double marginY_cm) {
-		// Position du joueur relative au coin courant de la caméra.
 		double relX = target.x() - x_cm;
 		double relY = target.y() - y_cm;
 
-		// Bornes de la dead-zone (centrée dans le viewport).
 		double leftBound = width_cm / 2 - marginX_cm;
 		double rightBound = width_cm / 2 + marginX_cm;
 		double topBound = height_cm / 2 - marginY_cm;
 		double bottomBound = height_cm / 2 + marginY_cm;
 
-		// On ne pousse la caméra que de ce qui dépasse la dead-zone.
 		if (relX < leftBound) {
 			x_cm -= (leftBound - relX);
 		} else if (relX > rightBound) {
@@ -85,7 +80,6 @@ public class ViewPort {
 			y_cm += (relY - bottomBound);
 		}
 
-		// Clamping aux bords de la map (contrainte Non-Tore).
 		x_cm = clampX(x_cm);
 		y_cm = clampY(y_cm);
 	}
@@ -109,8 +103,6 @@ public class ViewPort {
 		this.mapWidth_cm = mapWidth_cm;
 		this.mapHeight_cm = mapHeight_cm;
 
-		// Si la nouvelle map est plus petite que la fenêtre visible,
-		// on ne peut pas avoir une zone de map négative pour le clamp.
 		this.x_cm = clampX(0);
 		this.y_cm = clampY(0);
 	}
