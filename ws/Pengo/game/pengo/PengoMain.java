@@ -97,16 +97,18 @@ public class PengoMain {
 			}
 
 			try {
-				String[] selectedMap = PengoMapLoader.readMap(model.selectedMapFile());
+				PengoMapLoader.MapData mapData = PengoMapLoader.readMapData(model.selectedMapFile());
+				String[] selectedMap = mapData.lines;
 
 				int newMapWidth = PengoMapLoader.width(selectedMap);
 				int newMapHeight = PengoMapLoader.height(selectedMap);
 
-				// Recrée Game/Grid/ISU statiques à la taille de la map choisie.
-				new Game(newMapWidth, newMapHeight);
+				boolean torus = mapData.torus;
 
-				// Le modèle doit utiliser la nouvelle grille, pas l'ancienne
-				// (sinon le wrap torique reste calé sur l'ancienne taille).
+				// Recrée Game/Grid/ISU statiques avec la bonne taille ET le bon mode torique.
+				new Game(newMapWidth, newMapHeight, torus, torus);
+
+				// Le modèle doit utiliser la nouvelle grille, pas l'ancienne.
 				model.setGrid(Game.grid());
 
 				// Le viewport doit reclamper sur la taille réelle de la nouvelle map.
