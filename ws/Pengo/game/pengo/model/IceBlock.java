@@ -83,7 +83,20 @@ public class IceBlock extends Entity {
 			return;
 		}
 
-		if (enemy.harmlessForPlayer() && !enemy.draggedByIce()) {
+		// On peut emporter un ennemi étourdi (passedOut) ou gelé (frozen) :
+		// c'est justement le but quand Pengo lance un bloc dessus.
+		// En revanche, un ennemi mort / en train de mourir / déjà écrasé ne se
+		// transporte pas.
+		boolean carriable = enemy.draggedByIce()
+				|| enemy.passedOut()
+				|| enemy.frozen()
+				|| !enemy.harmlessForPlayer();
+
+		if (!carriable) {
+			return;
+		}
+
+		if (enemy.dead() || enemy.dying() || enemy.crushedByIce()) {
 			return;
 		}
 

@@ -129,6 +129,8 @@ public class Enemy extends Entity {
 
 		frozen = false;
 		frozenRemaining = 0;
+		passedOut = false;
+		passedOutRemaining = 0;
 
 		stop();
 		setBot(null);
