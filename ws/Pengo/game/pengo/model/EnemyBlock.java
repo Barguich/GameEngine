@@ -61,8 +61,6 @@ public class EnemyBlock extends IceBlock {
 			PengoBots.configureEntity(pm, enemy);
 			PengoBots.attachEnemyAvatar(enemy);
 		}
-
-		System.out.println("ENEMY BLOCK at " + spawnPos);
 	}
 
 	/**

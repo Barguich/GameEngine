@@ -116,7 +116,6 @@ public final class PengoBots {
 			bot.set(aut);
 			enemy.setBot(bot);
 
-			System.out.println("[PengoBots] SnoBee configuré : " + enemy + "  automate=" + aut.name());
 		}
 	}
 
@@ -160,7 +159,7 @@ public final class PengoBots {
 				List<Automaton> automata = (List<Automaton>) ast.accept(visitor);
 
 				if (!automata.isEmpty()) {
-					System.out.println("[PengoBots] Automate Diamond chargé : " + path);
+
 					return automata.get(0);
 				}
 			} catch (Exception ex) {

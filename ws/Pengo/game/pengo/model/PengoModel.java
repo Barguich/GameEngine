@@ -363,7 +363,6 @@ public class PengoModel extends Model {
 		if (diamondBlocksAligned()) {
 			won = true;
 			setState(GameState.WON);
-			System.out.println("YOU WIN - DIAMOND ALIGNMENT");
 			return;
 		}
 
@@ -371,7 +370,6 @@ public class PengoModel extends Model {
 		if (allEnemiesDead()) {
 			won = true;
 			setState(GameState.WON);
-			System.out.println("YOU WIN - ALL ENEMIES DEAD");
 		}
 	}
 
@@ -445,7 +443,6 @@ public class PengoModel extends Model {
 		}
 
 		if (resolvingIceEnemyCollision) {
-			System.out.println("LOSE LIFE IGNORED DURING ICE/ENEMY COLLISION");
 			return;
 		}
 

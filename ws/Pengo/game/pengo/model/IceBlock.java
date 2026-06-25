@@ -206,11 +206,9 @@ public class IceBlock extends Entity {
 		// si le bloc est déjà en train de glisser==on ne relance PAS le slide.
 
 		if (sliding) {
-			System.out.println("ICE ALREADY SLIDING - PUSH IGNORED");
 			return;
 		}
 
-		System.out.println("ICE START direction = " + direction);
 
 		this.direction = direction;
 		this.sliding = true;
@@ -242,8 +240,6 @@ public class IceBlock extends Entity {
 			stop();
 			return;
 		}
-
-		System.out.println("ICE SPEED = " + linearSpeed());
 	}
 
 	public void breakBlock() {
@@ -277,7 +273,6 @@ public class IceBlock extends Entity {
 		// sinon il s'arrête au contact de l'ennemi
 
 		if (sliding && e instanceof Enemy) {
-			System.out.println("ICEBLOCK IGNORE ENEMY COLLISION WHILE SLIDING");
 			return;
 		}
 
