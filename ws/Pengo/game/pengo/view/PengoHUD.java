@@ -23,12 +23,12 @@ public class PengoHUD implements Overlay {
 			return;
 		}
 
-		int scale = DebugOverlay.uiScale(canvas);
-		int x = 12 * scale;
-		int lineH = 22 * scale;
-		int y = debug.panelBottom() + 24 * scale;
+		float scale = DebugOverlay.uiScale(canvas);
+		int x = Math.round(12 * scale);
+		int lineH = Math.round(22 * scale);
+		int y = debug.panelBottom() + Math.round(24 * scale);
 
-		g.setFont(g.getFont("SansSerif", Font.BOLD, 18 * scale));
+		g.setFont(g.getFont("SansSerif", Font.BOLD, Math.max(10, Math.round(18 * scale))));
 		g.setColor(g.getColor(0, 100, 255, 0));
 
 		g.drawString("Score : " + model.score(), x, y);
