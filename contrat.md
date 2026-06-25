@@ -232,21 +232,40 @@ Le score est attribué selon la règle correspondante.
 
 Le jeu doit détecter si les trois Diamond Blocks sont alignés horizontalement ou verticalement. Cette vérification doit être effectuée après chaque déplacement d'un Diamond Block.
 
+
+
 ### Solution envisagée
 
-Après chaque déplacement d'un Diamond Block, le jeu [#MP: pas assez précis] récupère les positions des trois blocs et vérifie s'ils partagent la même ligne ou la même colonne. Cette logique peut être gérée via un automate GAL [#MP: à détailler]
+Chaque `DiamondBlock` est une entité du modèle avec une position connue dans la grille.
+Après le déplacement d’un bloc de glace, le modèle vérifie uniquement les `DiamondBlock` présents sur la carte.
 
-```Haskell
-DiamondBlock(Check){
+Le jeu récupère donc la liste des trois blocs diamant, puis compare leurs coordonnées :
+
+* les trois blocs sont alignés horizontalement si leurs coordonnées `y` sont identiques ;
+* les trois blocs sont alignés verticalement si leurs coordonnées `x` sont identiques.
+
+Si l’une de ces deux conditions est vraie, le modèle déclenche l’action de victoire.
+
+Cette logique peut aussi être exprimée par un automate GAL associé aux `DiamondBlock`.
+Dans ce cas, l’automate observe les cases voisines du bloc diamant courant. Si deux autres blocs diamant sont détectés dans deux directions opposées, alors l’action `Wiz` est exécutée. Dans notre moteur, `Wiz` est interprétée comme une action spéciale qui déclenche la victoire.
+
+Exemple d’automate GAL simplifié :
+
+```haskell
+DiamondBlock(Check) {
   * (Check):
-  | Step(N,D) && Step(S,D) ? Wiz : ()
-  | ...
-
-  * () 
+  | Cell(N,D) && Cell(S,D) ? Wiz
+  | Cell(E,D) && Cell(O,D) ? Wiz
+  | Cell(NE,D) && Cell(SO,D) ? Wiz
+  | Cell(NO,D) && Cell(SE,D) ? Wiz
+  | True ? Check
 }
 ```
-- D étant interprété comme Diamond
-- Wiz étant interprété comme une action de victoire par alignement des diamond blocks.
+
+* `D` représente la catégorie `DiamondBlock`.
+* `Cell(direction, D)` vérifie qu’un bloc diamant est présent dans la direction donnée.
+* `Wiz` est l’action déclenchée lorsque les trois blocs diamant sont alignés.
+* Dans le jeu Pengo, cette action est interprétée comme une victoire immédiate.
 
 ### [x] Démo
 
