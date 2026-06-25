@@ -1,5 +1,4 @@
 package pengoGametest;
-//test diamond alignement horizontal + vertical  + condition de victoire yes
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,92 +7,110 @@ import org.junit.jupiter.api.Test;
 import engine.Game;
 import pengo.model.DiamondBlock;
 import pengo.model.Enemy;
+import pengo.model.IceBlock;
 import pengo.model.PengoModel;
+import pengo.model.PengoPlayer;
 
 public class DiamondBlockTest {
+	@Test
+	public void testDiamondBlockIsDiamondReturnsTrue() {
+	    new Game(10, 10);
 
-    @Test
-    public void testDiamondBlocksAlignedHorizontallyWin() {
+	    DiamondBlock diamond = new DiamondBlock();
 
-        new Game(10, 10);
+	    assertTrue(diamond.isDiamond());
+	}
+	@Test
+	public void testDiamondBlockWizzWithoutModelReturnsFalse() {
+	    new Game(10, 10);
 
-        PengoModel model = new PengoModel(Game.grid());
+	    DiamondBlock diamond = new DiamondBlock();
 
-        DiamondBlock d1 = new DiamondBlock();
-        d1.setPosition(Game.grid().new Position(2, 5));
-        d1.setSize(Game.grid().new Dimension(1, 1));
-        model.add(d1);
+	    boolean result = diamond.wizz();
 
-        DiamondBlock d2 = new DiamondBlock();
-        d2.setPosition(Game.grid().new Position(3, 5));
-        d2.setSize(Game.grid().new Dimension(1, 1));
-        model.add(d2);
+	    assertFalse(result);
+	}
+	@Test
+	public void testDiamondBlockWizzWithPengoModelWinsGame() {
+	    new Game(10, 10);
 
-        DiamondBlock d3 = new DiamondBlock();
-        d3.setPosition(Game.grid().new Position(4, 5));
-        d3.setSize(Game.grid().new Dimension(1, 1));
-        model.add(d3);
+	    PengoModel model = new PengoModel(Game.grid());
 
-        model.checkVictory();
+	    PengoPlayer player = new PengoPlayer();
+	    player.setPosition(Game.grid().new Position(1, 1));
+	    player.setSize(Game.grid().new Dimension(1, 1));
+	    model.setPlayer(player);
 
-        assertTrue(model.won());
-    }
+	    Enemy enemy = new Enemy();
+	    enemy.setPosition(Game.grid().new Position(8, 8));
+	    enemy.setSize(Game.grid().new Dimension(1, 1));
+	    model.add(enemy);
 
-    @Test
-    public void testDiamondBlocksAlignedVerticallyWin() {
+	    DiamondBlock diamond = diamondAt(5, 5);
+	    model.add(diamond);
 
-        new Game(10, 10);
+	    boolean result = diamond.wizz();
 
-        PengoModel model = new PengoModel(Game.grid());
+	    assertTrue(result);
+	    assertTrue(model.won());
+	    assertEquals(PengoModel.GameState.WON, model.state());
+	}
+	@Test
+	public void testDiamondBlockWizzCanBeCalledSeveralTimes() {
+	    new Game(10, 10);
 
-        DiamondBlock d1 = new DiamondBlock();
-        d1.setPosition(Game.grid().new Position(5, 2));
-        d1.setSize(Game.grid().new Dimension(1, 1));
-        model.add(d1);
+	    PengoModel model = new PengoModel(Game.grid());
 
-        DiamondBlock d2 = new DiamondBlock();
-        d2.setPosition(Game.grid().new Position(5, 3));
-        d2.setSize(Game.grid().new Dimension(1, 1));
-        model.add(d2);
+	    DiamondBlock diamond = diamondAt(5, 5);
+	    model.add(diamond);
 
-        DiamondBlock d3 = new DiamondBlock();
-        d3.setPosition(Game.grid().new Position(5, 4));
-        d3.setSize(Game.grid().new Dimension(1, 1));
-        model.add(d3);
+	    assertTrue(diamond.wizz());
+	    assertTrue(diamond.wizz());
 
-        model.checkVictory();
+	    assertTrue(model.won());
+	}
+	@Test
+	public void testDiamondBlockReceiveGalHitWithNullDoesNotDestroy() {
+	    new Game(10, 10);
 
-        assertTrue(model.won());
-    }
-    @Test
-    public void testDiamondBlocksAlignedButNotAdjacentDoNotWin() {
+	    PengoModel model = new PengoModel(Game.grid());
 
-        new Game(10, 10);
+	    DiamondBlock diamond = diamondAt(5, 5);
+	    model.add(diamond);
 
-        PengoModel model = new PengoModel(Game.grid());
+	    boolean result = diamond.receiveGalHit(null);
 
-        DiamondBlock d1 = new DiamondBlock();
-        d1.setPosition(Game.grid().new Position(2, 5));
-        d1.setSize(Game.grid().new Dimension(1, 1));
-        model.add(d1);
+	    assertFalse(result);
+	    assertFalse(diamond.broken());
+	    assertTrue(model.entities().contains(diamond));
+	}
+	@Test
+	public void testDiamondBlockReceiveGalHitMultipleTimesDoesNotDestroy() {
+	    new Game(10, 10);
 
-        DiamondBlock d2 = new DiamondBlock();
-        d2.setPosition(Game.grid().new Position(4, 5));
-        d2.setSize(Game.grid().new Dimension(1, 1));
-        model.add(d2);
+	    PengoModel model = new PengoModel(Game.grid());
 
-        DiamondBlock d3 = new DiamondBlock();
-        d3.setPosition(Game.grid().new Position(6, 5));
-        d3.setSize(Game.grid().new Dimension(1, 1));
-        model.add(d3);
+	    DiamondBlock diamond = diamondAt(5, 5);
+	    model.add(diamond);
 
-        Enemy enemy = new Enemy();
-        enemy.setPosition(Game.grid().new Position(8, 8));
-        enemy.setSize(Game.grid().new Dimension(1, 1));
-        model.add(enemy);
+	    Enemy enemy = new Enemy();
+	    enemy.setPosition(Game.grid().new Position(6, 5));
+	    enemy.setSize(Game.grid().new Dimension(1, 1));
+	    model.add(enemy);
 
-        model.checkVictory();
+	    diamond.receiveGalHit(enemy);
+	    diamond.receiveGalHit(enemy);
+	    diamond.receiveGalHit(enemy);
 
-        assertFalse(model.won());
-    }
+	    assertFalse(diamond.broken());
+	    assertTrue(model.entities().contains(diamond));
+	}
+	private DiamondBlock diamondAt(int x, int y) {
+	    DiamondBlock diamond = new DiamondBlock();
+	    diamond.setPosition(Game.grid().new Position(x, y));
+	    diamond.setSize(Game.grid().new Dimension(1, 1));
+	    return diamond;
+	}
+	
+
 }

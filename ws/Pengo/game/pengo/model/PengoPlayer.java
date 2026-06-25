@@ -143,17 +143,17 @@ public class PengoPlayer extends Entity {
 		}
 
 		/*
-		 * Lorsque Pengo a suffisamment dépassé le bloc traversable, on applique les
-		 * dégâts au bloc.
+		 * Lorsque Pengo a suffisamment dépassé le bloc traversable,
+		 * le bloc disparaît.
 		 *
-		 * Cela évite de casser le bloc au moment exact où Pengo entre dedans :
-		 * visuellement, on voit d'abord Pengo passer à travers.
+		 * Cela permet de voir Pengo passer à travers le bloc avant
+		 * sa destruction complète.
 		 */
 		if (crossedIceBlock != null && crossedIceBlock.position() != null) {
 			double cell = step().x();
 
 			if (distanceCenterToCenter(crossedIceBlock) > cell * 0.6) {
-				crossedIceBlock.damage();
+				crossedIceBlock.breakBlock();
 				crossedIceBlock = null;
 			}
 		}

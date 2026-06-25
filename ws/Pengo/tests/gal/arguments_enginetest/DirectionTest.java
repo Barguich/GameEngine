@@ -2,7 +2,6 @@ package gal.arguments_enginetest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -54,8 +53,12 @@ class DirectionTest {
 	}
 
 	@Test
-	void toAngle_d_une_direction_relative_leve_IllegalStateException() {
-		assertThrows(IllegalStateException.class, () -> Direction.F.toAngle());
+	void toAngle_des_directions_relatives() {
+		assertEquals(0, Direction.F.toAngle());
+		assertEquals(180, Direction.B.toAngle());
+		assertEquals(90, Direction.L.toAngle());
+		assertEquals(-90, Direction.R.toAngle());
+		assertEquals(0, Direction.H.toAngle());
 	}
 
 	// ─── name ────────────────────────────────────────────────────────────
@@ -69,11 +72,10 @@ class DirectionTest {
 	// ─── canonical ───────────────────────────────────────────────────────
 
 	@Test
-	void canonical_cree_une_nouvelle_instance_distincte_de_la_constante() {
-		// Caractérisation : canonical(name) construit un *nouveau* Direction
-		// (new Direction(name)) au lieu de chercher dans la map `directions` ;
-		// il ne renvoie donc PAS l'instance partagée Direction.N.
-		Direction n2 = Direction.N.canonical("N");
+	void canonical_renvoie_l_instance_partagee() {
+		// canonical(name) cherche dans la map `directions` et renvoie l'instance
+		// partagée déjà enregistrée pour ce nom.
+		Direction n2 = Direction.canonical("N");
 		assertSame(Direction.N, n2);
 	}
 

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import engine.Game;
+import pengo.model.DiamondBlock;
 import pengo.model.Enemy;
 import pengo.model.GoldBlock;
 import pengo.model.PengoModel;
@@ -235,6 +236,46 @@ public class GoldBlockTest {
         gold.collision(null);
 
         assertFalse(gold.active());
+    }
+    @Test
+    public void testDiamondBlockIsSpecialNotDestructibleByEnemy() {
+        DiamondBlock diamond = new DiamondBlock();
+
+        assertFalse(diamond.destructibleByEnemy());
+    }
+    @Test
+    public void testGoldBlockIsSpecialNotDestructibleByEnemy() {
+        GoldBlock gold = new GoldBlock();
+
+        assertFalse(gold.destructibleByEnemy());
+    }
+    @Test
+    public void testDiamondBlockIsNotDestructibleByEnemy() {
+        DiamondBlock diamond = new DiamondBlock();
+
+        assertFalse(diamond.destructibleByEnemy());
+    }
+    @Test
+    public void testDiamondBlockReceiveGalHitDoesNotDestroyIt() {
+        new Game(10, 10);
+
+        PengoModel model = new PengoModel(Game.grid());
+
+        DiamondBlock diamond = new DiamondBlock();
+        diamond.setPosition(Game.grid().new Position(5, 5));
+        diamond.setSize(Game.grid().new Dimension(1, 1));
+        model.add(diamond);
+
+        Enemy enemy = new Enemy();
+        enemy.setPosition(Game.grid().new Position(6, 5));
+        enemy.setSize(Game.grid().new Dimension(1, 1));
+        model.add(enemy);
+
+        boolean result = diamond.receiveGalHit(enemy);
+
+        assertFalse(result);
+        assertFalse(diamond.broken());
+        assertTrue(model.entities().contains(diamond));
     }
     
     
