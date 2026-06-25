@@ -411,4 +411,215 @@ public class IceBlocktest {
 
         assertFalse(block.sliding());
     }
+    @Test
+    public void testIceBlockContainsSnoBeeConstructor() {
+        new Game(10, 10);
+
+        IceBlock block = new IceBlock(true, 1000);
+
+        assertTrue(block.containsSnoBee());
+    }
+    @Test
+    public void testIceBlockDefaultDoesNotContainSnoBee() {
+        new Game(10, 10);
+
+        IceBlock block = new IceBlock();
+
+        assertFalse(block.containsSnoBee());
+    }
+    @Test
+    public void testIceBlockDestroyByEnemyStartsBreakingAnimation() {
+        new Game(10, 10);
+
+        PengoModel model = new PengoModel(Game.grid());
+
+        IceBlock block = new IceBlock();
+        block.setPosition(Game.grid().new Position(5, 5));
+        block.setSize(Game.grid().new Dimension(1, 1));
+        model.add(block);
+
+        boolean destroyed = block.destroyByEnemy();
+
+        assertTrue(destroyed);
+        assertTrue(block.breakingAnimation());
+        assertEquals(0, block.hp());
+    }
+    @Test
+    public void testIceBlockDestroyByEnemyThenBreaksAfterTick() {
+        new Game(10, 10);
+
+        PengoModel model = new PengoModel(Game.grid());
+
+        IceBlock block = new IceBlock();
+        block.setPosition(Game.grid().new Position(5, 5));
+        block.setSize(Game.grid().new Dimension(1, 1));
+        model.add(block);
+
+        block.destroyByEnemy();
+
+        block.tick(IceBlock.ENEMY_BREAK_DURATION_MS + 1);
+
+        assertTrue(block.broken());
+        assertFalse(model.entities().contains(block));
+    }
+    @Test
+    public void testIceBlockReceiveGalHitDestroysBlock() {
+        new Game(10, 10);
+
+        PengoModel model = new PengoModel(Game.grid());
+
+        IceBlock block = new IceBlock();
+        block.setPosition(Game.grid().new Position(5, 5));
+        block.setSize(Game.grid().new Dimension(1, 1));
+        model.add(block);
+
+        Enemy enemy = new Enemy();
+        enemy.setPosition(Game.grid().new Position(6, 5));
+        enemy.setSize(Game.grid().new Dimension(1, 1));
+        model.add(enemy);
+
+        assertTrue(block.receiveGalHit(enemy));
+        assertTrue(block.breakingAnimation());
+    }
+    @Test
+    public void testIceBlockAttachSameEnemyOnlyOnce() {
+        new Game(10, 10);
+
+        PengoModel model = new PengoModel(Game.grid());
+
+        IceBlock block = new IceBlock();
+        block.setPosition(Game.grid().new Position(5, 5));
+        block.setSize(Game.grid().new Dimension(1, 1));
+        model.add(block);
+
+        Enemy enemy = new Enemy();
+        enemy.setPosition(Game.grid().new Position(6, 5));
+        enemy.setSize(Game.grid().new Dimension(1, 1));
+        model.add(enemy);
+
+        block.startSlide(0);
+
+        block.attachEnemyFront(enemy);
+        block.attachEnemyFront(enemy);
+
+        assertEquals(1, block.draggedEnemies().size());
+        assertTrue(block.isDraggingEnemy(enemy));
+    }
+    @Test
+    public void testIceBlockDraggedEnemyReturnsFirstEnemy() {
+        new Game(10, 10);
+
+        PengoModel model = new PengoModel(Game.grid());
+
+        IceBlock block = new IceBlock();
+        block.setPosition(Game.grid().new Position(5, 5));
+        block.setSize(Game.grid().new Dimension(1, 1));
+        model.add(block);
+
+        Enemy enemy1 = new Enemy();
+        enemy1.setPosition(Game.grid().new Position(6, 5));
+        enemy1.setSize(Game.grid().new Dimension(1, 1));
+        model.add(enemy1);
+
+        Enemy enemy2 = new Enemy();
+        enemy2.setPosition(Game.grid().new Position(7, 5));
+        enemy2.setSize(Game.grid().new Dimension(1, 1));
+        model.add(enemy2);
+
+        block.startSlide(0);
+        block.attachEnemyFront(enemy1);
+        block.attachEnemyFront(enemy2);
+
+        assertSame(enemy2, block.draggedEnemy());
+        assertEquals(2, block.draggedEnemies().size());
+    }
+    @Test
+    public void testIceBlockCrackedStates() {
+        new Game(10, 10);
+
+        IceBlock block = new IceBlock();
+
+        assertEquals(3, block.hp());
+        assertFalse(block.cracked());
+        assertFalse(block.veryCracked());
+
+        block.damage();
+        block.tick(IceBlock.PLAYER_HIT_DURATION_MS + 1);
+
+        assertEquals(2, block.hp());
+        assertTrue(block.cracked());
+        assertFalse(block.veryCracked());
+
+        block.damage();
+        block.tick(IceBlock.PLAYER_HIT_DURATION_MS + 1);
+
+        assertEquals(1, block.hp());
+        assertFalse(block.cracked());
+        assertTrue(block.veryCracked());
+    }@Test
+    public void testIceBlockPassableOnlyWhenHpOne() {
+        new Game(10, 10);
+
+        IceBlock block = new IceBlock();
+
+        assertFalse(block.passableByPlayer());
+
+        block.damage();
+        block.tick(IceBlock.PLAYER_HIT_DURATION_MS + 1);
+
+        assertFalse(block.passableByPlayer());
+
+        block.damage();
+        block.tick(IceBlock.PLAYER_HIT_DURATION_MS + 1);
+
+        assertTrue(block.passableByPlayer());
+    }
+    @Test
+    public void testIceBlockAlreadySlidingIgnoresSecondStartSlide() {
+        new Game(10, 10);
+
+        IceBlock block = new IceBlock();
+        block.setPosition(Game.grid().new Position(5, 5));
+        block.setSize(Game.grid().new Dimension(1, 1));
+
+        block.startSlide(0);
+
+        assertTrue(block.sliding());
+        assertEquals(0, block.direction());
+
+        block.startSlide(90);
+
+        assertTrue(block.sliding());
+        assertEquals(0, block.direction());
+    }
+    @Test
+    public void testIceBlockDetachEnemyClearsDraggedEnemies() {
+        new Game(10, 10);
+
+        PengoModel model = new PengoModel(Game.grid());
+
+        IceBlock block = new IceBlock();
+        block.setPosition(Game.grid().new Position(5, 5));
+        block.setSize(Game.grid().new Dimension(1, 1));
+        model.add(block);
+
+        Enemy enemy = new Enemy();
+        enemy.setPosition(Game.grid().new Position(6, 5));
+        enemy.setSize(Game.grid().new Dimension(1, 1));
+        model.add(enemy);
+
+        block.startSlide(0);
+        block.attachEnemyFront(enemy);
+
+        assertTrue(block.draggingEnemy());
+        assertTrue(enemy.draggedByIce());
+
+        block.detachEnemy();
+
+        assertFalse(block.draggingEnemy());
+        assertFalse(enemy.draggedByIce());
+    }
+    
+    
+    
 }
