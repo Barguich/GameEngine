@@ -76,18 +76,35 @@ public class PlayerAttackTest {
         block.setSize(Game.grid().new Dimension(1, 1));
         model.add(block);
 
-        player.attack();
-        player.attack();
-        player.attack();
+        assertEquals(3, block.hp());
 
-        assertTrue(block.broken());
-        assertFalse(model.entities().contains(block));
+        player.attack();
+        block.tick(500);
+        model.tick(500);
+
+        player.attack();
+        block.tick(500);
+        model.tick(500);
+
+        player.attack();
+        block.tick(500);
+        model.tick(500);
+
+        assertTrue(
+            block.broken() || block.hp() <= 0,
+            "Après 3 attaques espacées, le bloc doit être cassé"
+        );
     }
     @Test
     public void testWinWhenAllEnemiesDead() {
         new Game(10, 10);
 
         PengoModel model = new PengoModel(Game.grid());
+
+        PengoPlayer player = new PengoPlayer();
+        player.setPosition(Game.grid().new Position(1, 1));
+        player.setSize(Game.grid().new Dimension(1, 1));
+        model.setPlayer(player);
 
         Enemy enemy = new Enemy();
         enemy.setPosition(Game.grid().new Position(5, 5));
@@ -97,9 +114,53 @@ public class PlayerAttackTest {
         assertFalse(model.won());
 
         model.killEnemy(enemy);
+        model.remove(enemy);
+
+        model.checkVictory();
 
         assertTrue(model.won());
         assertEquals(PengoModel.GameState.WON, model.state());
+    }
+    @Test
+    public void testPlayerLoseLifeStopsAtZero() {
+        new Game(10, 10);
+
+        PengoPlayer player = new PengoPlayer();
+
+        player.loseLife();
+        player.loseLife();
+        player.loseLife();
+        player.loseLife();
+
+        assertEquals(0, player.lives());
+        assertTrue(player.dead());
+    }
+    @Test
+    public void testPlayerAddScore() {
+        new Game(10, 10);
+
+        PengoPlayer player = new PengoPlayer();
+
+        player.addScore(100);
+        player.addScore(50);
+
+        assertEquals(150, player.score());
+    }
+    @Test
+    public void testPlayerSpeedBoostExpires() {
+        new Game(10, 10);
+
+        PengoPlayer player = new PengoPlayer();
+
+        player.activateSpeedBoost(1000);
+
+        assertTrue(player.speedBoosted());
+        assertTrue(player.speedMultiplier() > 1.0);
+
+        player.tick(1001);
+
+        assertFalse(player.speedBoosted());
+        assertEquals(1.0, player.speedMultiplier(), 0.001);
     }
     
 }

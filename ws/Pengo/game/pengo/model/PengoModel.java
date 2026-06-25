@@ -355,15 +355,24 @@ public class PengoModel extends Model {
 	}
 
 	public void checkVictory() {
-		if (lost || won) {
-			return;
-		}
+	    if (lost || won) {
+	        return;
+	    }
 
-		if (allEnemiesDead()) {
-			won = true;
-			setState(GameState.WON);
-			System.out.println("YOU WIN - ALL ENEMIES DEAD");
-		}
+	    // Victoire si 3 DiamondBlocks sont alignés.
+	    if (diamondBlocksAligned()) {
+	        won = true;
+	        setState(GameState.WON);
+	        System.out.println("YOU WIN - DIAMOND ALIGNMENT");
+	        return;
+	    }
+
+	    // Victoire si tous les ennemis sont morts.
+	    if (allEnemiesDead()) {
+	        won = true;
+	        setState(GameState.WON);
+	        System.out.println("YOU WIN - ALL ENEMIES DEAD");
+	    }
 	}
 
 	private boolean allEnemiesDead() {

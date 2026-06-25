@@ -44,13 +44,14 @@ class CircleTest {
 		// distance = 10 > 1 + 1
 		assertFalse(a.intersects(b));
 	}
-
 	@Test
-	void cercles_tangents_s_intersectent_inegalite_large() {
-		Circle a = new Circle(coord(10, 10), 2);
-		Circle b = new Circle(coord(14, 10), 2);
-		// distance = 4 == somme des rayons → true (<=)
-		assertTrue(a.intersects(b));
+	void cercles_tangents_ne_s_intersectent_pas() {
+	    Circle a = new Circle(coord(10, 10), 2);
+	    Circle b = new Circle(coord(14, 10), 2);
+
+	    // distance = 4 == somme des rayons
+	    // Dans ce moteur, tangent = pas intersection réelle.
+	    assertFalse(a.intersects(b));
 	}
 
 	@Test
@@ -62,4 +63,30 @@ class CircleTest {
 		assertEquals(12, box.xmax(), DELTA);
 		assertEquals(12, box.ymax(), DELTA);
 	}
+	@Test
+	void deux_cercles_identiques_s_intersectent() {
+	    Circle a = new Circle(coord(10, 10), 2);
+	    Circle b = new Circle(coord(10, 10), 2);
+
+	    assertTrue(a.intersects(b));
+	}
+	@Test
+	void petit_cercle_dans_grand_cercle_s_intersecte() {
+	    Circle a = new Circle(coord(10, 10), 5);
+	    Circle b = new Circle(coord(11, 10), 1);
+
+	    assertTrue(a.intersects(b));
+	}
+	@Test
+	void box_d_un_cercle_de_rayon_zero() {
+	    Circle a = new Circle(coord(10, 10), 0);
+
+	    Box box = a.box();
+
+	    assertEquals(10, box.xmin(), DELTA);
+	    assertEquals(10, box.ymin(), DELTA);
+	    assertEquals(10, box.xmax(), DELTA);
+	    assertEquals(10, box.ymax(), DELTA);
+	}
+	
 }

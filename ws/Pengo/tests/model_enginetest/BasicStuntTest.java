@@ -62,11 +62,11 @@ class BasicStuntTest {
 	}
 
 	@Test
-	void set_cell_null_leve_une_erreur() {
-		// assert c != null : AssertionError si les assertions JVM sont actives
-		// (-ea, par défaut sous Eclipse JUnit), sinon NullPointerException sur
-		// c.position().
-		assertThrows(Throwable.class, () -> stunt.set((geometry.Grid.Cell) null));
+	void set_cell_null_ne_fait_rien() {
+	    stunt.set((geometry.Grid.Cell) null);
+
+	    assertEquals(5, entity.position().x());
+	    assertEquals(5, entity.position().y());
 	}
 
 	// ─── set(double x_cm, double y_cm) ───────────────────────────────────

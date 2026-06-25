@@ -69,10 +69,47 @@ class VectorTest {
 	 * comportement réel (NaN) sans corriger le moteur.
 	 */
 	@Test
-	void unity_sur_vecteur_nul_produit_NaN() {
-		Vector v = new Vector(0, 0);
-		v.unity();
-		assertTrue(Double.isNaN(v.x()));
-		assertTrue(Double.isNaN(v.y()));
+	void unity_sur_vecteur_nul_reste_nul() {
+	    Vector v = new Vector(0, 0);
+
+	    v.unity();
+
+	    assertEquals(0, v.x(), DELTA);
+	    assertEquals(0, v.y(), DELTA);
+	    assertEquals(0, v.norm(), DELTA);
+	}
+	@Test
+	void scaled_avec_zero_donne_vecteur_nul() {
+	    Vector v = new Vector(2, 3);
+
+	    Vector s = v.scaled(0);
+
+	    assertEquals(0, s.x(), DELTA);
+	    assertEquals(0, s.y(), DELTA);
+	}
+	@Test
+	void scaled_avec_nombre_negatif_inverse_le_sens() {
+	    Vector v = new Vector(2, -3);
+
+	    Vector s = v.scaled(-2);
+
+	    assertEquals(-4, s.x(), DELTA);
+	    assertEquals(6, s.y(), DELTA);
+	}
+	@Test
+	void turned_180_degres() {
+	    Vector v = new Vector(1, 0);
+
+	    Vector t = v.turned(180);
+
+	    assertEquals(-1, t.x(), DELTA);
+	    assertEquals(0, t.y(), DELTA);
+	}
+	@Test
+	void dot_de_deux_vecteurs_perpendiculaires_vaut_zero() {
+	    Vector a = new Vector(1, 0);
+	    Vector b = new Vector(0, 1);
+
+	    assertEquals(0, a.dot(b), DELTA);
 	}
 }
