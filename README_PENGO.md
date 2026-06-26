@@ -5,7 +5,7 @@ Ce projet implémente une version du jeu **Pengo** en Java, avec un moteur gén�
 ## 1. Prérequis
 
 - Eclipse ou un IDE Java équivalent.
-- Le projet doit être ouvert avec le dossier `ws/Pengo` comme projet Java.
+- Le projet doit être ouvert avec le dossier `ws` comme projet Java. Le code source est dans `ws/Pengo`, mais la racine du projet Eclipse reste `ws`.
 - Les ressources doivent rester dans le dossier :
 
 ```text
