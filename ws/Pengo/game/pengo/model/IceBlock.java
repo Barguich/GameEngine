@@ -97,7 +97,6 @@ public class IceBlock extends Entity {
 			return;
 		}
 
-		System.out.println("ICEBLOCK DRAG ENEMY");
 
 		// ajoute devant la chaîne.
 
@@ -179,7 +178,6 @@ public class IceBlock extends Entity {
 		breakingAnimationDuration = ENEMY_BREAK_DURATION_MS;
 		breakingAnimationRemaining = breakingAnimationDuration;
 		breakingFrame = 0;
-		System.out.println("ICEBLOCK DESTROYED BY ENEMY");
 		return true;
 	}
 
@@ -189,8 +187,6 @@ public class IceBlock extends Entity {
 		}
 
 		hp--;
-
-		System.out.println("ICEBLOCK DAMAGE, hp = " + hp);
 
 		breakingAnimation = true;
 		breakingAnimationDuration = PLAYER_HIT_DURATION_MS;

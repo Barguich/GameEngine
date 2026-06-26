@@ -209,8 +209,6 @@ public class PengoModel extends Model {
 		} else {
 			score += points;
 		}
-
-		System.out.println("Score = " + score);
 	}
 
 	public void activateDoubleScore(long duration) {
@@ -453,12 +451,9 @@ public class PengoModel extends Model {
 		player.loseLife();
 		invincibleRemaining = 2000;
 
-		System.out.println("Le joueur perd une vie");
-
 		if (player.dead()) {
 			lost = true;
 			setState(GameState.GAME_OVER);
-			System.out.println("GAME OVER");
 		} else {
 			respawnPlayerNearSafePlace();
 		}
@@ -783,7 +778,6 @@ public class PengoModel extends Model {
 		Enemy enemy = enemyReachedDuringThisMovement(ice, movement);
 
 		if (enemy != null) {
-			System.out.println("ICEBLOCK TOUCHES FIRST ENEMY");
 
 			ice.attachEnemyFront(enemy);
 
@@ -796,8 +790,6 @@ public class PengoModel extends Model {
 			Entity obstacle = firstSolidAt(enemyNextCell, ice, null);
 
 			if (obstacle != null) {
-				System.out.println("ENEMY IMMEDIATELY CRUSHED AGAINST " + obstacle.getClass().getSimpleName());
-
 				crushDraggedEnemiesByIce(ice, enemyPos);
 				return true;
 			}
@@ -849,8 +841,6 @@ public class PengoModel extends Model {
 			Enemy nextEnemy = enemyReachedByFrontEnemy(ice, frontEnemy, movement);
 
 			if (nextEnemy != null) {
-				System.out.println("ICEBLOCK TOUCHES ANOTHER ENEMY");
-
 				ice.attachEnemyFront(nextEnemy);
 
 				chain = validDraggedEnemies(ice);
@@ -865,8 +855,6 @@ public class PengoModel extends Model {
 			Entity obstacle = firstSolidAt(frontEnemyNextCell, ice, null);
 
 			if (obstacle != null) {
-				System.out.println("DRAGGED ENEMIES CRUSHED AGAINST " + obstacle.getClass().getSimpleName());
-
 				crushDraggedEnemiesByIce(ice, frontEnemyPos);
 				return true;
 			}
@@ -1364,8 +1352,6 @@ public class PengoModel extends Model {
 		if (crushedEnemies.isEmpty()) {
 			return;
 		}
-
-		System.out.println("CRUSH " + crushedEnemies.size() + " ENEMY/ENEMIES BY ICE");
 
 		// tous les ennemis écrasés doivent jouer leur animation
 		// sur la même case : la case de l'ennemi le plus devant.

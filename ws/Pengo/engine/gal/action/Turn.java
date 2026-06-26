@@ -59,7 +59,6 @@ public class Turn extends GALAction {
 			// Passe par le Stunt : respecte action_ms, refuse si déjà occupé,
 			// et la rotation est progressive (gérée par tick()).
 			boolean started = ((GALStunt) s).startTurning(angle_deg, intensity);
-			System.out.println("[Turn] exec angle=" + angle_deg + " started=" + started);
 			return started;
 		}
 

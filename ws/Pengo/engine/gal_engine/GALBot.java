@@ -48,8 +48,6 @@ public class GALBot extends Bot {
 		}
 		if (automaton == null)
 			return;
-		System.out.println(
-				"orientation=" + entity.orientation());
 		if (entity.stunt() instanceof GALStunt && ((GALStunt) entity.stunt()).busy()) {
 			return;
 		}
