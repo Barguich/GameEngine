@@ -5,7 +5,7 @@ Ce projet implémente une version du jeu **Pengo** en Java, avec un moteur gén�
 ## 1. Prérequis
 
 - Eclipse ou un IDE Java équivalent.
-- Le projet doit être ouvert avec le dossier `ws` comme projet Java. Le code source est dans `ws/Pengo`, mais la racine du projet Eclipse reste `ws`.
+- Le projet doit être ouvert avec le dossier `ws/Pengo` comme projet Java.
 - Les ressources doivent rester dans le dossier :
 
 ```text
@@ -31,6 +31,20 @@ ws/Pengo/game/pengo/PengoMain.java
 C'est cette classe qui crée le jeu, initialise le modèle, la vue, le viewport, les contrôleurs, les bots et charge les cartes.
 
 ## 3. Compilation
+### Depuis un terminal
+
+Se placer dans le dossier `ws` :
+
+```bash
+cd ws
+```
+
+Lancer ensuite le jeu avec :
+
+```bash
+java -ea -cp "bin:given.jar" pengo.PengoMain
+```
+
 
 ### Avec Eclipse
 
