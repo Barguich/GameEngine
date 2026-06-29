@@ -1,4 +1,5 @@
 # Projet Pengo
+lien du video : https://youtu.be/L0TqmwFEOVk?si=IhvKEaO03hVXW-6-
 
 Ce projet implémente une version du jeu **Pengo** en Java, avec un moteur générique, un modèle de jeu, une vue avec viewport, des sprites, des collisions et des automates/bots GAL pour les ennemis.
 
